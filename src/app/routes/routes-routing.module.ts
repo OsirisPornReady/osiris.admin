@@ -27,7 +27,7 @@ const routes: Routes = [
       { path: 'exception', loadChildren: () => import('./exception/exception.module').then(m => m.ExceptionModule) },
       // 业务子模块
       // { path: 'widgets', loadChildren: () => import('./widgets/widgets.module').then(m => m.WidgetsModule) },
-    ]
+     { path: 'video-manage', loadChildren: () => import('./video-manage/video-manage.module').then((m) => m.VideoManageModule) }]
   },
   // 空白布局
   // {

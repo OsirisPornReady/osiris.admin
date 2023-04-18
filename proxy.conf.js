@@ -14,4 +14,10 @@ module.exports = {
   //   secure: false, // Ignore invalid SSL certificates
   //   changeOrigin: true
   // }
+
+  '/api': {
+    target: 'http://localhost:8090/',
+    secure: false, // Ignore invalid SSL certificates
+    changeOrigin: true
+  }
 };

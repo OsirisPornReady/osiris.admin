@@ -4,7 +4,7 @@ export const environment = {
   production: true,
   useHash: true,
   api: {
-    baseUrl: './',
+    baseUrl: 'http://localhost:8090/api/', // ./
     refreshTokenEnabled: true,
     refreshTokenType: 'auth-refresh'
   }

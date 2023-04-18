@@ -11,11 +11,11 @@ export const environment = {
   production: false,
   useHash: true,
   api: {
-    baseUrl: './',
+    baseUrl: 'http://localhost:8090/api/', // ./
     refreshTokenEnabled: true,
     refreshTokenType: 'auth-refresh'
   },
-  modules: [DelonMockModule.forRoot({ data: MOCKDATA })]
+  // modules: [DelonMockModule.forRoot({ data: MOCKDATA })]
 } as Environment;
 
 /*

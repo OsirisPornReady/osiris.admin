@@ -54,7 +54,7 @@ const GLOBAL_THIRD_MODULES: Array<Type<void>> = [];
 
 // #region Startup Service
 import { StartupService } from '@core';
-export function StartupServiceFactory(startupService: StartupService): () => Observable<void> {
+export function StartupServiceFactory(startupService: StartupService): () => Promise<any> { // Observable<void>
   return () => startupService.load();
 }
 const APPINIT_PROVIDES = [
