@@ -2,9 +2,58 @@
   <div class="modal-title">编辑 {{ record.id }} 信息</div>
 </div>
 <nz-spin *ngIf="!i" class="modal-spin"></nz-spin>
-<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
+<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" [loading]="http.loading" button="none">
   <div class="modal-footer">
     <button nz-button type="button" (click)="close()">关闭</button>
     <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">保存</button>
   </div>
+
+  <ng-template sf-template="tags" let-i let-ui="ui" let-schema="schema">
+    <div>
+      <nz-space nzDirection="vertical" nzSize="middle" style="width: 100%">
+        <div nz-row [nzGutter]="[12, 12]" style="height: 44px" *nzSpaceItem>
+          <div nz-col [nzSpan]="12" *ngIf="tagEditState">
+            <input nz-input placeholder="添加tag" [(ngModel)]="editTag" (keydown.enter)="addTag($event)" />
+          </div>
+          <div nz-col style="display: flex; align-items: center">
+            <button
+              nz-button
+              nzType="dashed"
+              nzShape="round"
+              nzSize="small"
+              type="button"
+              (click)="switchTagEdit()"
+            >
+              {{ tagEditState ? '关闭' : '编辑' }}
+            </button>
+            <button
+              nz-button
+              nzType="primary"
+              nzDanger
+              nzShape="round"
+              nzSize="small"
+              type="button"
+              nz-popconfirm="true"
+              nzPopconfirmTitle="要删除选中tag吗?"
+              (nzOnConfirm)="bulkDelTag()"
+              *ngIf="tagEditState"
+            >
+              删除
+            </button>
+          </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; align-content: space-between" *nzSpaceItem>
+          <nz-tag
+            *ngFor="let tag of tagList; let i = index"
+            style="margin-bottom: 6px"
+            [nzMode]="tagEditState ? 'checkable' : 'default'"
+            [nzColor]="tagEditState ? '' : 'magenta'"
+            (nzOnClose)="delTag(tag, i)"
+            (nzCheckedChange)="bulkSelectTag($event, tag, i)"
+            >{{ tag }}</nz-tag
+          >
+        </div>
+      </nz-space>
+    </div>
+  </ng-template>
 </sf>
