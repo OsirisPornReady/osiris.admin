@@ -2,7 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { STColumn, STComponent } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
-import { VideoManageVideoEditComponent } from "../video-edit/video-edit.component";
+
+import { VideoService } from '../../../../service/video/video.service';
+import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -33,14 +35,30 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
-  constructor(private http: _HttpClient, private modal: ModalHelper) { }
+  constructor(
+    private http: _HttpClient,
+    private modal: ModalHelper,
+    private videoService: VideoService
+  ) { }
 
   ngOnInit(): void { }
 
-  addEdit(item: any): void {
-    this.modal
-      .createStatic(VideoManageVideoEditComponent, { i: { id: 0 } })
-      .subscribe(() => this.st.reload());
+  addEdit(id: number = 0): void {
+    this.modal.createStatic(VideoManageVideoEditComponent, { record: { id } }).subscribe(res => {
+      if (res == 'ok') {
+        this.st.reload();
+      }
+    });
   }
+
+  async delete(id: number = 0) {
+    try {
+      await this.videoService.delete(id);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+
 
 }

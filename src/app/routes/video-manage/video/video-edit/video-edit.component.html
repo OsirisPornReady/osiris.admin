@@ -1,5 +1,5 @@
 <div class="modal-header">
-  <div class="modal-title">编辑 {{ record.id }} 信息</div>
+  <div class="modal-title">{{ title }}</div>
 </div>
 <nz-spin *ngIf="!i" class="modal-spin"></nz-spin>
 <sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" [loading]="http.loading" button="none">
@@ -8,7 +8,7 @@
     <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">保存</button>
   </div>
 
-  <ng-template sf-template="tags" let-i let-ui="ui" let-schema="schema">
+  <ng-template sf-template="tbd" let-i let-ui="ui" let-schema="schema">
     <div>
       <nz-space nzDirection="vertical" nzSize="middle" style="width: 100%">
         <div nz-row [nzGutter]="[12, 12]" style="height: 44px" *nzSpaceItem>

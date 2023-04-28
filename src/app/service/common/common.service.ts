@@ -6,20 +6,5 @@ import { lastValueFrom, map } from 'rxjs';
 export class CommonService {
   constructor(private http: _HttpClient) {}
 
-  getSelectList(field = 'label') {
-    //asyncData专用，不用转成promise
-    let url = `common/getSelectList`;
-    let result: any[] = [];
-    return this.http.get(url).pipe(
-      map(res => {
-        res.forEach((i: any) => {
-          result.push({
-            label: i[field],
-            value: i.value
-          });
-        });
-        return result;
-      })
-    );
-  }
+
 }

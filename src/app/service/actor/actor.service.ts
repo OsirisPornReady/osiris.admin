@@ -3,40 +3,35 @@ import { _HttpClient } from '@delon/theme';
 import { lastValueFrom, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class VideoService {
+export class ActorService {
 
   constructor(private http: _HttpClient) { }
 
   add(entity: any) {
-    let url = `video`;
+    let url = `actor/add`;
     return lastValueFrom(this.http.post(url, entity));
   }
 
   update(entity: any) {
-    let url = `video/${entity.id}`;
+    let url = `actor/update`;
     return lastValueFrom(this.http.put(url, entity));
   }
 
-  delete(id: number) {
-    let url = `video/${id}`;
-    return lastValueFrom(this.http.delete(url));
+  get(params: any) {
+    let url = `actor/get`;
+    return lastValueFrom(this.http.get(url, params));
   }
 
-  getById(id: number) {
-    let url = `video/get`;
-    return lastValueFrom(this.http.get(url, { id }));
-  }
-
-  getSelectList(field = '') {
+  getSelectList(field = 'name') {
     //asyncData专用，不用转成promise
-    let url = `video/getSelectList`;
+    let url = `actor/getSelectList`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {
         res.forEach((i: any) => {
           result.push({
             label: i[field],
-            value: i.id
+            value: i.value
           });
         });
         return result;

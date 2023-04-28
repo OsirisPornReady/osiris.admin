@@ -4,25 +4,28 @@ import { _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
-import { CommonService } from '../../../service/common/common.service';
-import { VideoService } from '../../../service/video/video.service';
+import { ActorService } from '../../../../service/actor/actor.service';
+import { CommonService } from '../../../../service/common/common.service';
+import { VideoService } from '../../../../service/video/video.service';
 
 @Component({
   selector: 'app-video-manage-video-edit',
   templateUrl: './video-edit.component.html',
 })
 export class VideoManageVideoEditComponent implements OnInit {
+  title = '';
   record: any = {};
   i: any;
   schema: SFSchema = {
     properties: {
       title: { type: 'string', title: '标题' },
+      existSerialNumber: { type: 'boolean', title: '番号' },
+      serialNumber: { type: 'string', title: '', maxLength: 15 },
       videoType: { type: 'string', title: '类型' },
       area: { type: 'string', title: '地区' },
       publishTime: { type: 'string', title: '发布时间', format: 'date' },
       addTime: { type: 'string', title: '添加时间', format: 'date-time' },
-      existSerialNumber: { type: 'boolean', title: '番号' },
-      serialNumber: { type: 'string', title: '', maxLength: 15 },
+      cast: { type: 'string', title: '演员' },
       tags: {
         type: 'string',
         title: '标签',
@@ -47,7 +50,7 @@ export class VideoManageVideoEditComponent implements OnInit {
       allowClear: true,
       placeholder: '请选择视频类型',
       width: 400,
-      asyncData: () => this.commonService.getSelectList()
+      asyncData: () => this.videoService.getSelectList()
     },
     $area: {
       widget: 'select',
@@ -67,8 +70,20 @@ export class VideoManageVideoEditComponent implements OnInit {
         existSerialNumber: val => val
       }
     },
+    $cast: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择演员',
+      mode: 'tags',
+      default: null,
+      asyncData: () => this.actorService.getSelectList()
+    },
     $tags: {
-      widget: 'custom'
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择标签',
+      mode: 'tags',
+      default: null
     },
     $description: {
       widget: 'textarea',
@@ -94,21 +109,22 @@ export class VideoManageVideoEditComponent implements OnInit {
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
+    private commonService: CommonService,
     private videoService: VideoService,
-    private commonService: CommonService
+    private actorService: ActorService
   ) {}
 
-  ngOnInit(): void {
-    if (this.record.id > 0)
-    this.http.get(`/user/${this.record.id}`).subscribe(res => (this.i = res));
+  async ngOnInit() {
+    if (this.record.id > 0) {
+      this.title = '修改';
+      this.i = (await this.videoService.getById(this.record.id)) || {};
+    } else {
+      this.title = '新增';
+      this.i = {};
+    }
   }
 
   async save(value: any) {
-    // this.http.post(`/user/${this.record.id}`, value).subscribe(res => {
-    //   this.msgSrv.success('保存成功');
-    //   this.modal.close(true);
-    // });
-
     try {
       if (this.record.id > 0) {
         await this.videoService.update(value);
@@ -123,8 +139,6 @@ export class VideoManageVideoEditComponent implements OnInit {
   close(): void {
     this.modal.destroy();
   }
-
-  protected readonly open = open;
 
   switchTagEdit() {
     this.tagEditState = !this.tagEditState;

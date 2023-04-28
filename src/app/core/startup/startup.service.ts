@@ -76,13 +76,18 @@ export class StartupService {
                 icon: { type: 'icon', value: 'appstore' }
               },
               {
-                text: 'Video-manage',
+                text: 'Video Manage',
                 link: '',
                 icon: { type: 'icon', value: 'appstore' },
                 children: [
                   {
-                    text: 'video-list',
+                    text: 'video',
                     link: '/video-manage/video-list',
+                    icon: null
+                  },
+                  {
+                    text: 'tag',
+                    link: '/video-manage/video-tag-list',
                     icon: null
                   }
                 ]
@@ -92,7 +97,7 @@ export class StartupService {
         ]
       };
 
-      let url = 'app/init';
+      let url = 'common/init';
       zip(this.httpClient.get(url))
         .pipe(
           catchError((res: any) => {
