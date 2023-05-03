@@ -27,9 +27,9 @@ export class VideoService {
     return lastValueFrom(this.http.get(url, { id }));
   }
 
-  getSelectList(field = '') {
+  getSelectAll(field = '') {
     //asyncData专用，不用转成promise
-    let url = `video/getSelectList`;
+    let url = `video/getSelectAll`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {

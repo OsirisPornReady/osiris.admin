@@ -4,7 +4,7 @@ import { _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
-import { VideoManageVideoTagService } from '../../../../service/video/video-tag.service';
+import { VideoTagService } from '../../../../service/video/video-tag.service';
 
 @Component({
   selector: 'app-video-manage-video-tag-edit',
@@ -31,7 +31,7 @@ export class VideoManageVideoTagEditComponent implements OnInit {
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
-    private videoTagService: VideoManageVideoTagService
+    private videoTagService: VideoTagService
   ) {}
 
   async ngOnInit() {

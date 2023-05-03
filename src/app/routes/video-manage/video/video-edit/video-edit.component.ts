@@ -7,6 +7,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 import { ActorService } from '../../../../service/actor/actor.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { VideoService } from '../../../../service/video/video.service';
+import { VideoTagService } from "../../../../service/video/video-tag.service";
 
 @Component({
   selector: 'app-video-manage-video-edit',
@@ -50,7 +51,7 @@ export class VideoManageVideoEditComponent implements OnInit {
       allowClear: true,
       placeholder: '请选择视频类型',
       width: 400,
-      asyncData: () => this.videoService.getSelectList()
+      asyncData: () => this.videoService.getSelectAll()
     },
     $area: {
       widget: 'select',
@@ -83,7 +84,8 @@ export class VideoManageVideoEditComponent implements OnInit {
       allowClear: true,
       placeholder: '请选择标签',
       mode: 'tags',
-      default: null
+      default: null,
+      asyncData: () => this.videoTagService.getSelectAll()
     },
     $description: {
       widget: 'textarea',
@@ -111,7 +113,8 @@ export class VideoManageVideoEditComponent implements OnInit {
     public http: _HttpClient,
     private commonService: CommonService,
     private videoService: VideoService,
-    private actorService: ActorService
+    private actorService: ActorService,
+    private videoTagService: VideoTagService
   ) {}
 
   async ngOnInit() {

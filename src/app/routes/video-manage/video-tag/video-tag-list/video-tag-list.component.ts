@@ -3,7 +3,7 @@ import { STColumn, STComponent } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
 
-import { VideoManageVideoTagService } from '../../../../service/video/video-tag.service';
+import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoManageVideoTagEditComponent } from '../video-tag-edit/video-tag-edit.component';
 
 @Component({
@@ -51,7 +51,7 @@ export class VideoManageVideoTagListComponent implements OnInit {
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
-    private videoTagService: VideoManageVideoTagService
+    private videoTagService: VideoTagService
   ) { }
 
   ngOnInit(): void { }

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class VideoManageVideoTagService {
+export class VideoTagService {
 
   constructor(private http: _HttpClient) { }
 
@@ -25,6 +25,23 @@ export class VideoManageVideoTagService {
   getById(id: number) {
     let url = `video_tag/get`;
     return lastValueFrom(this.http.get(url, { id }));
+  }
+
+  getSelectAll(field = 'tag') {
+    //asyncData专用，不用转成promise
+    let url = `video_tag/getSelectAll`;
+    let result: any[] = [];
+    return this.http.get(url).pipe(
+      map(res => {
+        res.forEach((i: any) => {
+          result.push({
+            label: i[field],
+            value: i.id
+          });
+        });
+        return result;
+      })
+    );
   }
 
 }
