@@ -3,16 +3,18 @@ import { STColumn, STComponent } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { lastValueFrom } from 'rxjs';
 
-import { VideoTagService } from '../../../../service/video/video-tag.service';
-import { VideoManageVideoTagEditComponent } from '../video-tag-edit/video-tag-edit.component';
+import { AreaService } from '../../../../service/area/area.service';
+import { CastService } from '../../../../service/cast/cast.service';
+import { CastManageCastEditComponent } from '../cast-edit/cast-edit.component';
 
 @Component({
-  selector: 'app-video-manage-video-tag-list',
-  templateUrl: './video-tag-list.component.html',
+  selector: 'app-cast-manage-cast-list',
+  templateUrl: './cast-list.component.html',
 })
-export class VideoManageVideoTagListComponent implements OnInit {
-  url = `/video_tag/get_by_page`;
+export class CastManageCastListComponent implements OnInit {
+  url = `/cast/get_by_page`;
   searchSchema: SFSchema = {
     properties: {
       no: {
@@ -23,10 +25,8 @@ export class VideoManageVideoTagListComponent implements OnInit {
   };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
-    { title: 'ID', index: 'id' },
-    { title: '标签', index: 'tag' },
-    { title: '引用次数', type: 'number', index: 'refCount' },
-    { title: '更新时间', type: 'date', index: 'updateTime' },
+    { title: '姓名', index: 'name' },
+    { title: '地区', render: 'customAreaInfo' },
     {
       title: '操作',
       buttons: [
@@ -49,17 +49,22 @@ export class VideoManageVideoTagListComponent implements OnInit {
     }
   ];
 
+
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
-    private videoTagService: VideoTagService
+    private castService: CastService,
+    private areaService: AreaService
   ) { }
 
-  ngOnInit(): void { }
+  async ngOnInit() {
+
+  }
 
   addEdit(id: number = 0): void {
-    this.modal.createStatic(VideoManageVideoTagEditComponent, { record: { id } }).subscribe(res => {
+    this.modal.createStatic(CastManageCastEditComponent, { record: { id } }).subscribe(res => {
       if (res == 'ok') {
         this.st.reload();
       }
@@ -68,7 +73,7 @@ export class VideoManageVideoTagListComponent implements OnInit {
 
   async delete(id: number = 0) {
     try {
-      await this.videoTagService.delete(id);
+      await this.castService.delete(id);
       this.msgSrv.success('删除成功');
       this.st.reload();
     } catch (e) {

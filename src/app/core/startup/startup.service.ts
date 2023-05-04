@@ -89,6 +89,35 @@ export class StartupService {
                     text: 'tag',
                     link: '/video-manage/video-tag-list',
                     icon: null
+                  },
+                  {
+                    text: 'type',
+                    link: '/video-manage/video-type-list',
+                    icon: null
+                  }
+                ]
+              },
+              {
+                text: 'Cast Manage',
+                link: '',
+                icon: { type: 'icon', value: 'appstore' },
+                children: [
+                  {
+                    text: 'cast',
+                    link: '/cast-manage/cast-list',
+                    icon: null
+                  }
+                ]
+              },
+              {
+                text: 'System Manage',
+                link: '',
+                icon: { type: 'icon', value: 'appstore' },
+                children: [
+                  {
+                    text: 'area',
+                    link: '/system-manage/area-list',
+                    icon: null
                   }
                 ]
               }

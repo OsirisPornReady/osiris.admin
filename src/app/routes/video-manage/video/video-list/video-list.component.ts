@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { STColumn, STComponent } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 import { VideoService } from '../../../../service/video/video.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
@@ -38,6 +39,7 @@ export class VideoManageVideoListComponent implements OnInit {
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
+    private msgSrv: NzMessageService,
     private videoService: VideoService
   ) { }
 
@@ -54,6 +56,8 @@ export class VideoManageVideoListComponent implements OnInit {
   async delete(id: number = 0) {
     try {
       await this.videoService.delete(id);
+      this.msgSrv.success('删除成功');
+      this.st.reload();
     } catch (e) {
       console.error(e);
     }

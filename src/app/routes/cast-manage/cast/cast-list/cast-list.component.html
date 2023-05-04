@@ -1,0 +1,12 @@
+<page-header [home]="''" [title]="''"></page-header>
+<nz-card>
+  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
+  <button (click)="addEdit()" nz-button nzType="primary">新建</button>
+  <st #st [data]="url" [columns]="columns">
+    <ng-template st-row="customAreaInfo" let-item>
+      <span *ngFor="let subItem of item.areaInfo; let subIndex = index">
+        {{ subItem.area }}{{ subIndex == item.areaInfo.length - 1 ? '' : ' ，' }}
+      </span>
+    </ng-template>
+  </st>
+</nz-card>

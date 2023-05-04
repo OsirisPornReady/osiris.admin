@@ -4,14 +4,16 @@ import { _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
-import { ActorService } from '../../../../service/actor/actor.service';
+import { AreaService } from '../../../../service/area/area.service';
+import { CastService } from '../../../../service/cast/cast.service';
 import { CommonService } from '../../../../service/common/common.service';
+import { VideoTagService } from '../../../../service/video/video-tag.service';
+import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { VideoService } from '../../../../service/video/video.service';
-import { VideoTagService } from "../../../../service/video/video-tag.service";
 
 @Component({
   selector: 'app-video-manage-video-edit',
-  templateUrl: './video-edit.component.html',
+  templateUrl: './video-edit.component.html'
 })
 export class VideoManageVideoEditComponent implements OnInit {
   title = '';
@@ -33,12 +35,12 @@ export class VideoManageVideoEditComponent implements OnInit {
         enum: [
           { value: 1, label: '电影' },
           { value: 2, label: '书' },
-          { value: 3, label: '旅行' },
-        ],
+          { value: 3, label: '旅行' }
+        ]
       },
-      description: { type: 'string', title: '描述', maxLength: 140 },
+      description: { type: 'string', title: '描述', maxLength: 140 }
     },
-    required: ['description'],
+    required: ['description']
   };
   ui: SFUISchema = {
     '*': {
@@ -51,13 +53,14 @@ export class VideoManageVideoEditComponent implements OnInit {
       allowClear: true,
       placeholder: '请选择视频类型',
       width: 400,
-      asyncData: () => this.videoService.getSelectAll()
+      asyncData: () => this.videoTypeService.getSelectAll()
     },
     $area: {
       widget: 'select',
       allowClear: true,
       placeholder: '请选择地区',
-      width: 400
+      width: 400,
+      asyncData: () => this.videoAreaService.getSelectAll()
     },
     $existSerialNumber: {
       checkedChildren: '有',
@@ -77,7 +80,7 @@ export class VideoManageVideoEditComponent implements OnInit {
       placeholder: '请选择演员',
       mode: 'tags',
       default: null,
-      asyncData: () => this.actorService.getSelectList()
+      asyncData: () => this.castService.getSelectAll()
     },
     $tags: {
       widget: 'select',
@@ -102,19 +105,16 @@ export class VideoManageVideoEditComponent implements OnInit {
     }
   };
 
-  editTag: any;
-  tagEditState: boolean = false;
-  tagList: any[] = ['tag1', 'tag2', 'tag3'];
-  bulkTagIndexHash: any = {};
-
   constructor(
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private commonService: CommonService,
+    private castService: CastService,
     private videoService: VideoService,
-    private actorService: ActorService,
-    private videoTagService: VideoTagService
+    private videoTagService: VideoTagService,
+    private videoTypeService: VideoTypeService,
+    private videoAreaService: AreaService
   ) {}
 
   async ngOnInit() {
@@ -141,37 +141,5 @@ export class VideoManageVideoEditComponent implements OnInit {
 
   close(): void {
     this.modal.destroy();
-  }
-
-  switchTagEdit() {
-    this.tagEditState = !this.tagEditState;
-  }
-
-  addTag(value: any) {
-    this.tagList.push(this.editTag);
-    this.editTag = '';
-  }
-
-  delTag(tag: any, index: number) {
-    this.tagList.splice(index, 1);
-  }
-
-  bulkSelectTag(event: any, tag: any, index: number) {
-    if (event) {
-      this.bulkTagIndexHash[index] = true;
-    } else {
-      this.bulkTagIndexHash[index] = false;
-    }
-  }
-
-  bulkDelTag() {
-    this.tagList = this.tagList.filter((item: any, index: number) => {
-      if (this.bulkTagIndexHash.hasOwnProperty(index)) {
-        return !this.bulkTagIndexHash[index];
-      } else {
-        return true;
-      }
-    });
-    this.bulkTagIndexHash = {};
   }
 }
