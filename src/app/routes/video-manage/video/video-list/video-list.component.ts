@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { STColumn, STComponent } from '@delon/abc/st';
+import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -10,9 +10,16 @@ import { VideoManageVideoEditComponent } from '../video-edit/video-edit.componen
 @Component({
   selector: 'app-video-manage-video-list',
   templateUrl: './video-list.component.html',
+  styleUrls: ['./video-list.component.less']
 })
 export class VideoManageVideoListComponent implements OnInit {
-  url = `/user`;
+  url = `/video/get_by_page`;
+
+  page: STPage = {
+    showSize: true,
+    pageSizes: [10, 20, 30, 40, 50],
+    showQuickJumper: true,
+  };
   searchSchema: SFSchema = {
     properties: {
       no: {
@@ -21,17 +28,50 @@ export class VideoManageVideoListComponent implements OnInit {
       }
     }
   };
+  BADGE: STColumnBadge = {
+    1: { text: '成功', color: 'success' },
+    2: { text: '错误', color: 'error' },
+    3: { text: '进行中', color: 'processing' },
+    4: { text: '默认', color: 'default' },
+    5: { text: '警告', color: 'warning' }
+  };
+  TAG: STColumnTag = {
+    true: { text: '已入库', color: 'green' },
+    false: { text: '未入库', color: 'red' }
+  };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
-    { title: '编号', index: 'no' },
-    { title: '调用次数', type: 'number', index: 'callNo' },
-    { title: '头像', type: 'img', width: '50px', index: 'avatar' },
-    { title: '时间', type: 'date', index: 'updatedAt' },
+    { title: '标题', index: 'title', width: 550 },
     {
-      title: '',
+      title: '番号',
+      index: 'serialNumber',
+      width: 250,
+      format: (item, col, index) => {
+        return item.existSerialNumber ? item.serialNumber : '-';
+      }
+    },
+    { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
+    { title: '状态', index: 'existSerialNumber', type: 'tag', tag: this.TAG },
+    // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
+    {
+      title: '操作',
       buttons: [
         // { text: '查看', click: (item: any) => `/form/${item.id}` },
-        // { text: '编辑', type: 'static', component: FormEditComponent, click: 'reload' },
+        {
+          text: '编辑',
+          type: 'static',
+          click: (item: any) => {
+            this.addEdit(item.id);
+          }
+        },
+        {
+          text: '删除',
+          type: 'del',
+          pop: true,
+          click: async (item: any) => {
+            await this.delete(item.id);
+          }
+        }
       ]
     }
   ];
@@ -63,6 +103,10 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   }
 
-
+  rowClassName(record: STData, index: number) {
+    if (record['existSerialNumber']) {
+      return 'sign-tr';
+    } else return '';
+  }
 
 }

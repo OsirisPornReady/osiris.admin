@@ -23,8 +23,9 @@ export class VideoService {
   }
 
   getById(id: number) {
-    let url = `video/get`;
-    return lastValueFrom(this.http.get(url, { id }));
+    let url = `video/${id}`;
+    return lastValueFrom(this.http.get(url));
+    // return lastValueFrom(this.http.get(url, { id }));
   }
 
   getSelectAll(field = '') {

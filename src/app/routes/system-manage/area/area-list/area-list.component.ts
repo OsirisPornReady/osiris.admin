@@ -39,8 +39,8 @@ export class SystemManageAreaListComponent implements OnInit {
           text: '删除',
           type: 'del',
           pop: true,
-          click: (item: any) => {
-            this.delete(item.id);
+          click: async (item: any) => {
+            await this.delete(item.id);
           }
         }
       ]

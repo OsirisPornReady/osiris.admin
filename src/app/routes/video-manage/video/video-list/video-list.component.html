@@ -1,10 +1,10 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
   <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
-  <div nz-row class="m-16-0">
+  <div nz-row class="mt-sm mb-md">
     <div nz-col [nzXs]="24" [nzLg]="24">
       <button nz-button nzType="dashed" (click)="addEdit()">添加</button>
     </div>
   </div>
-  <st #st [data]="url" [columns]="columns"></st>
+  <st #st [data]="url" [columns]="columns" [page]="page" [rowClassName]="rowClassName" [widthMode]="{ type: 'strict' }"></st>
 </nz-card>

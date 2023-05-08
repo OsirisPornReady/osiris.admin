@@ -22,30 +22,29 @@ export class VideoManageVideoEditComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       title: { type: 'string', title: '标题' },
-      existSerialNumber: { type: 'boolean', title: '番号' },
-      serialNumber: { type: 'string', title: '', maxLength: 15 },
+      existSerialNumber: { type: 'boolean', title: '有无番号' },
+      serialNumber: { type: 'string', title: '番号', maxLength: 15 },
       videoType: { type: 'string', title: '类型' },
-      area: { type: 'string', title: '地区' },
-      publishTime: { type: 'string', title: '发布时间', format: 'date' },
-      addTime: { type: 'string', title: '添加时间', format: 'date-time' },
-      cast: { type: 'string', title: '演员' },
-      tags: {
-        type: 'string',
-        title: '标签',
-        enum: [
-          { value: 1, label: '电影' },
-          { value: 2, label: '书' },
-          { value: 3, label: '旅行' }
-        ]
-      },
+      publishTime: { type: 'string', title: '发行日期', format: 'date' },
+      duration: { type: 'number', title: '时长' },
+      director: { type: 'string', title: '导演' },
+      producer: { type: 'string', title: '制作商' }, // 日本常用
+      releaser: { type: 'string', title: '发行商' }, // 日本常用
+      brand: { type: 'string', title: '厂牌' }, // 欧美常用
+      inSeries: { type: 'boolean', title: '是否系列作品' },
+      series: { type: 'string', title: '系列' },
+      // area: { type: 'string', title: '地区' },
+      // addTime: { type: 'string', title: '添加时间', format: 'date-time' },
+      tags: { type: 'string', title: '标签' },
+      stars: { type: 'string', title: '演员' },
       description: { type: 'string', title: '描述', maxLength: 140 }
     },
-    required: ['description']
+    required: ['title']
   };
   ui: SFUISchema = {
     '*': {
       spanLabelFixed: 120,
-      grid: { span: 24 }
+      grid: { span: 22 }
     },
     $title: {},
     $videoType: {
@@ -54,6 +53,56 @@ export class VideoManageVideoEditComponent implements OnInit {
       placeholder: '请选择视频类型',
       width: 400,
       asyncData: () => this.videoTypeService.getSelectAll()
+    },
+    $duration: {
+      unit: '分钟',
+      widgetWidth: 150,
+      precision: 0
+    },
+    $director: {
+      visibleIf: {
+        videoType: val => val == 2 || val == 3
+      },
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择导演',
+      asyncData: () => this.videoTagService.getSelectAll()
+    },
+    $producer: {
+      visibleIf: {
+        videoType: val => val == 2
+      },
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择制作商',
+      asyncData: () => this.videoTagService.getSelectAll()
+    },
+    $releaser: {
+      visibleIf: {
+        videoType: val => val == 2
+      },
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择发行商',
+      asyncData: () => this.videoTagService.getSelectAll()
+    },
+    $brand: {
+      visibleIf: {
+        videoType: val => val == 3
+      },
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择厂牌',
+      asyncData: () => this.videoTagService.getSelectAll()
+    },
+    $series: {
+      visibleIf: {
+        inSeries: val => val
+      },
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择系列',
+      asyncData: () => this.videoTagService.getSelectAll()
     },
     $area: {
       widget: 'select',
@@ -65,29 +114,27 @@ export class VideoManageVideoEditComponent implements OnInit {
     $existSerialNumber: {
       checkedChildren: '有',
       unCheckedChildren: '无',
-      grid: { span: 5 }
+      // grid: { span: 5 }
     },
     $serialNumber: {
-      spanLabelFixed: 0,
-      grid: { span: 19 },
+      // spanLabelFixed: 0,
+      // grid: { span: 19 },
       visibleIf: {
         existSerialNumber: val => val
       }
     },
-    $cast: {
+    $stars: {
       widget: 'select',
       allowClear: true,
       placeholder: '请选择演员',
-      mode: 'tags',
-      default: null,
+      mode: 'multiple',
       asyncData: () => this.castService.getSelectAll()
     },
     $tags: {
       widget: 'select',
       allowClear: true,
       placeholder: '请选择标签',
-      mode: 'tags',
-      default: null,
+      mode: 'multiple',
       asyncData: () => this.videoTagService.getSelectAll()
     },
     $description: {

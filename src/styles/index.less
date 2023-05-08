@@ -1,1 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
+
+//修改antd-zorro的badge状态点样式，使得每个状态都有动态效果，同时调整dot大小
+.ant-badge-status-dot {
+  width: 8px;
+  height: 8px;
+}
+.ant-badge-status-dot:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  -webkit-animation: antStatusProcessing 1.2s ease-in-out infinite;
+  animation: antStatusProcessing 1.2s ease-in-out infinite;
+  content: '';
+}
+.ant-badge-status-success:after {
+  border: 1px solid #52c41a;
+}
+.ant-badge-status-warning:after {
+  border: 1px solid #faad14;
+}
+.ant-badge-status-error:after {
+  border: 1px solid #ff4d4f;
+}
+

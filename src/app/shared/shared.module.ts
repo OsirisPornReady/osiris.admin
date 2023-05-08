@@ -6,6 +6,7 @@ import { AlainThemeModule } from '@delon/theme';
 import { DelonACLModule } from '@delon/acl';
 import { DelonFormModule } from '@delon/form';
 
+import { CustomNzBadgeStatusColorDirective } from '../directive/custom-nz-badge-status-color.directive';
 import { SHARED_DELON_MODULES } from './shared-delon.module';
 import { SHARED_ZORRO_MODULES } from './shared-zorro.module';
 
@@ -18,7 +19,9 @@ const THIRDMODULES: Array<Type<void>> = [];
 // #region your componets & directives
 
 const COMPONENTS: Array<Type<void>> = [];
-const DIRECTIVES: Array<Type<void>> = [];
+const DIRECTIVES: Array<Type<void>> = [
+  CustomNzBadgeStatusColorDirective
+];
 
 // #endregion
 

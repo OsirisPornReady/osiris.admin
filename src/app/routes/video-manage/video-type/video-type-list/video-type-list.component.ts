@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { STColumn, STComponent } from '@delon/abc/st';
+import { STColumn, STComponent, STPage } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -13,6 +13,12 @@ import { VideoManageVideoTypeEditComponent } from '../video-type-edit/video-type
 })
 export class VideoManageVideoTypeListComponent implements OnInit {
   url = `/video_type/get_by_page`;
+
+  page: STPage = {
+    showSize: true,
+    pageSizes: [10, 20, 30, 40, 50],
+    showQuickJumper: true,
+  };
   searchSchema: SFSchema = {
     properties: {
       no: {
@@ -39,8 +45,8 @@ export class VideoManageVideoTypeListComponent implements OnInit {
           text: '删除',
           type: 'del',
           pop: true,
-          click: (item: any) => {
-            this.delete(item.id);
+          click: async (item: any) => {
+            await this.delete(item.id);
           }
         }
       ]

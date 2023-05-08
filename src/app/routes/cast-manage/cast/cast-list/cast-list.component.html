@@ -1,12 +1,21 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
   <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
-  <button (click)="addEdit()" nz-button nzType="primary">新建</button>
+  <div nz-row class="mt-sm mb-md">
+    <div nz-col [nzXs]="24" [nzLg]="24">
+      <button nz-button nzType="dashed" class="mr-sm" (click)="addEdit()">添加</button>
+    </div>
+  </div>
   <st #st [data]="url" [columns]="columns">
     <ng-template st-row="customAreaInfo" let-item>
       <span *ngFor="let subItem of item.areaInfo; let subIndex = index">
         {{ subItem.area }}{{ subIndex == item.areaInfo.length - 1 ? '' : ' ，' }}
       </span>
+    </ng-template>
+
+    <ng-template st-row="customStatus" let-item>
+      <nz-badge nzStatus="success" nzText="Color"></nz-badge>
+<!--      <nz-badge nzStandalone nzColor="#CF3DCA" nzText="Color" appCustomNzBadgeStatusColor [statusColor]="'#CF3DCA'"></nz-badge>-->
     </ng-template>
   </st>
 </nz-card>

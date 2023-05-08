@@ -27,6 +27,7 @@ export class CastManageCastListComponent implements OnInit {
   columns: STColumn[] = [
     { title: '姓名', index: 'name' },
     { title: '地区', render: 'customAreaInfo' },
+    { title: '状态', render: 'customStatus' },
     {
       title: '操作',
       buttons: [
@@ -41,8 +42,8 @@ export class CastManageCastListComponent implements OnInit {
           text: '删除',
           type: 'del',
           pop: true,
-          click: (item: any) => {
-            this.delete(item.id);
+          click: async (item: any) => {
+            await this.delete(item.id);
           }
         }
       ]
