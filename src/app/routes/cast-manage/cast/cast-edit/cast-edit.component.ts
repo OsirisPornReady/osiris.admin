@@ -18,6 +18,14 @@ export class CastManageCastEditComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       name: { type: 'string', title: '姓名' },
+      gender: {
+        type: 'string',
+        title: '性别',
+        enum: [
+          { label: 'female', value: 'female' },
+          { label: 'trans', value: 'trans' }
+        ]
+      },
       area: { type: 'string', title: '地区' }
     },
     required: ['name'],
@@ -26,6 +34,9 @@ export class CastManageCastEditComponent implements OnInit {
     '*': {
       spanLabelFixed: 100,
       grid: { span: 22 },
+    },
+    $gender: {
+      width: 400
     },
     $area: {
       widget: 'select',

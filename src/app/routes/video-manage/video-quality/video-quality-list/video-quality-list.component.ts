@@ -1,20 +1,24 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { STColumn, STComponent } from '@delon/abc/st';
+import { STColumn, STComponent, STPage } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { lastValueFrom } from 'rxjs';
 
-import { AreaService } from '../../../../service/area/area.service';
-import { CastService } from '../../../../service/cast/cast.service';
-import { CastManageCastEditComponent } from '../cast-edit/cast-edit.component';
+import { VideoQualityService } from '../../../../service/video/video-quality.service';
+import { VideoManageVideoQualityEditComponent } from '../video-quality-edit/video-quality-edit.component';
 
 @Component({
-  selector: 'app-cast-manage-cast-list',
-  templateUrl: './cast-list.component.html',
+  selector: 'app-video-manage-video-quality-list',
+  templateUrl: './video-quality-list.component.html',
 })
-export class CastManageCastListComponent implements OnInit {
-  url = `/cast/get_by_page`;
+export class VideoManageVideoQualityListComponent implements OnInit {
+  url = `/video_quality/get_by_page`;
+
+  page: STPage = {
+    showSize: true,
+    pageSizes: [10, 20, 30, 40, 50],
+    showQuickJumper: true,
+  };
   searchSchema: SFSchema = {
     properties: {
       no: {
@@ -25,18 +29,11 @@ export class CastManageCastListComponent implements OnInit {
   };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
-    { title: '姓名', index: 'name' },
-    {
-      title: '性别',
-      index: 'gender',
-      type: 'enum',
-      enum: {
-        female: 'female',
-        trans: 'trans'
-      }
-    },
-    { title: '地区', render: 'customAreaInfo' },
-    { title: '状态', render: 'customStatus' },
+    { title: 'ID', index: 'id' },
+    { title: '分辨率', index: 'quality' },
+    { title: '标签颜色', index: 'color' },
+    { title: '该分辨率下的视频数', type: 'number', index: 'videoCount' },
+    { title: '更新时间', type: 'date', index: 'updateTime' },
     {
       title: '操作',
       buttons: [
@@ -59,22 +56,17 @@ export class CastManageCastListComponent implements OnInit {
     }
   ];
 
-
-
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
-    private castService: CastService,
-    private areaService: AreaService
+    private videoQualityService: VideoQualityService
   ) { }
 
-  async ngOnInit() {
-
-  }
+  ngOnInit(): void { }
 
   addEdit(id: number = 0): void {
-    this.modal.createStatic(CastManageCastEditComponent, { record: { id } }).subscribe(res => {
+    this.modal.createStatic(VideoManageVideoQualityEditComponent, { record: { id } }).subscribe(res => {
       if (res == 'ok') {
         this.st.reload();
       }
@@ -83,7 +75,7 @@ export class CastManageCastListComponent implements OnInit {
 
   async delete(id: number = 0) {
     try {
-      await this.castService.delete(id);
+      await this.videoQualityService.delete(id);
       this.msgSrv.success('删除成功');
       this.st.reload();
     } catch (e) {

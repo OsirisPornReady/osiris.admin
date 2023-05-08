@@ -4,6 +4,7 @@ import { SFSchema } from '@delon/form';
 import { ModalHelper, _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
+import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 
@@ -18,7 +19,7 @@ export class VideoManageVideoListComponent implements OnInit {
   page: STPage = {
     showSize: true,
     pageSizes: [10, 20, 30, 40, 50],
-    showQuickJumper: true,
+    showQuickJumper: true
   };
   searchSchema: SFSchema = {
     properties: {
@@ -28,30 +29,27 @@ export class VideoManageVideoListComponent implements OnInit {
       }
     }
   };
-  BADGE: STColumnBadge = {
-    1: { text: '成功', color: 'success' },
-    2: { text: '错误', color: 'error' },
-    3: { text: '进行中', color: 'processing' },
-    4: { text: '默认', color: 'default' },
-    5: { text: '警告', color: 'warning' }
+  statusBADGE: STColumnBadge = {
+    1: { text: '已入库', color: 'success' },
+    2: { text: '未上架', color: 'warning' },
+    3: { text: '未入库', color: 'processing' },
+    4: { text: '无资源', color: 'error' },
+    5: { text: '默认', color: 'default' }
   };
-  TAG: STColumnTag = {
-    true: { text: '已入库', color: 'green' },
-    false: { text: '未入库', color: 'red' }
-  };
+  qualityTAG: STColumnTag = {};
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     { title: '标题', index: 'title', width: 550 },
     {
       title: '番号',
-      index: 'serialNumber',
       width: 250,
       format: (item, col, index) => {
         return item.existSerialNumber ? item.serialNumber : '-';
       }
     },
     { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
-    { title: '状态', index: 'existSerialNumber', type: 'tag', tag: this.TAG },
+    { title: '状态', render: 'customVideoStatus' },
+    { title: '质量', render: 'customVideoQuality' },
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
     {
       title: '操作',
@@ -80,10 +78,21 @@ export class VideoManageVideoListComponent implements OnInit {
     private http: _HttpClient,
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
-    private videoService: VideoService
-  ) { }
+    private videoService: VideoService,
+    private videoQualityService: VideoQualityService
+  ) {}
 
-  ngOnInit(): void { }
+  async ngOnInit() {
+    try {
+      let res = (await this.videoQualityService.getDict()) || {};
+      if (res) {
+        this.qualityTAG = res;
+      }
+      console.log('字典', res);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   addEdit(id: number = 0): void {
     this.modal.createStatic(VideoManageVideoEditComponent, { record: { id } }).subscribe(res => {
@@ -108,5 +117,26 @@ export class VideoManageVideoListComponent implements OnInit {
       return 'sign-tr';
     } else return '';
   }
+
+  getVideoStatus(item: any): number {
+    let publishTime = new Date(item.publishTime);
+    let today = new Date();
+    let onStorage = item.onStorage;
+    if (item.onStorage) {
+      return 1;
+    } else {
+      if (today < publishTime) {
+        return 2;
+      } else {
+        return 3;
+      }
+    }
+  }
+
+  getVideoQuality(item: any) {
+    let videoResolution = item.videoResolution;
+
+  }
+
 
 }

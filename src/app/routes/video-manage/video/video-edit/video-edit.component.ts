@@ -7,6 +7,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 import { AreaService } from '../../../../service/area/area.service';
 import { CastService } from '../../../../service/cast/cast.service';
 import { CommonService } from '../../../../service/common/common.service';
+import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { VideoService } from '../../../../service/video/video.service';
@@ -22,9 +23,11 @@ export class VideoManageVideoEditComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       title: { type: 'string', title: '标题' },
+      onStorage: { type: 'boolean', title: '入库情况' },
       existSerialNumber: { type: 'boolean', title: '有无番号' },
       serialNumber: { type: 'string', title: '番号', maxLength: 15 },
       videoType: { type: 'string', title: '类型' },
+      videoResolution: { type: 'string', title: '分辨率' },
       publishTime: { type: 'string', title: '发行日期', format: 'date' },
       duration: { type: 'number', title: '时长' },
       director: { type: 'string', title: '导演' },
@@ -47,12 +50,23 @@ export class VideoManageVideoEditComponent implements OnInit {
       grid: { span: 22 }
     },
     $title: {},
+    $onStorage: {
+      checkedChildren: '已入库',
+      unCheckedChildren: '未入库'
+    },
     $videoType: {
       widget: 'select',
       allowClear: true,
       placeholder: '请选择视频类型',
       width: 400,
       asyncData: () => this.videoTypeService.getSelectAll()
+    },
+    $videoResolution: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择视频分辨率',
+      width: 400,
+      asyncData: () => this.videoQualityService.getSelectAll()
     },
     $duration: {
       unit: '分钟',
@@ -161,7 +175,8 @@ export class VideoManageVideoEditComponent implements OnInit {
     private videoService: VideoService,
     private videoTagService: VideoTagService,
     private videoTypeService: VideoTypeService,
-    private videoAreaService: AreaService
+    private videoAreaService: AreaService,
+    private videoQualityService: VideoQualityService
   ) {}
 
   async ngOnInit() {

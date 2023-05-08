@@ -6,5 +6,13 @@
       <button nz-button nzType="dashed" (click)="addEdit()">添加</button>
     </div>
   </div>
-  <st #st [data]="url" [columns]="columns" [page]="page" [rowClassName]="rowClassName" [widthMode]="{ type: 'strict' }"></st>
+  <st #st [data]="url" [columns]="columns" [page]="page" [rowClassName]="rowClassName" [widthMode]="{ type: 'strict' }">
+    <ng-template st-row="customVideoStatus" let-item>
+      <nz-badge [nzStatus]="statusBADGE[getVideoStatus(item)].color" [nzText]="statusBADGE[getVideoStatus(item)].text"></nz-badge>
+    </ng-template>
+
+    <ng-template st-row="customVideoQuality" let-item>
+      <nz-tag [nzColor]="qualityTAG[item.videoResolution].color">{{ qualityTAG[item.videoResolution].text }}</nz-tag>
+    </ng-template>
+  </st>
 </nz-card>

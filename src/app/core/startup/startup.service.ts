@@ -94,6 +94,11 @@ export class StartupService {
                     text: 'type',
                     link: '/video-manage/video-type-list',
                     icon: null
+                  },
+                  {
+                    text: 'quality',
+                    link: '/video-manage/video-quality-list',
+                    icon: null
                   }
                 ]
               },

@@ -7,18 +7,21 @@ import { VideoManageVideoTagListComponent } from './video-tag/video-tag-list/vid
 import { VideoManageVideoTagEditComponent } from './video-tag/video-tag-edit/video-tag-edit.component';
 import { VideoManageVideoTypeListComponent } from './video-type/video-type-list/video-type-list.component';
 import { VideoManageVideoTypeEditComponent } from './video-type/video-type-edit/video-type-edit.component';
-
+import { VideoManageVideoQualityListComponent } from './video-quality/video-quality-list/video-quality-list.component';
+import { VideoManageVideoQualityEditComponent } from './video-quality/video-quality-edit/video-quality-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
   VideoManageVideoTagListComponent,
   VideoManageVideoTypeListComponent,
+  VideoManageVideoQualityListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoEditComponent,
   VideoManageVideoTagEditComponent,
   VideoManageVideoTypeEditComponent,
+  VideoManageVideoQualityEditComponent
 ];
 
 @NgModule({
