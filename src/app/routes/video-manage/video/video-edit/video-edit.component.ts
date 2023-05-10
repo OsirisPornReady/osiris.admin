@@ -12,7 +12,7 @@ import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { VideoService } from '../../../../service/video/video.service';
 
-import { VideoManageVideoCrawlInfoComponent } from '../video-crawl-info/video-crawl-info.component';
+import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 
 @Component({
   selector: 'app-video-manage-video-edit',
@@ -162,10 +162,7 @@ export class VideoManageVideoEditComponent implements OnInit {
     },
     $description: {
       widget: 'textarea',
-      autosize: {
-        minRows: 3,
-        maxRows: 6
-      }
+      autosize: { minRows: 3, maxRows: 6 }
     },
     $publishTime: {
       widget: 'date'
@@ -175,7 +172,6 @@ export class VideoManageVideoEditComponent implements OnInit {
     }
   };
 
-  crawlingMsgId = '';
 
   constructor(
     private modal: NzModalRef,
@@ -217,25 +213,18 @@ export class VideoManageVideoEditComponent implements OnInit {
     this.modal.destroy();
   }
 
-  async crawlInfo(value: any) {
-    try {
-      if (value.existSerialNumber) {
-        if (value.serialNumber) {
-          this.crawlingMsgId = this.msgSrv.loading(`${value.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
-          let res = await this.videoService.crawlInfoBySerialNumber(value.serialNumber);
-          this.msgSrv.remove(this.crawlingMsgId);
-          this.msgSrv.success('爬取信息成功');
-          this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { i: res }, { size: 700 }).subscribe(drawerRes => {
-            this.msgSrv.info(drawerRes);
-          });
-        } else {
-          this.msgSrv.info('番号为空');
-        }
+  crawlInfo(value: any) {
+    if (value.existSerialNumber) {
+      if (value.serialNumber) {
+        this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
+          this.msgSrv.info(res);
+        });
       } else {
-        this.msgSrv.info('未配置番号');
+        this.msgSrv.info('番号为空');
       }
-    } catch (error) {
-      this.msgSrv.error('爬取信息失败');
+    } else {
+      this.msgSrv.info('未配置番号');
     }
   }
+
 }

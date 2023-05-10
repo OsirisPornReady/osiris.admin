@@ -4,7 +4,8 @@ import { _HttpClient } from '@delon/theme';
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
-import { VideoTagService } from '../../../../service/video/video-tag.service';
+import { VideoTagService } from '../../../../../service/video/video-tag.service';
+import { VideoService } from '../../../../../service/video/video.service';
 
 @Component({
   selector: 'app-video-manage-video-crawl-info',
@@ -16,8 +17,9 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit {
   i: any;
   schema: SFSchema = {
     properties: {
-      tag: { type: 'string', title: '标签' },
-      tagChinese: { type: 'string', title: '中文标签' },
+      serialNumber: { type: 'string', title: '番号' },
+      tags: { type: 'string', title: '标签' },
+      htmlText: { type: 'string', title: '文本' },
     },
     required: ['tag'],
   };
@@ -33,17 +35,33 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit {
       mode: 'multiple',
       asyncData: () => this.videoTagService.getSelectAll('tagChinese')
     },
+    $htmlText: {
+      widget: 'text',
+      defaultText: '-',
+      html: true
+    }
   };
 
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
-    private videoTagService: VideoTagService
+    private videoTagService: VideoTagService,
+    private videoService: VideoService
   ) {}
 
-  ngOnInit() {
-    console.log('爬取信息', this.i);
+  async ngOnInit() {
+    let crawlingMsgId = '';
+    try {
+      crawlingMsgId = this.msgSrv.loading(`${this.record.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
+      this.i = (await this.videoService.crawlInfoBySerialNumber(this.record.serialNumber)) || {};
+      this.msgSrv.remove(crawlingMsgId);
+      this.msgSrv.success('爬取信息成功');
+    } catch (error) {
+      this.msgSrv.remove(crawlingMsgId);
+      this.msgSrv.error('爬取信息失败');
+      this.close();
+    }
   }
 
   async save(value: any) {

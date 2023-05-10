@@ -32,3 +32,6 @@ node_modules/
 
 # yarn v2
 .yarn
+
+# 老子就不需要这傻逼commit校验
+src/

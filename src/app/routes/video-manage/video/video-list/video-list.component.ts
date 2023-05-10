@@ -7,7 +7,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
-import { VideoManageVideoCrawlInfoComponent } from '../video-crawl-info/video-crawl-info.component';
+import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -46,12 +46,13 @@ export class VideoManageVideoListComponent implements OnInit {
       width: 250,
       format: (item, col, index) => {
         return item.existSerialNumber ? item.serialNumber : '-';
-      }
+      },
+      className: 'text-center'
     },
     { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
-    { title: '状态', render: 'customVideoStatus' },
+    { title: '状态', render: 'customVideoStatus', className: 'text-center' },
     { title: '质量', render: 'customVideoQuality' },
-    { title: '爬虫', render: 'customVideoInfoCrawlButton' },
+    { title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center' },
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
     {
       title: '操作',
@@ -59,7 +60,7 @@ export class VideoManageVideoListComponent implements OnInit {
         // { text: '查看', click: (item: any) => `/form/${item.id}` },
         {
           text: '编辑',
-          type: 'static',
+          // type: 'static', // alain中的static就是不能点击蒙版部分关闭的意思,最好指定component,但此处我们要自己控制modal,所以不用了
           click: (item: any) => {
             this.addEdit(item.id);
           }
@@ -72,11 +73,11 @@ export class VideoManageVideoListComponent implements OnInit {
             await this.delete(item.id);
           }
         }
-      ]
+      ],
+      className: 'text-center'
     }
   ];
 
-  crawlingMsgId = '';
 
   constructor(
     private http: _HttpClient,
@@ -139,28 +140,19 @@ export class VideoManageVideoListComponent implements OnInit {
 
   getVideoQuality(item: any) {
     let videoResolution = item.videoResolution;
-
   }
 
-  async crawlInfo(value: any) {
-    try {
-      if (value.existSerialNumber) {
-        if (value.serialNumber) {
-          this.crawlingMsgId = this.msgSrv.loading(`${value.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
-          let res = await this.videoService.crawlInfoBySerialNumber(value.serialNumber);
-          this.msgSrv.remove(this.crawlingMsgId);
-          this.msgSrv.success('爬取信息成功');
-          this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { i: res }, { size: 700 }).subscribe(drawerRes => {
-            this.msgSrv.info(drawerRes);
-          });
-        } else {
-          this.msgSrv.info('番号为空');
-        }
+  crawlInfo(value: any) {
+    if (value.existSerialNumber) {
+      if (value.serialNumber) {
+        this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
+          this.msgSrv.info(res);
+        });
       } else {
-        this.msgSrv.info('未配置番号');
+        this.msgSrv.info('番号为空');
       }
-    } catch (error) {
-      this.msgSrv.error('爬取信息失败');
+    } else {
+      this.msgSrv.info('未配置番号');
     }
   }
 

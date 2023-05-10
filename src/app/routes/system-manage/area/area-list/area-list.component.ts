@@ -30,7 +30,7 @@ export class SystemManageAreaListComponent implements OnInit {
       buttons: [
         {
           text: '编辑',
-          type: 'static',
+          // type: 'static',
           click: (item: any) => {
             this.addEdit(item.id);
           }
