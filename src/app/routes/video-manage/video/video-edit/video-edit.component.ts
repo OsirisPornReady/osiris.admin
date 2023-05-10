@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { SFSchema, SFUISchema } from '@delon/form';
+import {Component, OnInit, AfterViewInit, ViewChild, QueryList, ViewChildren} from '@angular/core';
+import {SFComponent, SFSchema, SFUISchema} from '@delon/form';
 import { _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
@@ -18,10 +18,13 @@ import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-i
   selector: 'app-video-manage-video-edit',
   templateUrl: './video-edit.component.html'
 })
-export class VideoManageVideoEditComponent implements OnInit {
+export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   title = '';
   record: any = {};
   i: any;
+  @ViewChildren(SFComponent) sfList!: QueryList<SFComponent>;
+  @ViewChildren('sf') sf!: SFComponent;
+  safeSF!: SFComponent;
   schema: SFSchema = {
     properties: {
       title: { type: 'string', title: '标题' },
@@ -172,6 +175,9 @@ export class VideoManageVideoEditComponent implements OnInit {
     }
   };
 
+  CrawlerData: any = {};
+  needAutoFill: boolean = false;
+  autoFillMseId: string = '';
 
   constructor(
     private modal: NzModalRef,
@@ -197,6 +203,17 @@ export class VideoManageVideoEditComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    this.sfList.changes.subscribe(() => {
+      let sfArray = this.sfList.toArray()
+      if (sfArray.length > 0) {
+        this.safeSF = sfArray[0];
+        this.autoFillForm()
+      }
+      console.log(this.safeSF)
+    })
+  }
+
   async save(value: any) {
     try {
       if (this.record.id > 0) {
@@ -217,7 +234,11 @@ export class VideoManageVideoEditComponent implements OnInit {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
         this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
-          this.msgSrv.info(res);
+          if (res.state == 'ok') {
+            this.CrawlerData = res.data;
+            this.needAutoFill = true;
+            this.autoFillForm();
+          }
         });
       } else {
         this.msgSrv.info('番号为空');
@@ -225,6 +246,25 @@ export class VideoManageVideoEditComponent implements OnInit {
     } else {
       this.msgSrv.info('未配置番号');
     }
+  }
+
+  autoFillForm() {
+    if (!this.needAutoFill) { return; }
+    this.autoFillMseId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
+    let { publishTime, director, producer, releaser, series, stars, ...fillData } = this.CrawlerData;
+    let originData = JSON.parse(JSON.stringify(this.safeSF.value));
+    Object.keys(fillData).forEach((key: string) => {
+      if (originData.hasOwnProperty(key)) {
+        try {
+          this.safeSF.setValue(`/${key}`, fillData[key])
+        } catch (e) {
+          console.error(`自动填充字段${key}失败`, e)
+        }
+      }
+    })
+    this.msgSrv.remove(this.autoFillMseId);
+    this.msgSrv.success('自动填充完成');
+    this.needAutoFill = false;
   }
 
 }

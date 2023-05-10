@@ -146,7 +146,13 @@ export class VideoManageVideoListComponent implements OnInit {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
         this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
-          this.msgSrv.info(res);
+          if (res.state == 'ok') {
+            this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, CrawlerData: res.data, needAutoFill: true }).subscribe(res => {
+              if (res == 'ok') {
+                this.st.reload();
+              }
+            });
+          }
         });
       } else {
         this.msgSrv.info('番号为空');
