@@ -12,7 +12,7 @@ import { VideoManageVideoTypeEditComponent } from '../video-type-edit/video-type
   templateUrl: './video-type-list.component.html',
 })
 export class VideoManageVideoTypeListComponent implements OnInit {
-  url = `/video_type/get_by_page`;
+  url = `/api/video_type/get_by_page`;
 
   page: STPage = {
     showSize: true,

@@ -9,4 +9,7 @@
       >保存</button
     >
   </div>
+  <ng-template sf-template="crawlInfoButton" let-i let-ui="ui" let-schema="schema">
+    <button nz-button type="button" nzType="default" (click)="crawlInfo(sf.value)">根据番号爬取信息</button>
+  </ng-template>
 </sf>

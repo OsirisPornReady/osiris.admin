@@ -73,7 +73,7 @@ export class StartupService {
               {
                 text: 'Dashboard',
                 link: '/dashboard',
-                icon: { type: 'icon', value: 'appstore' }
+                icon: { type: 'icon', value: 'shopping' }
               },
               {
                 text: 'Video Manage',
@@ -105,7 +105,7 @@ export class StartupService {
               {
                 text: 'Cast Manage',
                 link: '',
-                icon: { type: 'icon', value: 'appstore' },
+                icon: { type: 'icon', value: 'woman' },
                 children: [
                   {
                     text: 'cast',
@@ -117,7 +117,7 @@ export class StartupService {
               {
                 text: 'System Manage',
                 link: '',
-                icon: { type: 'icon', value: 'appstore' },
+                icon: { type: 'icon', value: 'setting' },
                 children: [
                   {
                     text: 'area',
@@ -131,7 +131,7 @@ export class StartupService {
         ]
       };
 
-      let url = 'common/init';
+      let url = 'api/common/init';
       zip(this.httpClient.get(url))
         .pipe(
           catchError((res: any) => {

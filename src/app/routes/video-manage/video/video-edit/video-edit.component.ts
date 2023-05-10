@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SFSchema, SFUISchema } from '@delon/form';
-import { _HttpClient } from '@delon/theme';
+import { _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
@@ -11,6 +11,8 @@ import { VideoQualityService } from '../../../../service/video/video-quality.ser
 import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { VideoService } from '../../../../service/video/video.service';
+
+import { VideoManageVideoCrawlInfoComponent } from '../video-crawl-info/video-crawl-info.component';
 
 @Component({
   selector: 'app-video-manage-video-edit',
@@ -26,6 +28,7 @@ export class VideoManageVideoEditComponent implements OnInit {
       onStorage: { type: 'boolean', title: '入库情况' },
       existSerialNumber: { type: 'boolean', title: '有无番号' },
       serialNumber: { type: 'string', title: '番号', maxLength: 15 },
+      crawlInfoButton: { type: 'string', title: '导入' },
       videoType: { type: 'string', title: '类型' },
       videoResolution: { type: 'string', title: '分辨率' },
       publishTime: { type: 'string', title: '发行日期', format: 'date' },
@@ -137,6 +140,12 @@ export class VideoManageVideoEditComponent implements OnInit {
         existSerialNumber: val => val
       }
     },
+    $crawlInfoButton: {
+      visibleIf: {
+        existSerialNumber: val => val
+      },
+      widget: 'custom'
+    },
     $stars: {
       widget: 'select',
       allowClear: true,
@@ -149,7 +158,7 @@ export class VideoManageVideoEditComponent implements OnInit {
       allowClear: true,
       placeholder: '请选择标签',
       mode: 'multiple',
-      asyncData: () => this.videoTagService.getSelectAll()
+      asyncData: () => this.videoTagService.getSelectAll('tagChinese')
     },
     $description: {
       widget: 'textarea',
@@ -166,6 +175,8 @@ export class VideoManageVideoEditComponent implements OnInit {
     }
   };
 
+  crawlingMsgId = '';
+
   constructor(
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
@@ -176,7 +187,8 @@ export class VideoManageVideoEditComponent implements OnInit {
     private videoTagService: VideoTagService,
     private videoTypeService: VideoTypeService,
     private videoAreaService: AreaService,
-    private videoQualityService: VideoQualityService
+    private videoQualityService: VideoQualityService,
+    private drawer: DrawerHelper
   ) {}
 
   async ngOnInit() {
@@ -203,5 +215,27 @@ export class VideoManageVideoEditComponent implements OnInit {
 
   close(): void {
     this.modal.destroy();
+  }
+
+  async crawlInfo(value: any) {
+    try {
+      if (value.existSerialNumber) {
+        if (value.serialNumber) {
+          this.crawlingMsgId = this.msgSrv.loading(`${value.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
+          let res = await this.videoService.crawlInfoBySerialNumber(value.serialNumber);
+          this.msgSrv.remove(this.crawlingMsgId);
+          this.msgSrv.success('爬取信息成功');
+          this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { i: res }, { size: 700 }).subscribe(drawerRes => {
+            this.msgSrv.info(drawerRes);
+          });
+        } else {
+          this.msgSrv.info('番号为空');
+        }
+      } else {
+        this.msgSrv.info('未配置番号');
+      }
+    } catch (error) {
+      this.msgSrv.error('爬取信息失败');
+    }
   }
 }

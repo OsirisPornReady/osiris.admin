@@ -12,7 +12,7 @@ import { VideoManageVideoQualityEditComponent } from '../video-quality-edit/vide
   templateUrl: './video-quality-list.component.html',
 })
 export class VideoManageVideoQualityListComponent implements OnInit {
-  url = `/video_quality/get_by_page`;
+  url = `/api/video_quality/get_by_page`;
 
   page: STPage = {
     showSize: true,

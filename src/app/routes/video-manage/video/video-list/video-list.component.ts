@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
-import { ModalHelper, _HttpClient } from '@delon/theme';
+import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
+import { VideoManageVideoCrawlInfoComponent } from '../video-crawl-info/video-crawl-info.component';
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -14,7 +15,7 @@ import { VideoManageVideoEditComponent } from '../video-edit/video-edit.componen
   styleUrls: ['./video-list.component.less']
 })
 export class VideoManageVideoListComponent implements OnInit {
-  url = `/video/get_by_page`;
+  url = `/api/video/get_by_page`;
 
   page: STPage = {
     showSize: true,
@@ -50,6 +51,7 @@ export class VideoManageVideoListComponent implements OnInit {
     { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
     { title: '状态', render: 'customVideoStatus' },
     { title: '质量', render: 'customVideoQuality' },
+    { title: '爬虫', render: 'customVideoInfoCrawlButton' },
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
     {
       title: '操作',
@@ -74,12 +76,15 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
+  crawlingMsgId = '';
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
     private videoService: VideoService,
-    private videoQualityService: VideoQualityService
+    private videoQualityService: VideoQualityService,
+    private drawer: DrawerHelper
   ) {}
 
   async ngOnInit() {
@@ -88,7 +93,6 @@ export class VideoManageVideoListComponent implements OnInit {
       if (res) {
         this.qualityTAG = res;
       }
-      console.log('字典', res);
     } catch (e) {
       console.error(e);
     }
@@ -138,5 +142,26 @@ export class VideoManageVideoListComponent implements OnInit {
 
   }
 
+  async crawlInfo(value: any) {
+    try {
+      if (value.existSerialNumber) {
+        if (value.serialNumber) {
+          this.crawlingMsgId = this.msgSrv.loading(`${value.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
+          let res = await this.videoService.crawlInfoBySerialNumber(value.serialNumber);
+          this.msgSrv.remove(this.crawlingMsgId);
+          this.msgSrv.success('爬取信息成功');
+          this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { i: res }, { size: 700 }).subscribe(drawerRes => {
+            this.msgSrv.info(drawerRes);
+          });
+        } else {
+          this.msgSrv.info('番号为空');
+        }
+      } else {
+        this.msgSrv.info('未配置番号');
+      }
+    } catch (error) {
+      this.msgSrv.error('爬取信息失败');
+    }
+  }
 
 }

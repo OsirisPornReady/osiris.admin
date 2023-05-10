@@ -12,7 +12,7 @@ import { SystemManageAreaEditComponent } from '../area-edit/area-edit.component'
   templateUrl: './area-list.component.html',
 })
 export class SystemManageAreaListComponent implements OnInit {
-  url = `/area/get_by_page`;
+  url = `/api/area/get_by_page`;
   searchSchema: SFSchema = {
     properties: {
       no: {

@@ -8,29 +8,29 @@ export class AreaService {
   constructor(private http: _HttpClient) { }
 
   add(entity: any) {
-    let url = `area`;
+    let url = `api/area`;
     return lastValueFrom(this.http.post(url, entity));
   }
 
   update(entity: any) {
-    let url = `area/${entity.id}`;
+    let url = `api/area/${entity.id}`;
     return lastValueFrom(this.http.put(url, entity));
   }
 
   delete(id: number) {
-    let url = `area/${id}`;
+    let url = `api/area/${id}`;
     return lastValueFrom(this.http.delete(url));
   }
 
   getById(id: number) {
-    let url = `area/${id}`;
+    let url = `api/area/${id}`;
     return lastValueFrom(this.http.get(url));
     // return lastValueFrom(this.http.get(url, { id }));
   }
 
   getSelectAll(field = 'area') {
     //asyncData专用，不用转成promise
-    let url = `area/getSelectAll`;
+    let url = `api/area/getSelectAll`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {

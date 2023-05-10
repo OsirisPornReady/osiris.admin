@@ -15,8 +15,14 @@ module.exports = {
   //   changeOrigin: true
   // }
 
-  '/api': {
+  '/api': { //后端服务器地址
     target: 'http://localhost:8090/',
+    secure: false, // Ignore invalid SSL certificates
+    changeOrigin: true
+  },
+
+  '/crawl': { //爬虫服务器地址
+    target: 'http://localhost:8100/',
     secure: false, // Ignore invalid SSL certificates
     changeOrigin: true
   }

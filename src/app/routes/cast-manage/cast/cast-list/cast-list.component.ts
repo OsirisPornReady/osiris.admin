@@ -14,7 +14,7 @@ import { CastManageCastEditComponent } from '../cast-edit/cast-edit.component';
   templateUrl: './cast-list.component.html',
 })
 export class CastManageCastListComponent implements OnInit {
-  url = `/cast/get_by_page`;
+  url = `/api/cast/get_by_page`;
   searchSchema: SFSchema = {
     properties: {
       no: {

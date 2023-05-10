@@ -12,7 +12,7 @@ import { VideoManageVideoTagEditComponent } from '../video-tag-edit/video-tag-ed
   templateUrl: './video-tag-list.component.html',
 })
 export class VideoManageVideoTagListComponent implements OnInit {
-  url = `/video_tag/get_by_page`;
+  url = `/api/video_tag/get_by_page`;
 
   page: STPage = {
     showSize: true,
@@ -31,6 +31,7 @@ export class VideoManageVideoTagListComponent implements OnInit {
   columns: STColumn[] = [
     { title: 'ID', index: 'id' },
     { title: '标签', index: 'tag' },
+    { title: '中文标签', index: 'tagChinese' },
     { title: '引用次数', type: 'number', index: 'refCount' },
     { title: '更新时间', type: 'date', index: 'updateTime' },
     {
