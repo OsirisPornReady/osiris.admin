@@ -57,7 +57,7 @@ export class VideoManageVideoListComponent implements OnInit {
     },
     { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
     { title: '状态', render: 'customVideoStatus', className: 'text-center' },
-    { title: '质量', render: 'customVideoQuality' },
+    { title: '质量', render: 'customVideoQuality', className: 'text-center' },
     { title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center' },
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
     {
