@@ -37,7 +37,13 @@ export class VideoManageVideoListComponent implements OnInit {
     4: { text: '无资源', color: 'error' },
     5: { text: '默认', color: 'default' }
   };
-  qualityTAG: STColumnTag = {};
+  qualityTAG: STColumnTag = {
+    '1': { text: '成功', color: 'green' },
+    '2': { text: '错误', color: 'red' },
+    '3': { text: '进行中', color: 'blue' },
+    '4': { text: '默认', color: '' },
+    '5': { text: '警告', color: 'orange' },
+  };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     { title: '标题', index: 'title', width: 550 },
@@ -78,6 +84,8 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
+  isAutoCreate: boolean = false;
+  autoCreateSerialNumber: string = '';
 
   constructor(
     private http: _HttpClient,
@@ -138,14 +146,14 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   }
 
-  getVideoQuality(item: any) {
-    let videoResolution = item.videoResolution;
+  getVideoQuality(item: any): string {
+    return item.videoResolution;
   }
 
   crawlInfo(value: any) {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
-        this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
+        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
           if (res.state == 'ok') {
             this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, CrawlerData: res.data, needAutoFill: true }).subscribe(res => {
               if (res == 'ok') {
@@ -162,4 +170,18 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   }
 
+  autoCreate() {
+    if (!this.autoCreateSerialNumber) {
+      this.msgSrv.info('番号为空');
+    } else {
+      let value = {
+        id: 0,
+        existSerialNumber: true,
+        serialNumber: this.autoCreateSerialNumber
+      }
+      this.crawlInfo(value)
+    }
+  }
+
+  protected readonly JSON = JSON;
 }

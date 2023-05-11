@@ -23,7 +23,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   record: any = {};
   i: any;
   @ViewChildren(SFComponent) sfList!: QueryList<SFComponent>;
-  @ViewChildren('sf') sf!: SFComponent;
+  @ViewChild('sf') sf!: SFComponent;
   safeSF!: SFComponent;
   schema: SFSchema = {
     properties: {
@@ -55,7 +55,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       spanLabelFixed: 120,
       grid: { span: 22 }
     },
-    $title: {},
+    $title: { placeholder: '输入标题' },
     $onStorage: {
       checkedChildren: '已入库',
       unCheckedChildren: '未入库'
@@ -83,46 +83,31 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       visibleIf: {
         videoType: val => val == 2 || val == 3
       },
-      widget: 'select',
-      allowClear: true,
       placeholder: '请选择导演',
-      asyncData: () => this.videoTagService.getSelectAll()
     },
     $producer: {
       visibleIf: {
         videoType: val => val == 2
       },
-      widget: 'select',
-      allowClear: true,
       placeholder: '请选择制作商',
-      asyncData: () => this.videoTagService.getSelectAll()
     },
     $releaser: {
       visibleIf: {
         videoType: val => val == 2
       },
-      widget: 'select',
-      allowClear: true,
       placeholder: '请选择发行商',
-      asyncData: () => this.videoTagService.getSelectAll()
     },
     $brand: {
       visibleIf: {
         videoType: val => val == 3
       },
-      widget: 'select',
-      allowClear: true,
       placeholder: '请选择厂牌',
-      asyncData: () => this.videoTagService.getSelectAll()
     },
     $series: {
       visibleIf: {
         inSeries: val => val
       },
-      widget: 'select',
-      allowClear: true,
       placeholder: '请选择系列',
-      asyncData: () => this.videoTagService.getSelectAll()
     },
     $area: {
       widget: 'select',
@@ -204,14 +189,28 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.sfList.changes.subscribe(() => {
-      let sfArray = this.sfList.toArray()
-      if (sfArray.length > 0) {
-        this.safeSF = sfArray[0];
-        this.autoFillForm()
-      }
-      console.log(this.safeSF)
-    })
+    //由于sf组件没有足够的钩子,只能出此下策
+    if (this.record.id > 0) {
+      this.sfList.changes.subscribe(() => {
+        let sfArray = this.sfList.toArray();
+        if (sfArray.length > 0) {
+          this.safeSF = sfArray[0];
+          // promise语法糖,相当于
+          // new Promise((resolve) => {
+          //   resolve(42)
+          // })
+          Promise.resolve().then(() => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+            this.autoFillForm();
+          })
+        }
+      })
+    } else {
+      this.safeSF = this.sf
+      this.safeSF.validator()
+      Promise.resolve().then(() => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+        this.autoFillForm();
+      })
+    }
   }
 
   async save(value: any) {
@@ -233,7 +232,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   crawlInfo(value: any) {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
-        this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
+        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
           if (res.state == 'ok') {
             this.CrawlerData = res.data;
             this.needAutoFill = true;
@@ -251,17 +250,27 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   autoFillForm() {
     if (!this.needAutoFill) { return; }
     this.autoFillMseId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
-    let { publishTime, director, producer, releaser, series, stars, ...fillData } = this.CrawlerData;
+    let { stars, ...fillData } = this.CrawlerData;
     let originData = JSON.parse(JSON.stringify(this.safeSF.value));
-    Object.keys(fillData).forEach((key: string) => {
-      if (originData.hasOwnProperty(key)) {
+    if (this.record.id > 0) {
+      Object.keys(fillData).forEach((key: string) => {
+        if (originData.hasOwnProperty(key)) {
+          try {
+            this.safeSF.setValue(`/${key}`, fillData[key])
+          } catch (e) {
+            console.error(`自动填充字段${key}失败`, e)
+          }
+        }
+      })
+    } else {
+      Object.keys(fillData).forEach((key: string) => {
         try {
           this.safeSF.setValue(`/${key}`, fillData[key])
         } catch (e) {
           console.error(`自动填充字段${key}失败`, e)
         }
-      }
-    })
+      })
+    }
     this.msgSrv.remove(this.autoFillMseId);
     this.msgSrv.success('自动填充完成');
     this.needAutoFill = false;
