@@ -25,5 +25,11 @@ module.exports = {
     target: 'http://localhost:8100/',
     secure: false, // Ignore invalid SSL certificates
     changeOrigin: true
-  }
+  },
+
+  // '/image': { //图床服务器地址
+  //   target: 'http://localhost:8101/',
+  //   secure: false, // Ignore invalid SSL certificates
+  //   changeOrigin: true
+  // }
 };

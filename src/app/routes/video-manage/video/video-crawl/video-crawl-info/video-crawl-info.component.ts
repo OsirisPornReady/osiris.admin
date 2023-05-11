@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { SFSchema, SFUISchema } from '@delon/form';
 import { _HttpClient } from '@delon/theme';
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
@@ -11,7 +11,7 @@ import { VideoService } from '../../../../../service/video/video.service';
   selector: 'app-video-manage-video-crawl-info',
   templateUrl: './video-crawl-info.component.html',
 })
-export class VideoManageVideoCrawlInfoComponent implements OnInit {
+export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   title = '';
   record: any = {};
   i: any;
@@ -31,7 +31,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit {
   };
   ui: SFUISchema = {
     '*': {
-      spanLabelFixed: 100,
+      spanLabelFixed: 75,
       grid: { span: 22 }
     },
     $serialNumber: {
@@ -55,6 +55,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit {
     },
   };
 
+  serialNumber: string = ''
+  coverSrc: string = ''
+  javUrl: string = ''
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
@@ -68,7 +72,14 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit {
     try {
       crawlingMsgId = this.msgSrv.loading(`${this.record.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
       this.i = (await this.videoService.crawlInfoBySerialNumber(this.record.serialNumber)) || {};
+      if (this.record.id > 0) {} else {
+        this.i.existSerialNumber = true;
+      }
       this.i.serialNumber = this.record.serialNumber.toUpperCase();
+      this.serialNumber = this.i.serialNumber;
+      this.title = this.i.title
+      this.coverSrc = this.i.coverSrc;
+      this.javUrl = `https://www.javbus.com/${this.i.serialNumber}`
       this.msgSrv.remove(crawlingMsgId);
       this.msgSrv.success('信息爬取成功');
     } catch (error) {
@@ -86,5 +97,9 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit {
 
   close(): void {
     this.drawer.close({ state: 'cancel', data: {} });
+  }
+
+  ngOnDestroy() {
+    this.coverSrc = ''
   }
 }

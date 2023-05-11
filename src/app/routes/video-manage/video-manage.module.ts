@@ -10,6 +10,7 @@ import { VideoManageVideoTypeEditComponent } from './video-type/video-type-edit/
 import { VideoManageVideoQualityListComponent } from './video-quality/video-quality-list/video-quality-list.component';
 import { VideoManageVideoQualityEditComponent } from './video-quality/video-quality-edit/video-quality-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from './video/video-crawl/video-crawl-info/video-crawl-info.component';
+import {NgOptimizedImage} from "@angular/common";
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
@@ -29,7 +30,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
 @NgModule({
   imports: [
     SharedModule,
-    VideoManageRoutingModule
+    VideoManageRoutingModule,
+    NgOptimizedImage
   ],
   declarations:[...COMPONENTS, ...COMPONENTS_NOROUNT],
 })

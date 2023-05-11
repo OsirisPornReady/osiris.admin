@@ -2,7 +2,7 @@ import {Component, OnInit, AfterViewInit, ViewChild, QueryList, ViewChildren} fr
 import {SFComponent, SFSchema, SFUISchema} from '@delon/form';
 import { _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalRef } from 'ng-zorro-antd/modal';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
 
 import { AreaService } from '../../../../service/area/area.service';
 import { CastService } from '../../../../service/cast/cast.service';
@@ -175,7 +175,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     private videoTypeService: VideoTypeService,
     private videoAreaService: AreaService,
     private videoQualityService: VideoQualityService,
-    private drawer: DrawerHelper
+    private drawer: DrawerHelper,
+    private nzConfirmService: NzModalService
   ) {}
 
   async ngOnInit() {
@@ -232,7 +233,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   crawlInfo(value: any) {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
-        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
+        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1000 }).subscribe(res => {
           if (res.state == 'ok') {
             this.CrawlerData = res.data;
             this.needAutoFill = true;
@@ -247,10 +248,10 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     }
   }
 
-  autoFillForm() {
+  async autoFillForm() {
     if (!this.needAutoFill) { return; }
     this.autoFillMseId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
-    let { stars, ...fillData } = this.CrawlerData;
+    let { stars, coverSrc, ...fillData } = this.CrawlerData;
     let originData = JSON.parse(JSON.stringify(this.safeSF.value));
     if (this.record.id > 0) {
       Object.keys(fillData).forEach((key: string) => {
@@ -274,6 +275,33 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     this.msgSrv.remove(this.autoFillMseId);
     this.msgSrv.success('自动填充完成');
     this.needAutoFill = false;
+    await this.autoSubmitFormConfirm();
+  }
+
+  async autoSubmitFormConfirm() {
+    try { // 鉴于手动添加的时候自由度要高一点,就只在自动填表单的时候验证番号吧
+      let isExist = await this.videoService.isSerialNumberExist(this.CrawlerData.serialNumber)
+      if (!isExist) {
+        Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+          if (this.safeSF.valid) {
+            this.nzConfirmService.confirm({
+              nzTitle: '<i>是否自动提交?</i>',
+              nzContent: '<b>Some descriptions</b>',
+              nzCentered: true,
+              nzOnOk: async () => {
+                try {
+                  await this.save(this.safeSF.value);
+                } catch (e) {}
+              }
+            })
+          } else {
+            this.msgSrv.error('表单存在非法值,无法自动提交')
+          }
+        })
+      } else {
+        this.msgSrv.error('番号已存在')
+      }
+    } catch (e) {}
   }
 
 }

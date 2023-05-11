@@ -4,6 +4,9 @@ import { lastValueFrom, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CommonService {
+
+  NSFW_mode: boolean = true;
+
   constructor(private http: _HttpClient) {}
 
 

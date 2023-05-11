@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage } from '@delon/abc/st';
-import { SFSchema } from '@delon/form';
+import { SFSchema, SFUISchema } from '@delon/form';
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -15,19 +15,66 @@ import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-i
   styleUrls: ['./video-list.component.less']
 })
 export class VideoManageVideoListComponent implements OnInit {
-  url = `/api/video/get_by_page`;
+  url = `/api/video/get_by_page?sort=publishTime desc`;
 
   page: STPage = {
     showSize: true,
     pageSizes: [10, 20, 30, 40, 50],
     showQuickJumper: true
   };
+  searchParam: any = {
+    searchField: 0
+  }
   searchSchema: SFSchema = {
     properties: {
-      no: {
+      searchField: {
         type: 'string',
-        title: '编号'
+        title: '',
+        enum: [
+          { label: '标题', value: 0 },
+          { label: '番号', value: 1 },
+          { label: '发布日期', value: 2 }
+        ],
+      },
+      keyword: {
+        type: 'string',
+        title: ''
+      },
+      serialNumber: {
+        type: 'string',
+        title: ''
+      },
+      publishTime: {
+        type: 'string',
+        title: ''
       }
+    }
+  };
+  ui: SFUISchema = {
+    '*': {
+      spanLabelFixed: 100,
+      grid: { span: 22 },
+    },
+    $searchField: {
+      widget: 'select',
+      allowClear: false,
+      placeholder: '选择搜索字段',
+      borderless: true,
+    },
+    $keyword: {
+      visibleIf: {
+        searchField: val => val == 0
+      },
+    },
+    $serialNumber: {
+      visibleIf: {
+        searchField: val => val == 1
+      },
+    },
+    $publishTime: {
+      visibleIf: {
+        searchField: val => val == 2
+      },
     }
   };
   statusBADGE: STColumnBadge = {
@@ -46,17 +93,19 @@ export class VideoManageVideoListComponent implements OnInit {
   };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
+    { title: '关注', width: 70, render: 'customVideoOnSubscription', className: 'text-center' },
     { title: '标题', index: 'title', width: 550 },
     {
       title: '番号',
-      width: 250,
+      width: 150,
       format: (item, col, index) => {
         return item.existSerialNumber ? item.serialNumber : '-';
       },
       className: 'text-center'
     },
     { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
-    { title: '状态', render: 'customVideoStatus', className: 'text-center' },
+    { title: '资源状态', render: 'customVideoStatus', className: 'text-center' },
+    { title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center' },
     { title: '质量', render: 'customVideoQuality', className: 'text-center' },
     { title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center' },
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
@@ -153,7 +202,7 @@ export class VideoManageVideoListComponent implements OnInit {
   crawlInfo(value: any) {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
-        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 700 }).subscribe(res => {
+        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1000 }).subscribe(res => {
           if (res.state == 'ok') {
             this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, CrawlerData: res.data, needAutoFill: true }).subscribe(res => {
               if (res == 'ok') {
@@ -171,17 +220,24 @@ export class VideoManageVideoListComponent implements OnInit {
   }
 
   autoCreate() {
-    if (!this.autoCreateSerialNumber) {
+    let autoCreateSerialNumber = this.autoCreateSerialNumber.trim(); //涉及输入框的要做trim处理
+    if (!autoCreateSerialNumber) {
       this.msgSrv.info('番号为空');
     } else {
       let value = {
         id: 0,
         existSerialNumber: true,
-        serialNumber: this.autoCreateSerialNumber
+        serialNumber: autoCreateSerialNumber
       }
       this.crawlInfo(value)
     }
   }
 
-  protected readonly JSON = JSON;
+  async switchVideoSubscription(item: any) {
+    try {
+      await this.videoService.switchVideoSubscription(item.id)
+      item.onSubscription = !item.onSubscription;
+    } catch (e) {}
+  }
+
 }

@@ -1,6 +1,6 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
-  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
+  <sf mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
   <div nz-row class="my-md">
     <div nz-col [nzXs]="24" [nzLg]="24" class="d-inline-flex justify-content-start align-items-center">
       <nz-switch [(ngModel)]="isAutoCreate"
@@ -10,7 +10,9 @@
       <button nz-button nzType="dashed" (click)="addEdit()" *ngIf="!isAutoCreate">添加</button>
       <div *ngIf="isAutoCreate">
         <input nz-input placeholder="serial number" [(ngModel)]="autoCreateSerialNumber" class="width-md mr-md" (keydown.enter)="autoCreate()"/>
-        <button nz-button nzType="dashed" type="button" (click)="autoCreate()">爬取</button>
+        <button nz-button nzType="dashed" nzShape="round" type="button" (click)="autoCreate()">
+          <span nz-icon nzType="api" nzTheme="outline"></span>
+        </button>
       </div>
     </div>
   </div>
@@ -20,12 +22,30 @@
     </ng-template>
 
     <ng-template st-row="customVideoQuality" let-item>
-      <nz-tag [nzColor]="qualityTAG[getVideoQuality(item)].color" class="st-single-nz-tag">{{ qualityTAG[getVideoQuality(item)].text }}</nz-tag>
+      <nz-tag *ngIf="getVideoQuality(item)" [nzColor]="qualityTAG[getVideoQuality(item)].color" class="st-single-nz-tag">{{ qualityTAG[getVideoQuality(item)].text }}</nz-tag>
+      <span *ngIf="!getVideoQuality(item)" nz-typography nzDisabled>未知</span>
     </ng-template>
 
     <ng-template st-row="customVideoInfoCrawlButton" let-item>
       <button nz-button type="button" nzType="default" nzShape="round" (click)="crawlInfo(item)" *ngIf="item.existSerialNumber">
         <span nz-icon nzType="api" nzTheme="outline"></span>
+      </button>
+    </ng-template>
+
+    <ng-template st-row="customVideoOnSubscription" let-item>
+      <span nz-icon
+            nzType="check-circle"
+            nzTheme="twotone"
+            nzTwotoneColor="#52c41a"
+            [ngClass]="['custom-twotone-checked-icon']"
+            [ngStyle]="{
+              'opacity': (item.onSubscription ? '1' : '0')
+            }"></span>
+    </ng-template>
+
+    <ng-template st-row="customSwitchVideoSubscription" let-item>
+      <button nz-button type="button" nzType="default" nzShape="circle" (click)="switchVideoSubscription(item)">
+        <span  nz-icon nzType="bell" nzTheme="outline"></span>
       </button>
     </ng-template>
   </st>

@@ -33,6 +33,16 @@ export class VideoService {
     return lastValueFrom(this.http.get(url));
   }
 
+  isSerialNumberExist(serialNumber: string) {
+    let url = `api/video/isSerialNumberExist/${serialNumber}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
+  switchVideoSubscription(id: number) {
+    let url = `api/video/switchVideoSubscription/${id}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
   getSelectAll(field = '') {
     //asyncData专用，不用转成promise
     let url = `video/getSelectAll`;
