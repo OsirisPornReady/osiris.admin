@@ -23,7 +23,7 @@ export class VideoManageVideoListComponent implements OnInit {
     showQuickJumper: true
   };
   searchParam: any = {
-    searchField: 0
+    searchField: 1
   }
   searchSchema: SFSchema = {
     properties: {
@@ -133,7 +133,7 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
-  isAutoCreate: boolean = false;
+  isAutoCreate: boolean = true;
   autoCreateSerialNumber: string = '';
 
   constructor(
