@@ -3,9 +3,11 @@ import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage } fro
 import { SFSchema, SFUISchema } from '@delon/form';
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzModalService } from "ng-zorro-antd/modal";
 
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
+import { CommonService } from '../../../../service/common/common.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 
@@ -93,6 +95,7 @@ export class VideoManageVideoListComponent implements OnInit {
   };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
+    { title: 'ID', index: 'id', type: 'checkbox', iif: () => this.isOpenMultiSelect },
     { title: '关注', width: 70, render: 'customVideoOnSubscription', className: 'text-center' },
     { title: '标题', index: 'title', width: 550 },
     {
@@ -133,6 +136,7 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
+  isOpenMultiSelect: boolean = false;
   isAutoCreate: boolean = true;
   autoCreateSerialNumber: string = '';
 
@@ -141,8 +145,10 @@ export class VideoManageVideoListComponent implements OnInit {
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
     private videoService: VideoService,
+    private commonService: CommonService,
     private videoQualityService: VideoQualityService,
-    private drawer: DrawerHelper
+    private drawer: DrawerHelper,
+    private nzModal: NzModalService
   ) {}
 
   async ngOnInit() {
@@ -151,6 +157,14 @@ export class VideoManageVideoListComponent implements OnInit {
       if (res) {
         this.qualityTAG = res;
       }
+      this.commonService.createWebSocketSubject()
+      this.commonService.socket$.subscribe(res => {
+        console.log('接收到了消息', res)
+      })
+      // setTimeout(() => {
+      //   console.log('断开连接')
+      //   this.commonService.socket$.unsubscribe()
+      // }, 5000)
     } catch (e) {
       console.error(e);
     }
@@ -172,6 +186,41 @@ export class VideoManageVideoListComponent implements OnInit {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  async switchMultiSelect() {
+    await this.st.resetColumns()
+  }
+
+  async bulkDelete(_data: any) {
+    // console.log('_data', _data)
+    try {
+      // const ids = linq
+      //   .from<any>(data)
+      //   .where((o) => o.checked)
+      //   .select((o) => o.id)
+      //   .toArray();
+      let ids: number[] = [];
+      ids = _data.filter((item: any) => { return  (item.hasOwnProperty('checked') && item.checked) })
+                 .map((item: any) => { return item.id })
+      if (ids.length > 0) {
+        this.nzModal.confirm({
+          nzTitle: '确认删除吗？',
+          nzOkText: '删除',
+          nzOkDanger: true,
+          nzOnOk: async () => {
+            await this.videoService.bulkDelete(ids);
+            this.msgSrv.success('操作成功!');
+            this.st.reload();
+          },
+          nzCancelText: '取消',
+          nzOnCancel: () => console.log('Cancel'),
+        });
+      } else {
+        this.msgSrv.error('至少勾选一项');
+        return;
+      }
+    } catch (error) {}
   }
 
   rowClassName(record: STData, index: number) {

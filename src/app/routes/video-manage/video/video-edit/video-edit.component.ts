@@ -215,11 +215,13 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   async save(value: any) {
+    const params = { ...value };
+    params.id = this.record.id;
     try {
       if (this.record.id > 0) {
-        await this.videoService.update(value);
+        await this.videoService.update(params);
       } else {
-        await this.videoService.add(value);
+        await this.videoService.add(params);
       }
       this.msgSrv.success('保存成功');
       this.modal.close('ok');

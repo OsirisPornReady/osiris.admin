@@ -22,6 +22,11 @@ export class VideoService {
     return lastValueFrom(this.http.delete(url));
   }
 
+  bulkDelete(ids: number[]) {
+    let url = `api/video/bulk_delete`;
+    return lastValueFrom(this.http.post(url, ids));
+  }
+
   getById(id: number) {
     let url = `api/video/${id}`;
     return lastValueFrom(this.http.get(url));

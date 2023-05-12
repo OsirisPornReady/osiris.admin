@@ -2,17 +2,30 @@
 <nz-card>
   <sf mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
   <div nz-row class="my-md">
-    <div nz-col [nzXs]="24" [nzLg]="24" class="d-inline-flex justify-content-start align-items-center">
-      <nz-switch [(ngModel)]="isAutoCreate"
-                 [nzCheckedChildren]="'自动'"
-                 [nzUnCheckedChildren]="'手动'"
-                 class="mr-md"></nz-switch>
-      <button nz-button nzType="dashed" (click)="addEdit()" *ngIf="!isAutoCreate">添加</button>
-      <div *ngIf="isAutoCreate">
-        <input nz-input placeholder="serial number" [(ngModel)]="autoCreateSerialNumber" class="width-md mr-md" (keydown.enter)="autoCreate()"/>
-        <button nz-button nzType="dashed" nzShape="round" type="button" (click)="autoCreate()">
-          <span nz-icon nzType="api" nzTheme="outline"></span>
-        </button>
+    <div nz-col [nzXs]="24" [nzLg]="24">
+      <div class="mb-md">
+        <nz-switch [(ngModel)]="isAutoCreate"
+                   [nzCheckedChildren]="'自动'"
+                   [nzUnCheckedChildren]="'手动'"
+                   class="mr-md"></nz-switch>
+        <nz-switch [(ngModel)]="isOpenMultiSelect"
+                   [nzCheckedChildren]="'批量'"
+                   [nzUnCheckedChildren]="'单条'"
+                   [nzDisabled]="isAutoCreate"
+                   (ngModelChange)="switchMultiSelect()"
+                   class="mr-md"></nz-switch>
+      </div>
+      <div>
+        <div *ngIf="!isAutoCreate">
+          <button nz-button nzType="dashed" (click)="addEdit()">添加</button>
+          <button nz-button nzType="default" nzDanger (click)="bulkDelete(st._data)" *ngIf="isOpenMultiSelect">批量删除</button>
+        </div>
+        <div *ngIf="isAutoCreate">
+          <input nz-input placeholder="serial number" [(ngModel)]="autoCreateSerialNumber" class="width-md mr-md" (keydown.enter)="autoCreate()"/>
+          <button nz-button nzType="dashed" nzShape="round" type="button" (click)="autoCreate()">
+            <span nz-icon nzType="api" nzTheme="outline"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
