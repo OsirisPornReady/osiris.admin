@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
-import { lastValueFrom, map } from 'rxjs';
+import {lastValueFrom, map, Observable} from 'rxjs';
+import {SFSchemaEnumType} from "@delon/form";
 
 @Injectable({ providedIn: 'root' })
 export class VideoService {
@@ -48,7 +49,7 @@ export class VideoService {
     return lastValueFrom(this.http.get(url));
   }
 
-  getSelectAll(field = '') {
+  getSelectAll(field = ''): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
     let url = `video/getSelectAll`;
     let result: any[] = [];

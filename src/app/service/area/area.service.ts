@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
-import { lastValueFrom, map } from 'rxjs';
+import {lastValueFrom, map, Observable} from 'rxjs';
+import {SFSchemaEnumType} from "@delon/form";
 
 @Injectable({ providedIn: 'root' })
 export class AreaService {
@@ -28,7 +29,7 @@ export class AreaService {
     // return lastValueFrom(this.http.get(url, { id }));
   }
 
-  getSelectAll(field = 'area') {
+  getSelectAll(field = 'area'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
     let url = `api/area/getSelectAll`;
     let result: any[] = [];
