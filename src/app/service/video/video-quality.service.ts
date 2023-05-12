@@ -50,6 +50,7 @@ export class VideoQualityService {
     let result: any = {};
     let ret = this.http.get(url).pipe(
       map(res => {
+        res = res || [];
         res.forEach((i: any) => {
           result[i.id] = {
             text: i.quality,

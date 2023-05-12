@@ -34,6 +34,7 @@ export class VideoTagService {
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {
+        res = res || [];
         res.forEach((i: any) => {
           result.push({
             label: i[field],
