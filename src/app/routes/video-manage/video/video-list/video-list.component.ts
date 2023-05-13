@@ -10,6 +10,9 @@ import { VideoService } from '../../../../service/video/video.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
+import { VideoManageVideoInfoComponent } from "../video-info/video-info.component";
+
+import { dateCompare } from "../../../../shared/utils/dateCompare";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -115,13 +118,21 @@ export class VideoManageVideoListComponent implements OnInit {
     {
       title: '操作',
       buttons: [
-        // { text: '查看', click: (item: any) => `/form/${item.id}` },
+        {
+          text: '查看',
+          click: (item: any) => {
+            // `/form/${item.id}`
+            this.checkVideoInfo(item.id)
+          },
+          iif: () => this.isAutoCreate
+        },
         {
           text: '编辑',
           // type: 'static', // alain中的static就是不能点击蒙版部分关闭的意思,最好指定component,但此处我们要自己控制modal,所以不用了
           click: (item: any) => {
             this.addEdit(item.id);
-          }
+          },
+          iif: () => !this.isAutoCreate
         },
         {
           text: '删除',
@@ -139,6 +150,7 @@ export class VideoManageVideoListComponent implements OnInit {
   isOpenMultiSelect: boolean = false;
   isAutoCreate: boolean = true;
   autoCreateSerialNumber: string = '';
+  isAutoSubmit: boolean = false
 
   constructor(
     private http: _HttpClient,
@@ -157,10 +169,10 @@ export class VideoManageVideoListComponent implements OnInit {
       if (res) {
         this.qualityTAG = res;
       }
-      this.commonService.createWebSocketSubject()
-      this.commonService.socket$.subscribe(res => {
-        console.log('接收到了消息', res)
-      })
+      // this.commonService.createWebSocketSubject()
+      // this.commonService.socket$.subscribe(res => {
+      //   console.log('接收到了消息', res)
+      // })
       // setTimeout(() => {
       //   console.log('断开连接')
       //   this.commonService.socket$.unsubscribe()
@@ -188,8 +200,12 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   }
 
-  async switchMultiSelect() {
+  async switchMultiSelect() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
     await this.st.resetColumns()
+  }
+
+  switchAutoSubmit() {
+    this.commonService.isAutoSubmit = this.isAutoSubmit;
   }
 
   async bulkDelete(_data: any) {
@@ -236,7 +252,7 @@ export class VideoManageVideoListComponent implements OnInit {
     if (item.onStorage) {
       return 1;
     } else {
-      if (today < publishTime) {
+      if (dateCompare(today, publishTime) < 0) {
         return 2;
       } else {
         return 3;
@@ -251,7 +267,7 @@ export class VideoManageVideoListComponent implements OnInit {
   crawlInfo(value: any) {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
-        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1000 }).subscribe(res => {
+        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
           if (res.state == 'ok') {
             this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, CrawlerData: res.data, needAutoFill: true }).subscribe(res => {
               if (res == 'ok') {
@@ -287,6 +303,14 @@ export class VideoManageVideoListComponent implements OnInit {
       await this.videoService.switchVideoSubscription(item.id)
       item.onSubscription = !item.onSubscription;
     } catch (e) {}
+  }
+
+  checkVideoInfo(id: number) {
+    this.drawer.create('', VideoManageVideoInfoComponent, { record: { id } }, { size: 1600, footer: false, drawerOptions: { nzPlacement: 'left', nzClosable: false } }).subscribe(res => {
+      if (res.state == 'ok') {
+
+      }
+    });
   }
 
 }

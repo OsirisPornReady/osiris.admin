@@ -215,13 +215,14 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   async save(value: any) {
-    const params = { ...value };
-    params.id = this.record.id;
+    // const params = { ...value };
+    // params.id = this.record.id;
+    // sf的机制让它不会收集为null的数据,不符合后端VideoDTO,提交params会出错
     try {
       if (this.record.id > 0) {
-        await this.videoService.update(params);
+        await this.videoService.update(value);
       } else {
-        await this.videoService.add(params);
+        await this.videoService.add(value);
       }
       this.msgSrv.success('保存成功');
       this.modal.close('ok');
@@ -235,7 +236,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   crawlInfo(value: any) {
     if (value.existSerialNumber) {
       if (value.serialNumber) {
-        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1000 }).subscribe(res => {
+        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
           if (res.state == 'ok') {
             this.CrawlerData = res.data;
             this.needAutoFill = true;
@@ -286,16 +287,22 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       if (!isExist) {
         Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
           if (this.safeSF.valid) {
-            this.nzConfirmService.confirm({
-              nzTitle: '<i>是否自动提交?</i>',
-              nzContent: '<b>Some descriptions</b>',
-              nzCentered: true,
-              nzOnOk: async () => {
-                try {
-                  await this.save(this.safeSF.value);
-                } catch (e) {}
-              }
-            })
+            if (this.commonService.isAutoSubmit) {
+              try {
+                await this.save(this.safeSF.value);
+              } catch (e) {}
+            } else {
+              this.nzConfirmService.confirm({
+                nzTitle: '<i>是否自动提交?</i>',
+                nzContent: '<b>自动导入已完成</b>',
+                nzCentered: true,
+                nzOnOk: async () => {
+                  try {
+                    await this.save(this.safeSF.value);
+                  } catch (e) {}
+                }
+              })
+            }
           } else {
             this.msgSrv.error('表单存在非法值,无法自动提交')
           }
