@@ -180,7 +180,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       })
       this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
         if (event.key == 'd') {
-          this.commonService.openNewTab(this.btdigUrl);
+          this.commonService.openNewTab(this.i.btdigUrl);
         }
       })
       this.msgSrv.remove(crawlingMsgId);
