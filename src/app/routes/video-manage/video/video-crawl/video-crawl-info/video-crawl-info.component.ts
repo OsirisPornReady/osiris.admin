@@ -136,6 +136,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       return;
     }
     try {
+      this.record.crawlKey = this.record.crawlKey.trim();
       crawlingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
       switch (this.record.crawlType) {
         case 0:
