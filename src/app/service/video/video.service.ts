@@ -39,6 +39,11 @@ export class VideoService {
     return lastValueFrom(this.http.get(url));
   }
 
+  isTitleExist(title: string) {
+    let url = `api/video/is_title_exist`;
+    return lastValueFrom(this.http.post(url, title));
+  }
+
   switchVideoSubscription(id: number) {
     let url = `api/video/switch_video_subscription/${id}`;
     return lastValueFrom(this.http.get(url));

@@ -301,9 +301,16 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async automatedOperate() {
-    this.autoFillForm()
-    await this.autoSubmitForm()
+  async automatedOperate() { //进入这个函数代表有自动化行为,就在这里判断是否有重复视频
+    this.autoFillForm();
+    try {
+      let title = this.safeSF.getValue('/title');
+      let isTitleExist: boolean = await this.videoService.isTitleExist(title);
+      if (isTitleExist) {
+        this.msgSrv.warning('此标题疑似已存在');
+      }
+    } catch (e) {}
+    await this.autoSubmitForm();
   }
 
   autoFillForm() {

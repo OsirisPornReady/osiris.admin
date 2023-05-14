@@ -160,9 +160,9 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       }
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.coverSrc = this.i.coverSrc;
-      this.javUrl = this.commonService.buildJavbusLink(this.i.serialNumber)
-      this.btdigUrl = this.commonService.buildBtdiggLink(this.i.serialNumber)
-      this.nyaaUrl = this.commonService.buildNyaaLink(this.i.serialNumber)
+      this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
+      this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
+      this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
       this.previewImageSrcList = Array.isArray(this.i.previewImageSrcList) ? this.i.previewImageSrcList : []
 
       this.enterSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {

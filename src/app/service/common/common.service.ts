@@ -7,11 +7,12 @@ import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 export class CommonService {
 
   NSFW_mode: boolean = true;
+  searchField: number = 0;
   isEditMode: boolean = true;
   isOpenMultiSelect: boolean = false;
   isAutoCreate: boolean = true;
   isAutoFill: boolean = true;
-  isAutoSubmit: boolean = false;
+  isAutoSubmit: boolean = true;
   crawlType: number = 0;
   public socket$!: WebSocketSubject<any>;
 

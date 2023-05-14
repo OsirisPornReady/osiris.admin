@@ -30,7 +30,7 @@ export class VideoManageVideoListComponent implements OnInit {
     showQuickJumper: true
   };
   searchParam: any = {
-    searchField: 1
+    searchField: null
   }
   searchSchema: SFSchema = {
     properties: {
@@ -142,7 +142,8 @@ export class VideoManageVideoListComponent implements OnInit {
           pop: true,
           click: async (item: any) => {
             await this.delete(item.id);
-          }
+          },
+          iif: () => this.isEditMode
         }
       ],
       className: 'text-center'
@@ -171,6 +172,7 @@ export class VideoManageVideoListComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.searchParam.searchField = this.commonService.searchField;
     this.isAutoFill = this.commonService.isAutoFill;
     this.isAutoSubmit = this.commonService.isAutoSubmit;
     this.isAutoCreate = this.commonService.isAutoCreate;
