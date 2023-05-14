@@ -4,40 +4,45 @@ import { _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
-import { AreaService } from '../../../../service/area/area.service';
+import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
 
 @Component({
-  selector: 'app-system-manage-area-edit',
-  templateUrl: './area-edit.component.html',
+  selector: 'app-system-manage-crawl-type-edit',
+  templateUrl: './crawl-type-edit.component.html',
 })
-export class SystemManageAreaEditComponent implements OnInit {
+export class SystemManageCrawlTypeEditComponent implements OnInit {
   title = '';
   record: any = {};
   i: any;
   schema: SFSchema = {
     properties: {
-      area: { type: 'string', title: '地区' },
+      name: { type: 'string', title: '名字' },
+      crawlTypeKey: { type: 'number', title: '配置值' },
+      isActive: { type: 'boolean', title: '是否启用' },
     },
-    required: ['area'],
+    required: ['name', 'crawlTypeKey'],
   };
   ui: SFUISchema = {
     '*': {
       spanLabelFixed: 100,
       grid: { span: 22 },
     },
+    $crawlTypeKey: {
+      precision: 0
+    }
   };
 
   constructor(
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
-    private areaService: AreaService
+    private crawlTypeService: CrawlTypeService
   ) {}
 
   async ngOnInit() {
     if (this.record.id > 0) {
       this.title = '修改';
-      this.i = (await this.areaService.getById(this.record.id)) || {};
+      this.i = (await this.crawlTypeService.getById(this.record.id)) || {};
     } else {
       this.title = '新增';
       this.i = {};
@@ -47,9 +52,9 @@ export class SystemManageAreaEditComponent implements OnInit {
   async save(value: any) {
     try {
       if (this.record.id > 0) {
-        await this.areaService.update(value);
+        await this.crawlTypeService.update(value);
       } else {
-        await this.areaService.add(value);
+        await this.crawlTypeService.add(value);
       }
       this.msgSrv.success('保存成功');
       this.modal.close('ok');

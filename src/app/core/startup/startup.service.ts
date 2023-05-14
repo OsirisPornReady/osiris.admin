@@ -124,6 +124,11 @@ export class StartupService {
                     text: 'area',
                     link: '/system-manage/area-list',
                     icon: null
+                  },
+                  {
+                    text: 'crawl',
+                    link: '/system-manage/crawl-list',
+                    icon: null
                   }
                 ]
               }

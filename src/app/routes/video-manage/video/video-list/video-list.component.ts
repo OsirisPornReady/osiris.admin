@@ -8,11 +8,13 @@ import { NzModalService } from "ng-zorro-antd/modal";
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
 import { CommonService } from '../../../../service/common/common.service';
+import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoInfoComponent } from "../video-info/video-info.component";
 
 import { dateCompare } from "../../../../shared/utils/dateUtils";
+import { lastValueFrom } from "rxjs";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -147,11 +149,14 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
+  isEditMode: boolean = false
   isOpenMultiSelect: boolean = false;
   isAutoCreate: boolean = true;
-  autoCreateSerialNumber: string = '';
+  isAutoFill: boolean = false
   isAutoSubmit: boolean = false
-  isEditMode: boolean = false
+  crawlKey: string = '';
+  crawlTypeOptions: any[] = [];
+  crawlType: any= null;
 
   constructor(
     private http: _HttpClient,
@@ -159,17 +164,21 @@ export class VideoManageVideoListComponent implements OnInit {
     private msgSrv: NzMessageService,
     private videoService: VideoService,
     private commonService: CommonService,
+    private crawlTypeService: CrawlTypeService,
     private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
     private nzModal: NzModalService
   ) {}
 
   async ngOnInit() {
+    this.isAutoFill = this.commonService.isAutoFill;
+    this.isAutoSubmit = this.commonService.isAutoSubmit;
     try {
       let res = (await this.videoQualityService.getDict()) || {};
       if (res) {
         this.qualityTAG = res;
       }
+      this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
       // this.commonService.createWebSocketSubject()
       // this.commonService.socket$.subscribe(res => {
       //   console.log('接收到了消息', res)
@@ -203,6 +212,10 @@ export class VideoManageVideoListComponent implements OnInit {
 
   async switchMultiSelect() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
     await this.st.resetColumns()
+  }
+
+  switchAutoFill() {
+    this.commonService.isAutoFill = this.isAutoFill;
   }
 
   switchAutoSubmit() {
@@ -266,34 +279,30 @@ export class VideoManageVideoListComponent implements OnInit {
   }
 
   crawlInfo(value: any) {
-    if (value.existSerialNumber) {
-      if (value.serialNumber) {
-        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
-          if (res.state == 'ok') {
-            this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, CrawlerData: res.data, needAutoFill: true }).subscribe(res => {
-              if (res == 'ok') {
-                this.st.reload();
-              }
-            });
-          }
-        });
-      } else {
-        this.msgSrv.info('番号为空');
-      }
+    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlType')) {
+      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
+        if (res.state == 'ok') {
+          this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, automated: true, automatedData: res.data }).subscribe(res => {
+            if (res == 'ok') {
+              this.st.reload();
+            }
+          });
+        }
+      });
     } else {
-      this.msgSrv.info('未配置番号');
+      this.msgSrv.info('请配置爬虫关键字与爬虫数据源');
     }
   }
 
   autoCreate() {
-    let autoCreateSerialNumber = this.autoCreateSerialNumber.trim(); //涉及输入框的要做trim处理
-    if (!autoCreateSerialNumber) {
-      this.msgSrv.info('番号为空');
+    let crawlKey = this.crawlKey.trim(); //涉及输入框的要做trim处理
+    if (!crawlKey) {
+      this.msgSrv.info('爬虫关键字为空');
     } else {
       let value = {
         id: 0,
-        existSerialNumber: true,
-        serialNumber: autoCreateSerialNumber
+        crawlType: this.crawlType,
+        crawlKey
       }
       this.crawlInfo(value)
     }

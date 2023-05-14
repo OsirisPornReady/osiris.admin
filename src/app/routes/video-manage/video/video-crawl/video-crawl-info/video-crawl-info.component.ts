@@ -36,7 +36,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       series: { type:'string', title: '系列' },
       starsRaw: { type: 'string', title: '演员' },
       tagsRaw: { type: 'string', title: '标签' },
-      description: { type: 'string', title: '描述', maxLength: 140 }
+      description: { type: 'string', title: '描述' }
     },
     required: ['title'],
   };
@@ -101,13 +101,11 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
     },
   };
 
-  crawlType: number = 0;
-  serialNumber: string = ''
   coverSrc: string = ''
   javUrl: string = ''
   btdigUrl: string = ''
   nyaaUrl: string = ''
-  previewImageSrcList: string[] = []; //'1','2','3','4','5','6','7','8','9','10','11','12'
+  previewImageSrcList: string[] = [];
   enterSubscription: any = null;
 
   constructor(
@@ -122,34 +120,40 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
 
   async ngOnInit() {
     let crawlingMsgId = '';
+    if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlType')) {
+      if (!(typeof this.record.crawlKey == 'string' && Number.isFinite(this.record.crawlType))) { //直接在前端进行类型检查吧
+        this.msgSrv.error('爬虫参数类型错误,请关闭页面');
+        console.log(this.record)
+        return;
+      }
+    } else {
+      this.msgSrv.error('未正确配置爬虫参数,请关闭页面');
+      return;
+    }
     try {
-      crawlingMsgId = this.msgSrv.loading(`${this.record.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
-// ------------------传递给自动填充相关
-      switch (this.crawlType) {
+      crawlingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
+      switch (this.record.crawlType) {
         case 0:
           this.i = null; //js中空对象并不为假值,置假应该用null
           this.msgSrv.remove(crawlingMsgId);
           this.msgSrv.error('未指定数据源,请关闭页面');
           return;
         case 1:
-          this.i = (await this.crawlService.crawlJavBusVideo(this.record.serialNumber)) || {};
+          this.i = (await this.crawlService.crawlJavBusVideo(this.commonService.recognizeSerialNumber(this.record.crawlKey))) || {};
           break;
         case 2:
-          this.i = (await this.crawlService.crawlTransAngelsVideo({ url: 'test' })) || {};
+          this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey })) || {};
+          break;
+        case 3:
+          this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey })) || {};
           break;
         default:
           this.i = null;
           this.msgSrv.remove(crawlingMsgId);
-          this.msgSrv.error('未指定数据源,请关闭页面');
+          this.msgSrv.error('无法识别数据源,请关闭页面');
           return;
       }
-      if (this.record.id > 0) {} else {
-        this.i.existSerialNumber = true;
-      }
-// ------------------本页面查看相关
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
-      this.serialNumber = this.i.serialNumber;
-      this.title = `${this.i.title}`
       this.coverSrc = this.i.coverSrc;
       this.javUrl = this.commonService.buildJavbusLink(this.i.serialNumber)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.serialNumber)

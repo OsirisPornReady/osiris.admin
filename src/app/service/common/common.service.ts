@@ -7,7 +7,9 @@ import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 export class CommonService {
 
   NSFW_mode: boolean = true;
+  isAutoFill: boolean = true;
   isAutoSubmit: boolean = false;
+  crawlType: number = 0;
   public socket$!: WebSocketSubject<any>;
 
   constructor(private http: _HttpClient) {}

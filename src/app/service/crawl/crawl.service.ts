@@ -13,6 +13,11 @@ export class CrawlService {
     return lastValueFrom(this.http.get(url));
   }
 
+  crawlBrazzersVideo(entity: any) {
+    let url = `crawl/video/brazzers`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
   crawlTransAngelsVideo(entity: any) {
     let url = `crawl/video/trans_angels`;
     return lastValueFrom(this.http.post(url, entity));

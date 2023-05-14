@@ -2,11 +2,12 @@ import {Component, OnInit, AfterViewInit, ViewChild, QueryList, ViewChildren} fr
 import {SFComponent, SFSchema, SFUISchema} from '@delon/form';
 import { _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+import { NzModalRef } from 'ng-zorro-antd/modal';
 
 import { AreaService } from '../../../../service/area/area.service';
 import { CastService } from '../../../../service/cast/cast.service';
 import { CommonService } from '../../../../service/common/common.service';
+import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../service/video/video-type.service';
@@ -27,11 +28,14 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   safeSF!: SFComponent;
   schema: SFSchema = {
     properties: {
+      needCrawl: { type: 'boolean', title: '是否需要导入' },
+      crawlType: { type: 'string', title: '导入数据源' },
+      crawlKey: { type: 'string', title: '导入关键字' },
+      crawlButton: { type: 'string', title: '导入' },
       title: { type: 'string', title: '标题' },
       onStorage: { type: 'boolean', title: '入库情况' },
       existSerialNumber: { type: 'boolean', title: '有无番号' },
       serialNumber: { type: 'string', title: '番号', maxLength: 15 },
-      crawlInfoButton: { type: 'string', title: '导入' },
       videoType: { type: 'string', title: '类型' },
       videoResolution: { type: 'string', title: '分辨率' },
       publishTime: { type: 'string', title: '发行日期', format: 'date' },
@@ -49,7 +53,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       tags: { type: 'string', title: '分类标签' },
       starsRaw: { type: 'string', title: '演员' },
       tagsRaw: { type: 'string', title: '标签' },
-      description: { type: 'string', title: '描述', maxLength: 140 }
+      description: { type: 'string', title: '描述' }
     },
     required: ['title']
   };
@@ -57,6 +61,13 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     '*': {
       spanLabelFixed: 120,
       grid: { span: 22 }
+    },
+    $crawlType: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择视频分辨率',
+      width: 400,
+      asyncData: () => this.crawlTypeService.getSelectAll()
     },
     $title: { placeholder: '输入标题' },
     $onStorage: {
@@ -135,9 +146,14 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
         existSerialNumber: val => val
       }
     },
-    $crawlInfoButton: {
+    $crawlKey: {
       visibleIf: {
-        existSerialNumber: val => val
+        needCrawl: val => val
+      }
+    },
+    $crawlButton: {
+      visibleIf: {
+        needCrawl: val => val
       },
       widget: 'custom'
     },
@@ -191,15 +207,16 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     }
   };
 
-  CrawlerData: any = {};
-  needAutoFill: boolean = false;
-  autoFillMseId: string = '';
+  automatedMsgId: string = '';
+  automated: boolean = false;
+  automatedData: any = {};
 
   constructor(
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private commonService: CommonService,
+    private crawlTypeService: CrawlTypeService,
     private castService: CastService,
     private videoService: VideoService,
     private videoTagService: VideoTagService,
@@ -207,7 +224,6 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     private videoAreaService: AreaService,
     private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
-    private nzConfirmService: NzModalService
   ) {}
 
   async ngOnInit() {
@@ -231,16 +247,22 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
           // new Promise((resolve) => {
           //   resolve(42)
           // })
-          Promise.resolve().then(() => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-            this.autoFillForm();
+          Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+            if (this.automated) {
+              this.autoFillForm();
+              await this.autoSubmitForm();
+            }
           })
         }
       })
     } else {
       this.safeSF = this.sf
-      this.safeSF.validator()
-      Promise.resolve().then(() => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-        this.autoFillForm();
+      // this.safeSF.validator()
+      Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+        if (this.automated) {
+          this.autoFillForm();
+          await this.autoSubmitForm();
+        }
       })
     }
   }
@@ -265,83 +287,54 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   crawlInfo(value: any) {
-    if (value.existSerialNumber) {
-      if (value.serialNumber) {
-        this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
-          if (res.state == 'ok') {
-            this.CrawlerData = res.data;
-            this.needAutoFill = true;
-            this.autoFillForm();
-          }
-        });
-      } else {
-        this.msgSrv.info('番号为空');
-      }
+    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlType')) {
+      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
+        if (res.state == 'ok') {
+          this.automatedData = res.data;
+          this.automated = true;
+          this.autoFillForm();
+          await this.autoSubmitForm()
+        }
+      });
     } else {
-      this.msgSrv.info('未配置番号');
+      this.msgSrv.info('请配置爬虫关键字与爬虫数据源');
     }
   }
 
-  async autoFillForm() {
-    if (!this.needAutoFill) { return; }
-    this.autoFillMseId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
-    let { stars, coverSrc, ...fillData } = this.CrawlerData;
-    let originData = JSON.parse(JSON.stringify(this.safeSF.value));
-    if (this.record.id > 0) {
-      Object.keys(fillData).forEach((key: string) => {
-        if (originData.hasOwnProperty(key)) {
-          try {
-            this.safeSF.setValue(`/${key}`, fillData[key])
-          } catch (e) {
-            console.error(`自动填充字段${key}失败`, e)
-          }
-        }
-      })
-    } else {
-      Object.keys(fillData).forEach((key: string) => {
-        try {
-          this.safeSF.setValue(`/${key}`, fillData[key])
-        } catch (e) {
-          console.error(`自动填充字段${key}失败`, e)
-        }
-      })
-    }
-    this.msgSrv.remove(this.autoFillMseId);
+  autoFillForm() {
+    if (!this.commonService.isAutoFill) { return; }
+    this.automatedMsgId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
+    let { stars, coverSrc, ...fillData } = this.automatedData;
+    Object.keys(fillData).forEach((key: string) => {
+      try {
+        this.safeSF.setValue(`/${key}`, fillData[key])
+      } catch (e) {
+        console.error(`自动填充字段${key}失败`, e)
+      }
+    })
+    this.msgSrv.remove(this.automatedMsgId);
     this.msgSrv.success('自动填充完成');
-    this.needAutoFill = false;
-    await this.autoSubmitFormConfirm();
   }
 
-  async autoSubmitFormConfirm() {
-    try { // 鉴于手动添加的时候自由度要高一点,就只在自动填表单的时候验证番号吧
-      let isExist = await this.videoService.isSerialNumberExist(this.CrawlerData.serialNumber)
-      if (!isExist) {
-        Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-          if (this.safeSF.valid) {
-            if (this.commonService.isAutoSubmit) {
-              try {
-                await this.save(this.safeSF.value);
-              } catch (e) {}
-            } else {
-              this.nzConfirmService.confirm({
-                nzTitle: '<i>是否自动提交?</i>',
-                nzContent: '<b>自动导入已完成</b>',
-                nzCentered: true,
-                nzOnOk: async () => {
-                  try {
-                    await this.save(this.safeSF.value);
-                  } catch (e) {}
-                }
-              })
-            }
-          } else {
-            this.msgSrv.error('表单存在非法值,无法自动提交')
-          }
-        })
+  async autoSubmitForm() {
+    // try { // 鉴于手动添加的时候自由度要高一点,就只在自动填表单的时候验证番号吧
+    //   let isExist = await this.videoService.isSerialNumberExist(this.CrawlerData.serialNumber)
+    //   if (!isExist) {
+    //
+    //   } else {
+    //     this.msgSrv.error('番号已存在')
+    //   }
+    // } catch (e) {}
+    if (!this.commonService.isAutoSubmit) { return; }
+    await Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+      if (this.safeSF.valid) {
+        try {
+          await this.save(this.safeSF.value);
+        } catch (e) {}
       } else {
-        this.msgSrv.error('番号已存在')
+        this.msgSrv.error('表单存在非法值,无法自动提交')
       }
-    } catch (e) {}
+    })
   }
 
 }
