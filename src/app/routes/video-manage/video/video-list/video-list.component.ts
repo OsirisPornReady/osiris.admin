@@ -149,11 +149,11 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   ];
 
-  isEditMode: boolean = false
+  isEditMode: boolean = false;
   isOpenMultiSelect: boolean = false;
   isAutoCreate: boolean = true;
-  isAutoFill: boolean = false
-  isAutoSubmit: boolean = false
+  isAutoFill: boolean = false;
+  isAutoSubmit: boolean = false;
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
   crawlType: any= null;
@@ -173,6 +173,9 @@ export class VideoManageVideoListComponent implements OnInit {
   async ngOnInit() {
     this.isAutoFill = this.commonService.isAutoFill;
     this.isAutoSubmit = this.commonService.isAutoSubmit;
+    this.isAutoCreate = this.commonService.isAutoCreate;
+    this.isEditMode = this.commonService.isEditMode;
+    this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
     try {
       let res = (await this.videoQualityService.getDict()) || {};
       if (res) {
@@ -210,8 +213,19 @@ export class VideoManageVideoListComponent implements OnInit {
     }
   }
 
+  async switchAutoCreate() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
+    await this.st.resetColumns()
+    this.commonService.isAutoCreate = this.isAutoCreate;
+  }
+
+  async switchEditMode() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
+    await this.st.resetColumns()
+    this.commonService.isEditMode = this.isEditMode;
+  }
+
   async switchMultiSelect() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
     await this.st.resetColumns()
+    this.commonService.isOpenMultiSelect = this.isOpenMultiSelect;
   }
 
   switchAutoFill() {

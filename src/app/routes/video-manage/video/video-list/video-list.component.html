@@ -7,18 +7,18 @@
         <nz-switch [(ngModel)]="isAutoCreate"
                    [nzCheckedChildren]="'自动'"
                    [nzUnCheckedChildren]="'手动'"
-                   (ngModelChange)="st.resetColumns()"
+                   (ngModelChange)="switchAutoCreate()"
                    class="mr-md"></nz-switch>
         <nz-switch [(ngModel)]="isEditMode"
                    [nzCheckedChildren]="'编辑'"
                    [nzUnCheckedChildren]="'查看'"
-                   (ngModelChange)="st.resetColumns()"
+                   (ngModelChange)="switchEditMode()"
                    class="mr-md"></nz-switch>
         <nz-switch [(ngModel)]="isOpenMultiSelect"
                    [nzCheckedChildren]="'批量'"
                    [nzUnCheckedChildren]="'单条'"
                    [nzDisabled]="!isEditMode"
-                   (ngModelChange)="st.resetColumns()"
+                   (ngModelChange)="switchMultiSelect()"
                    class="mr-md"></nz-switch>
       </div>
       <div>
@@ -59,9 +59,10 @@
     </ng-template>
 
     <ng-template st-row="customVideoInfoCrawlButton" let-item>
-      <button nz-button type="button" nzType="default" nzShape="round" (click)="crawlInfo(item)" *ngIf="item.existSerialNumber">
+      <button *ngIf="item.canCrawl" nz-button type="button" nzType="default" nzShape="round" (click)="crawlInfo(item)">
         <span nz-icon nzType="api" nzTheme="outline"></span>
       </button>
+      <span *ngIf="!item.canCrawl" nz-typography nzDisabled>未配置</span>
     </ng-template>
 
     <ng-template st-row="customVideoOnSubscription" let-item>

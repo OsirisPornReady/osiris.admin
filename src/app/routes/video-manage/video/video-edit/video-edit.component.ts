@@ -28,7 +28,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   safeSF!: SFComponent;
   schema: SFSchema = {
     properties: {
-      needCrawl: { type: 'boolean', title: '是否需要导入' },
+      canCrawl: { type: 'boolean', title: '是否需要导入' },
       crawlType: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
       crawlButton: { type: 'string', title: '导入' },
@@ -61,13 +61,6 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     '*': {
       spanLabelFixed: 120,
       grid: { span: 22 }
-    },
-    $crawlType: {
-      widget: 'select',
-      allowClear: true,
-      placeholder: '请选择视频分辨率',
-      width: 400,
-      asyncData: () => this.crawlTypeService.getSelectAll()
     },
     $title: { placeholder: '输入标题' },
     $onStorage: {
@@ -146,14 +139,24 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
         existSerialNumber: val => val
       }
     },
+    $crawlType: {
+      visibleIf: {
+        canCrawl: val => val
+      },
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择视频分辨率',
+      width: 400,
+      asyncData: () => this.crawlTypeService.getSelectAll()
+    },
     $crawlKey: {
       visibleIf: {
-        needCrawl: val => val
+        canCrawl: val => val
       }
     },
     $crawlButton: {
       visibleIf: {
-        needCrawl: val => val
+        canCrawl: val => val
       },
       widget: 'custom'
     },
@@ -249,8 +252,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
           // })
           Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
             if (this.automated) {
-              this.autoFillForm();
-              await this.autoSubmitForm();
+              await this.automatedOperate();
             }
           })
         }
@@ -260,8 +262,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       // this.safeSF.validator()
       Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
         if (this.automated) {
-          this.autoFillForm();
-          await this.autoSubmitForm();
+          await this.automatedOperate();
         }
       })
     }
@@ -292,13 +293,17 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
         if (res.state == 'ok') {
           this.automatedData = res.data;
           this.automated = true;
-          this.autoFillForm();
-          await this.autoSubmitForm()
+          await this.automatedOperate();
         }
       });
     } else {
       this.msgSrv.info('请配置爬虫关键字与爬虫数据源');
     }
+  }
+
+  async automatedOperate() {
+    this.autoFillForm()
+    await this.autoSubmitForm()
   }
 
   autoFillForm() {

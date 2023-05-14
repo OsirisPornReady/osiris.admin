@@ -28,7 +28,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       title: { type:'string', title: '标题' },
       videoType: { type: 'string', title: '类型' },
       publishTime: { type:'string', title: '发布时间', format: 'date' },
-      duration: { type:'string', title: '时长' },
+      duration: { type:'number', title: '时长' },
       director: { type:'string', title: '导演' },
       producer: { type:'string', title: '制作商' },
       releaser: { type:'string', title: '发行商' },
@@ -49,6 +49,11 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       widget: 'text',
       defaultText: '-',
       html: true
+    },
+    $duration: {
+      unit: '分钟',
+      widgetWidth: 150,
+      precision: 0
     },
     $director: {
       visibleIf: {
