@@ -111,7 +111,9 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
   btdigUrl: string = ''
   nyaaUrl: string = ''
   previewImageSrcList: string[] = [];
-  enterSubscription: any = null;
+  enterKeyDownSubscription: any = null;
+  spaceKeyDownSubscription: any = null;
+  dKeyDownSubscription: any = null;
 
   constructor(
     private drawer: NzDrawerRef,
@@ -166,9 +168,19 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
       this.previewImageSrcList = Array.isArray(this.i.previewImageSrcList) ? this.i.previewImageSrcList : []
 
-      this.enterSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
         if (event.key == 'Enter') {
           this.save(this.sf.value);
+        }
+      })
+      this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+        if (event.key == ' ') {
+          this.close();
+        }
+      })
+      this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+        if (event.key == 'd') {
+          this.commonService.openNewTab(this.btdigUrl);
         }
       })
       this.msgSrv.remove(crawlingMsgId);
@@ -197,8 +209,14 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
 
   ngOnDestroy() {
     this.coverSrc = ''
-    if (this.enterSubscription) {
-      this.enterSubscription.unsubscribe();
+    if (this.enterKeyDownSubscription) {
+      this.enterKeyDownSubscription.unsubscribe();
+    }
+    if (this.spaceKeyDownSubscription) {
+      this.spaceKeyDownSubscription.unsubscribe();
+    }
+    if (this.dKeyDownSubscription) {
+      this.dKeyDownSubscription.unsubscribe();
     }
   }
 

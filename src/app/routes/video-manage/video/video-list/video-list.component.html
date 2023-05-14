@@ -30,7 +30,7 @@
           <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" [(ngModel)]="crawlType" [nzOptions]="crawlTypeOptions" class="width-md">
 <!--            <nz-option [nzLabel]="option.label" [nzValue]="option.value" *ngFor="let option of crawlTypeOptions"></nz-option>-->
           </nz-select>
-          <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" (keydown.enter)="autoCreate()"/>
+          <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoCreate()"/>
           <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
             <span nz-icon nzType="api" nzTheme="outline"></span>
           </button>
