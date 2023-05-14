@@ -8,6 +8,9 @@ import { fromEvent } from "rxjs";
 import { VideoTagService } from '../../../../../service/video/video-tag.service';
 import { VideoService } from '../../../../../service/video/video.service';
 import { CommonService } from '../../../../../service/common/common.service';
+import { CrawlService } from '../../../../../service/crawl/crawl.service';
+
+import { dateStringFormatter } from "../../../../../shared/utils/dateUtils";
 
 @Component({
   selector: 'app-video-manage-video-crawl-info',
@@ -23,13 +26,17 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
     properties: {
       serialNumber: { type: 'string', title: '番号' },
       title: { type:'string', title: '标题' },
-      publishTime: { type:'string', title: '发布时间' },
+      videoType: { type: 'string', title: '类型' },
+      publishTime: { type:'string', title: '发布时间', format: 'date' },
       duration: { type:'string', title: '时长' },
       director: { type:'string', title: '导演' },
       producer: { type:'string', title: '制作商' },
       releaser: { type:'string', title: '发行商' },
+      brand: { type: 'string', title: '厂牌' },
       series: { type:'string', title: '系列' },
-      stars: { type:'string', title: '演员' },
+      starsRaw: { type: 'string', title: '演员' },
+      tagsRaw: { type: 'string', title: '标签' },
+      description: { type: 'string', title: '描述', maxLength: 140 }
     },
     required: ['title'],
   };
@@ -43,22 +50,58 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       defaultText: '-',
       html: true
     },
-    $tags: {
+    $director: {
+      visibleIf: {
+        videoType: val => val == 2 || val == 3
+      },
+      placeholder: '请选择导演',
+    },
+    $producer: {
+      visibleIf: {
+        videoType: val => val == 2
+      },
+      placeholder: '请选择制作商',
+    },
+    $releaser: {
+      visibleIf: {
+        videoType: val => val == 2
+      },
+      placeholder: '请选择发行商',
+    },
+    $brand: {
+      visibleIf: {
+        videoType: val => val == 3
+      },
+      placeholder: '请选择厂牌',
+    },
+    $series: {
       widget: 'select',
       allowClear: true,
-      placeholder: '请选择标签',
-      mode: 'multiple',
-      asyncData: () => this.videoTagService.getSelectAll('tagChinese')
+      placeholder: '请选择系列',
+      mode: 'tags',
+      default: null,
     },
-    $stars: {
+    $starsRaw: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择演员',
+      mode: 'tags',
+      default: null,
+    },
+    $tagsRaw: {
       widget: 'select',
       allowClear: true,
       placeholder: '请选择标签',
       mode: 'tags',
-      default: null
+      default: null,
+    },
+    $description: {
+      widget: 'textarea',
+      autosize: { minRows: 3, maxRows: 6 }
     },
   };
 
+  crawlType: number = 0;
   serialNumber: string = ''
   coverSrc: string = ''
   javUrl: string = ''
@@ -73,24 +116,46 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
     public http: _HttpClient,
     private videoTagService: VideoTagService,
     private videoService: VideoService,
-    private commonService: CommonService
+    private commonService: CommonService,
+    private crawlService: CrawlService
   ) {}
 
   async ngOnInit() {
     let crawlingMsgId = '';
     try {
       crawlingMsgId = this.msgSrv.loading(`${this.record.serialNumber}爬取中`, { nzDuration: 0 }).messageId;
-      this.i = (await this.videoService.crawlInfoBySerialNumber(this.record.serialNumber)) || {};
+// ------------------传递给自动填充相关
+      switch (this.crawlType) {
+        case 0:
+          this.i = null; //js中空对象并不为假值,置假应该用null
+          this.msgSrv.remove(crawlingMsgId);
+          this.msgSrv.error('未指定数据源,请关闭页面');
+          return;
+        case 1:
+          this.i = (await this.crawlService.crawlJavBusVideo(this.record.serialNumber)) || {};
+          break;
+        case 2:
+          this.i = (await this.crawlService.crawlTransAngelsVideo({ url: 'test' })) || {};
+          break;
+        default:
+          this.i = null;
+          this.msgSrv.remove(crawlingMsgId);
+          this.msgSrv.error('未指定数据源,请关闭页面');
+          return;
+      }
       if (this.record.id > 0) {} else {
         this.i.existSerialNumber = true;
       }
+// ------------------本页面查看相关
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.serialNumber = this.i.serialNumber;
-      this.title = `${this.i.serialNumber} ${this.i.title}`
+      this.title = `${this.i.title}`
       this.coverSrc = this.i.coverSrc;
       this.javUrl = this.commonService.buildJavbusLink(this.i.serialNumber)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.serialNumber)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.serialNumber)
+      this.previewImageSrcList = Array.isArray(this.i.previewImageSrcList) ? this.i.previewImageSrcList : []
+
       this.enterSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
         if (event.key == 'Enter') {
           this.save(this.sf.value);
@@ -99,6 +164,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       this.msgSrv.remove(crawlingMsgId);
       this.msgSrv.success('信息爬取成功');
     } catch (error) {
+      console.error(error)
       this.msgSrv.remove(crawlingMsgId);
       this.msgSrv.error('信息爬取失败');
       this.close();
@@ -125,4 +191,6 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       this.enterSubscription.unsubscribe();
     }
   }
+
+  protected readonly dateStringFormatter = dateStringFormatter;
 }

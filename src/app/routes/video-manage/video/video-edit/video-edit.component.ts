@@ -44,8 +44,11 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       series: { type: 'string', title: '系列' },
       // area: { type: 'string', title: '地区' },
       // addTime: { type: 'string', title: '添加时间', format: 'date-time' },
-      tags: { type: 'string', title: '标签' },
-      stars: { type: 'string', title: '演员' },
+      isClassified: { type: 'boolean', title: '已分类' },
+      stars: { type: 'string', title: '分类演员' },
+      tags: { type: 'string', title: '分类标签' },
+      starsRaw: { type: 'string', title: '演员' },
+      tagsRaw: { type: 'string', title: '标签' },
       description: { type: 'string', title: '描述', maxLength: 140 }
     },
     required: ['title']
@@ -107,7 +110,11 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       visibleIf: {
         inSeries: val => val
       },
+      widget: 'select',
+      allowClear: true,
       placeholder: '请选择系列',
+      mode: 'tags',
+      default: null,
     },
     $area: {
       widget: 'select',
@@ -134,7 +141,14 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       },
       widget: 'custom'
     },
+    $isClassified: {
+      checkedChildren: '已分类',
+      unCheckedChildren: '未分类',
+    },
     $stars: {
+      visibleIf: {
+        isClassified: val => val
+      },
       widget: 'select',
       allowClear: true,
       placeholder: '请选择演员',
@@ -142,11 +156,28 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       asyncData: () => this.castService.getSelectAll()
     },
     $tags: {
+      visibleIf: {
+        isClassified: val => val
+      },
       widget: 'select',
       allowClear: true,
       placeholder: '请选择标签',
       mode: 'multiple',
       asyncData: () => this.videoTagService.getSelectAll('tagChinese')
+    },
+    $starsRaw: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择演员',
+      mode: 'tags',
+      default: null,
+    },
+    $tagsRaw: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择标签',
+      mode: 'tags',
+      default: null,
     },
     $description: {
       widget: 'textarea',

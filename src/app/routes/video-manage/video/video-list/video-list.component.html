@@ -9,10 +9,15 @@
                    [nzUnCheckedChildren]="'手动'"
                    (ngModelChange)="st.resetColumns()"
                    class="mr-md"></nz-switch>
+        <nz-switch [(ngModel)]="isEditMode"
+                   [nzCheckedChildren]="'编辑'"
+                   [nzUnCheckedChildren]="'查看'"
+                   (ngModelChange)="st.resetColumns()"
+                   class="mr-md"></nz-switch>
         <nz-switch [(ngModel)]="isOpenMultiSelect"
                    [nzCheckedChildren]="'批量'"
                    [nzUnCheckedChildren]="'单条'"
-                   [nzDisabled]="isAutoCreate"
+                   [nzDisabled]="!isEditMode"
                    (ngModelChange)="st.resetColumns()"
                    class="mr-md"></nz-switch>
       </div>

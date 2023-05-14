@@ -34,11 +34,6 @@ export class VideoService {
     // return lastValueFrom(this.http.get(url, { id }));
   }
 
-  crawlInfoBySerialNumber(serialNumber: string) {
-    let url = `crawl/video/${serialNumber}`;
-    return lastValueFrom(this.http.get(url));
-  }
-
   isSerialNumberExist(serialNumber: string) {
     let url = `api/video/is_serial_number_exist/${serialNumber}`;
     return lastValueFrom(this.http.get(url));

@@ -12,7 +12,7 @@ import { VideoManageVideoEditComponent } from '../video-edit/video-edit.componen
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoInfoComponent } from "../video-info/video-info.component";
 
-import { dateCompare } from "../../../../shared/utils/dateCompare";
+import { dateCompare } from "../../../../shared/utils/dateUtils";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -124,7 +124,7 @@ export class VideoManageVideoListComponent implements OnInit {
             // `/form/${item.id}`
             this.checkVideoInfo(item.id)
           },
-          iif: () => this.isAutoCreate
+          iif: () => !this.isEditMode
         },
         {
           text: '编辑',
@@ -132,7 +132,7 @@ export class VideoManageVideoListComponent implements OnInit {
           click: (item: any) => {
             this.addEdit(item.id);
           },
-          iif: () => !this.isAutoCreate
+          iif: () => this.isEditMode
         },
         {
           text: '删除',
@@ -151,6 +151,7 @@ export class VideoManageVideoListComponent implements OnInit {
   isAutoCreate: boolean = true;
   autoCreateSerialNumber: string = '';
   isAutoSubmit: boolean = false
+  isEditMode: boolean = false
 
   constructor(
     private http: _HttpClient,

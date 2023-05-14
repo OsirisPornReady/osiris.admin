@@ -34,27 +34,31 @@
       <div style="width: 600px;">
         <div>
           <span class="font-weight-bold">番号: </span>
-          <span nz-typography nzType="danger" [nzContent]="serialNumber" [nzCopyable]="true" class="text-md d-inline-block mb-sm"></span>
+          <span nz-typography nzType="danger" [nzContent]="serialNumber ? serialNumber : '--'" [nzCopyable]="true" class="text-md d-inline-block mb-sm"></span>
         </div>
         <div class="av-info mb-sm">
           <span class="font-weight-bold">日期:</span>
-          <span nz-typography [nzContent]="i.publishTime" class="text-md font-weight-normal"></span>
+          <span nz-typography [nzContent]="dateStringFormatter(i.publishTime)" class="text-md font-weight-normal"></span>
         </div>
-        <div class="av-info mb-sm">
+        <div class="av-info mb-sm" *ngIf="i.duration">
           <span class="font-weight-bold">时长:</span>
           <span nz-typography [nzContent]="i.duration ? (i.duration + '分钟') : ''" class="text-md font-weight-normal"></span>
         </div>
-        <div class="av-info mb-sm">
+        <div class="av-info mb-sm" *ngIf="i.director">
           <span class="font-weight-bold">导演:</span>
           <span nz-typography [nzContent]="i.director" class="text-md font-weight-normal"></span>
         </div>
-        <div class="av-info mb-sm">
+        <div class="av-info mb-sm" *ngIf="i.producer">
           <span class="font-weight-bold">制作商:</span>
           <span nz-typography [nzContent]="i.producer" class="text-md font-weight-normal"></span>
         </div>
-        <div class="av-info mb-sm">
+        <div class="av-info mb-sm" *ngIf="i.releaser">
           <span class="font-weight-bold">发行商:</span>
           <span nz-typography [nzContent]="i.releaser" class="text-md font-weight-normal"></span>
+        </div>
+        <div class="av-info mb-sm" *ngIf="i.brand">
+          <span class="font-weight-bold">厂牌:</span>
+          <span nz-typography [nzContent]="i.brand" class="text-md font-weight-normal"></span>
         </div>
       </div>
     </div>
@@ -65,7 +69,7 @@
   <div>
     <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
       <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
-        <img nz-image width="150" [nzSrc]="coverSrc" alt=""/>
+        <img nz-image width="150" [nzSrc]="item" alt=""/>
       </nz-card>
     </nz-image-group>
     <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>

@@ -25,3 +25,20 @@ export function dateCompare(date1: Date, date2: Date): number {
     return -1;
   } else { return 404; }
 }
+
+
+
+/**
+ * 格式化videoDTO的日期
+ *
+ * @param dateStr 左日期
+ *
+ */
+export function dateStringFormatter(dateStr: string): string {
+  try {
+    let theDate = new Date(dateStr)
+    return `${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate() < 10 ? '0' : ''}${theDate.getDate()}`
+  } catch (e) {
+    return ''
+  }
+}
