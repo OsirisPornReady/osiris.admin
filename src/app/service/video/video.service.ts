@@ -40,18 +40,18 @@ export class VideoService {
   }
 
   isSerialNumberExist(serialNumber: string) {
-    let url = `api/video/isSerialNumberExist/${serialNumber}`;
+    let url = `api/video/is_serial_number_exist/${serialNumber}`;
     return lastValueFrom(this.http.get(url));
   }
 
   switchVideoSubscription(id: number) {
-    let url = `api/video/switchVideoSubscription/${id}`;
+    let url = `api/video/switch_video_subscription/${id}`;
     return lastValueFrom(this.http.get(url));
   }
 
   getSelectAll(field = ''): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `video/getSelectAll`;
+    let url = `video/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {

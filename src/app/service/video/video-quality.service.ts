@@ -31,7 +31,7 @@ export class VideoQualityService {
 
   getSelectAll(field = 'quality'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `api/video_quality/getSelectAll`;
+    let url = `api/video_quality/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {
@@ -47,7 +47,7 @@ export class VideoQualityService {
   }
 
   getDict() {
-    let url = `api/video_quality/getSelectAll`;
+    let url = `api/video_quality/get_select_all`;
     let result: any = {};
     let ret = this.http.get(url).pipe(
       map(res => {

@@ -31,7 +31,7 @@ export class VideoTagService {
 
   getSelectAll(field = 'tag'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `api/video_tag/getSelectAll`;
+    let url = `api/video_tag/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {

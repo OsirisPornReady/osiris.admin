@@ -31,7 +31,7 @@ export class VideoTypeService {
 
   getSelectAll(field = 'type'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `api/video_type/getSelectAll`;
+    let url = `api/video_type/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {

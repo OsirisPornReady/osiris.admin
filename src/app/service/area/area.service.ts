@@ -31,7 +31,7 @@ export class AreaService {
 
   getSelectAll(field = 'area'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `api/area/getSelectAll`;
+    let url = `api/area/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {

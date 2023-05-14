@@ -31,7 +31,7 @@ export class CastService {
 
   getSelectAll(field = 'name'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `api/cast/getSelectAll`;
+    let url = `api/cast/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {
