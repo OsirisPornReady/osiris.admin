@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage } from '@delon/abc/st';
+import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage, STMultiSort } from '@delon/abc/st';
 import { SFSchema, SFUISchema } from '@delon/form';
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -22,7 +22,7 @@ import { lastValueFrom } from "rxjs";
   styleUrls: ['./video-list.component.less']
 })
 export class VideoManageVideoListComponent implements OnInit {
-  url = `/api/video/get_by_page?sort=publishTime desc`;
+  url = `/api/video/get_by_page`; //?sort=publishTime desc
 
   page: STPage = {
     showSize: true,
@@ -98,6 +98,9 @@ export class VideoManageVideoListComponent implements OnInit {
     '4': { text: '默认', color: '' },
     '5': { text: '警告', color: 'orange' },
   };
+  multiSort: STMultiSort = {
+    arrayParam: true
+  }
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     { title: 'ID', index: 'id', type: 'checkbox', iif: () => this.isOpenMultiSelect },
@@ -105,13 +108,15 @@ export class VideoManageVideoListComponent implements OnInit {
     { title: '标题', index: 'title', width: 550 },
     {
       title: '番号',
+      index: 'serialNumber',
       width: 150,
       format: (item, col, index) => {
         return item.existSerialNumber ? item.serialNumber : '-';
       },
-      className: 'text-center'
+      className: 'text-center',
+      sort: true
     },
-    { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime' },
+    { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime', sort: true },
     { title: '资源状态', render: 'customVideoStatus', className: 'text-center' },
     { title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center' },
     { title: '质量', render: 'customVideoQuality', className: 'text-center' },
@@ -158,6 +163,8 @@ export class VideoManageVideoListComponent implements OnInit {
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
   crawlType: any= null;
+  defaultSort: any = null;
+  defaultSortOptions: any[] = [];
 
   constructor(
     private http: _HttpClient,
@@ -178,6 +185,12 @@ export class VideoManageVideoListComponent implements OnInit {
     this.isAutoCreate = this.commonService.isAutoCreate;
     this.isEditMode = this.commonService.isEditMode;
     this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
+    this.defaultSortOptions = [
+      { label: '更新时间倒序', value: { defaultSort: 'updateTime.descend' } },
+      { label: '更新时间顺序', value: { defaultSort: 'updateTime.ascend' } },
+      { label: '添加时间倒序', value: { defaultSort: 'addTime.descend' } },
+      { label: '添加时间顺序', value: { defaultSort: 'addTime.ascend' } },
+    ]
     try {
       let res = (await this.videoQualityService.getDict()) || {};
       if (res) {

@@ -20,6 +20,7 @@
                    [nzDisabled]="!isEditMode"
                    (ngModelChange)="switchMultiSelect()"
                    class="mr-md"></nz-switch>
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="列表默认排序" [(ngModel)]="defaultSort" [nzOptions]="defaultSortOptions" (ngModelChange)="st.reset(defaultSort)" class="width-md"></nz-select>
       </div>
       <div>
         <div *ngIf="!isAutoCreate">
@@ -48,7 +49,7 @@
       </div>
     </div>
   </div>
-  <st #st [data]="url" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
+  <st #st [data]="url" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }" [multiSort]="multiSort">
     <ng-template st-row="customVideoStatus" let-item>
       <nz-badge [nzStatus]="statusBADGE[getVideoStatus(item)].color" [nzText]="statusBADGE[getVideoStatus(item)].text"></nz-badge>
     </ng-template>
