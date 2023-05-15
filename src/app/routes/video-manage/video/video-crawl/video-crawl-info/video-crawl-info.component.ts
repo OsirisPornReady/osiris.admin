@@ -193,8 +193,16 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
     }
   }
 
-  ngAfterViewInit() {
-
+  async ngAfterViewInit() {
+    try {
+      if (this.i) {
+        let title = this.i.title;
+        let isTitleExist: boolean = await this.videoService.isTitleExist(title);
+        if (isTitleExist) {
+          this.msgSrv.warning('此标题已存在');
+        }
+      }
+    } catch (e) {}
   }
 
   async save(value: any) {
