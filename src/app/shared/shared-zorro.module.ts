@@ -29,6 +29,7 @@ import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzRateModule } from 'ng-zorro-antd/rate';
 
 export const SHARED_ZORRO_MODULES = [
   NzFormModule,
@@ -61,5 +62,6 @@ export const SHARED_ZORRO_MODULES = [
   NzDescriptionsModule,
   NzDividerModule,
   NzEmptyModule,
-  NzSkeletonModule
+  NzSkeletonModule,
+  NzRateModule
 ];

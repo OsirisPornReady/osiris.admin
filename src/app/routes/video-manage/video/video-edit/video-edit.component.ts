@@ -33,7 +33,9 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       crawlKey: { type: 'string', title: '导入关键字' },
       crawlButton: { type: 'string', title: '导入' },
       title: { type: 'string', title: '标题' },
+      score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
       onStorage: { type: 'boolean', title: '入库情况' },
+      videoSrc: { type: 'string', title: '视频地址' },
       existSerialNumber: { type: 'boolean', title: '有无番号' },
       serialNumber: { type: 'string', title: '番号', maxLength: 15 },
       videoType: { type: 'string', title: '类型' },
@@ -207,6 +209,18 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     },
     $addTime: {
       widget: 'date'
+    },
+    $videoSrc: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入视频地址(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $score: {
+      // widget: 'custom'
+      widget: 'rate',
+      text: ` {{value}} 分`
     }
   };
 
