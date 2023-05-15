@@ -22,7 +22,7 @@ module.exports = {
   },
 
   '/crawl': { //爬虫服务器地址
-    target: 'http://localhost:8100/',
+    target: 'http://localhost:9003/',
     secure: false, // Ignore invalid SSL certificates
     changeOrigin: true
   },
