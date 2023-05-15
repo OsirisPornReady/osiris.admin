@@ -20,7 +20,7 @@
                    [nzDisabled]="!isEditMode"
                    (ngModelChange)="switchMultiSelect()"
                    class="mr-md"></nz-switch>
-        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="列表默认排序" [(ngModel)]="defaultSort" [nzOptions]="defaultSortOptions" (ngModelChange)="st.reset(defaultSort)" class="width-md"></nz-select>
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="列表默认排序" [(ngModel)]="defaultSort" [nzOptions]="defaultSortOptions" (ngModelChange)="selectDefaultSort()" class="width-md"></nz-select>
       </div>
       <div>
         <div *ngIf="!isAutoCreate">
@@ -28,7 +28,7 @@
           <button nz-button nzType="default" nzDanger (click)="bulkDelete(st._data)" *ngIf="isOpenMultiSelect">批量删除</button>
         </div>
         <div *ngIf="isAutoCreate">
-          <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" [(ngModel)]="crawlType" [nzOptions]="crawlTypeOptions" class="width-md">
+          <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlType" [nzOptions]="crawlTypeOptions">
 <!--            <nz-option [nzLabel]="option.label" [nzValue]="option.value" *ngFor="let option of crawlTypeOptions"></nz-option>-->
           </nz-select>
           <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoCreate()"/>

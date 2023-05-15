@@ -186,10 +186,10 @@ export class VideoManageVideoListComponent implements OnInit {
     this.isEditMode = this.commonService.isEditMode;
     this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
     this.defaultSortOptions = [
-      { label: '更新时间倒序', value: { defaultSort: 'updateTime.descend' } },
-      { label: '更新时间顺序', value: { defaultSort: 'updateTime.ascend' } },
-      { label: '添加时间倒序', value: { defaultSort: 'addTime.descend' } },
-      { label: '添加时间顺序', value: { defaultSort: 'addTime.ascend' } },
+      { label: '更新时间倒序', value: 'updateTime.descend' },
+      { label: '更新时间顺序', value: 'updateTime.ascend'  },
+      { label: '添加时间倒序', value: 'addTime.descend' },
+      { label: '添加时间顺序', value: 'addTime.ascend' },
     ]
     try {
       let res = (await this.videoQualityService.getDict()) || {};
@@ -309,6 +309,7 @@ export class VideoManageVideoListComponent implements OnInit {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlType')) {
+      console.log(value.crawlType)
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
         if (res.state == 'ok') {
           this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, automated: true, automatedData: res.data }).subscribe(res => {
@@ -324,14 +325,15 @@ export class VideoManageVideoListComponent implements OnInit {
   }
 
   autoCreate() {
-    let crawlKey = this.crawlKey.trim(); //涉及输入框的要做trim处理
-    if (!crawlKey) {
+    if (!this.crawlType) {
+      this.msgSrv.info('爬虫类型未设置');
+    } else if (!this.crawlKey.trim()) { //涉及输入框的要做trim处理
       this.msgSrv.info('爬虫关键字为空');
     } else {
       let value = {
         id: 0,
         crawlType: this.crawlType,
-        crawlKey
+        crawlKey: this.crawlKey
       }
       this.crawlInfo(value)
     }
@@ -350,6 +352,10 @@ export class VideoManageVideoListComponent implements OnInit {
 
       }
     });
+  }
+
+  selectDefaultSort() { // sort接口设计的是传null值就不执行
+    this.st.reload({ defaultSort: this.defaultSort }, { merge: true, toTop: false })
   }
 
 }
