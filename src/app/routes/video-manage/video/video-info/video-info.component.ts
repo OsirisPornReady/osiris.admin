@@ -157,6 +157,9 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
     try {
       this.i = await this.videoService.getById(this.record.id)
 
+
+      this.dataSourceUrl = this.i.dataSourceUrl
+
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)

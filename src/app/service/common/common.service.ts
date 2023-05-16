@@ -8,7 +8,7 @@ export class CommonService {
 
   NSFW_mode: boolean = true;
   searchField: number = 0;
-  isEditMode: boolean = true;
+  isEditMode: boolean = false;
   isOpenMultiSelect: boolean = false;
   isAutoCreate: boolean = true;
   isAutoFill: boolean = true;

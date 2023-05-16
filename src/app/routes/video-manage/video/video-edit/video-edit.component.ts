@@ -60,6 +60,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       previewImageSrcList: { type: 'string', title: '预览图' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
+      dataSourceUrl: { type: 'string', title: '数据源' },
+      btdigUrl: { type: 'string', title: 'btdig' },
     },
     required: ['title']
   };
@@ -151,7 +153,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       },
       widget: 'select',
       allowClear: true,
-      placeholder: '请选择视频分辨率',
+      placeholder: '请选择导入数据源',
       width: 400,
       asyncData: () => this.crawlTypeService.getSelectAll()
     },

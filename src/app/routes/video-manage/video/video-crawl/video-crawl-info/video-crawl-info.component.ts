@@ -200,6 +200,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
           return;
       }
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
+      this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
@@ -234,20 +235,25 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   }
 
   async save(value: any) {
-    try {
-      let isTitleExist: boolean = await this.videoService.isTitleExist(this.i.title);
-      if (isTitleExist) {
-        this.nzModal.confirm({
-          nzTitle: '<i>此标题已存在</i>',
-          nzContent: '<b>标题已存在,是否继续提交?</b>',
-          nzOnOk: () => {
-            this.drawer.close({ state: 'ok', data: value });
-          }
-        });
-      } else {
-        this.drawer.close({ state: 'ok', data: value });
-      }
-    } catch (error) {}
+    if (this.record.id == 0) {  //只在新建的时候检验标题是否重复
+      try {
+        let isTitleExist: boolean = await this.videoService.isTitleExist(this.i.title);
+        if (isTitleExist) {
+          this.nzModal.confirm({
+            nzTitle: '<i>此标题已存在</i>',
+            nzContent: '<b>标题已存在,是否继续提交?</b>',
+            nzCentered: true,
+            nzOnOk: () => {
+              this.drawer.close({ state: 'ok', data: value });
+            }
+          });
+        } else {
+          this.drawer.close({ state: 'ok', data: value });
+        }
+      } catch (error) {}
+    } else {
+      this.drawer.close({ state: 'ok', data: value });
+    }
   }
 
   close(): void {
@@ -268,7 +274,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     if (this.commonService.socket$) {
       this.commonService.socket$.unsubscribe();
     }
-    this.msgSrv.remove(this.crawlLoadingMsgId);
+    this.msgSrv.remove('');
   }
 
 

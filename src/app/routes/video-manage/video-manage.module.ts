@@ -13,6 +13,7 @@ import { VideoManageVideoTypeEditComponent } from './video-type/video-type-edit/
 import { VideoManageVideoQualityListComponent } from './video-quality/video-quality-list/video-quality-list.component';
 import { VideoManageVideoQualityEditComponent } from './video-quality/video-quality-edit/video-quality-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from './video/video-crawl/video-crawl-info/video-crawl-info.component';
+import { VideoManageVideoCrawlConfigComponent } from './video/video-crawl/video-crawl-config/video-crawl-config.component';
 import { VideoManageVideoInfoComponent } from './video/video-info/video-info.component';
 
 const COMPONENTS: Type<void>[] = [
@@ -28,6 +29,7 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoTypeEditComponent,
   VideoManageVideoQualityEditComponent,
   VideoManageVideoCrawlInfoComponent,
+  VideoManageVideoCrawlConfigComponent,
   VideoManageVideoInfoComponent
 ];
 

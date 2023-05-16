@@ -11,10 +11,12 @@ import { CommonService } from '../../../../service/common/common.service';
 import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
+import { VideoManageVideoCrawlConfigComponent } from '../video-crawl/video-crawl-config/video-crawl-config.component';
 import { VideoManageVideoInfoComponent } from "../video-info/video-info.component";
 
 import { dateCompare } from "../../../../shared/utils/dateUtils";
 import { lastValueFrom } from "rxjs";
+import {VideoManageVideoTagEditComponent} from "../../video-tag/video-tag-edit/video-tag-edit.component";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -130,6 +132,14 @@ export class VideoManageVideoListComponent implements OnInit {
           click: (item: any) => {
             // `/form/${item.id}`
             this.checkVideoInfo(item.id)
+          },
+          iif: () => !this.isEditMode
+        },
+        {
+          text: '配置',
+          click: (item: any) => {
+            // `/form/${item.id}`
+            this.editCrawlConfig(item.id)
           },
           iif: () => !this.isEditMode
         },
@@ -357,6 +367,14 @@ export class VideoManageVideoListComponent implements OnInit {
 
   selectDefaultSort() { // sort接口设计的是传null值就不执行
     this.st.reload({ defaultSort: this.defaultSort }, { merge: true, toTop: false })
+  }
+
+  editCrawlConfig(id: number) {
+    this.modal.createStatic(VideoManageVideoCrawlConfigComponent, { record: { id } }).subscribe(res => {
+      if (res == 'ok') {
+        this.st.reload(null, { toTop: false });
+      }
+    });
   }
 
 }
