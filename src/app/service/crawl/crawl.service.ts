@@ -8,9 +8,14 @@ export class CrawlService {
 
   constructor(private http: _HttpClient) { }
 
-  crawlJavBusVideo(serialNumber: string) {
-    let url = `crawl/video/jav_bus/${serialNumber}`;
-    return lastValueFrom(this.http.get(url));
+  // crawlJavBusVideo(serialNumber: string) {
+  //   let url = `crawl/video/jav_bus/${serialNumber}`;
+  //   return lastValueFrom(this.http.get(url));
+  // }
+
+  crawlJavBusVideo(entity: any) {
+    let url = `crawl/video/jav_bus`;
+    return lastValueFrom(this.http.post(entity));
   }
 
   crawlBrazzersVideo(entity: any) {

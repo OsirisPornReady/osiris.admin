@@ -173,7 +173,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
           this.msgSrv.error('未指定数据源,请关闭页面');
           return;
         case 1:
-          this.i = (await this.crawlService.crawlJavBusVideo(this.commonService.recognizeSerialNumber(this.record.crawlKey))) || {};
+          this.i = (await this.crawlService.crawlJavBusVideo( { crawlKey: this.record.crawlKey, downloadImage: false })) || {};
           break;
         case 2:
           this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: false })) || {};
