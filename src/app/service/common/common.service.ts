@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
 import { lastValueFrom, map, Observable } from 'rxjs';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
+import { environment } from "@env/environment";
 
 @Injectable({ providedIn: 'root' })
 export class CommonService {
@@ -61,7 +62,7 @@ export class CommonService {
   //   return socket$
   // }
 
-  createWebSocketSubject(wsUrl:string = 'ws://localhost:8003/crawl/imageDownloadSocket') {
+  createWebSocketSubject(wsUrl:string = environment['imageSocketUrl']) {
       this.socket$ = webSocket({
         url: wsUrl,
       });

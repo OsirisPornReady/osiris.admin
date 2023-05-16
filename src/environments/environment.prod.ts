@@ -8,5 +8,6 @@ export const environment = {
     baseUrl: './',
     refreshTokenEnabled: true,
     refreshTokenType: 'auth-refresh'
-  }
+  },
+  imageSocketUrl: 'ws://localhost:9003/crawl/imageDownloadSocket'
 } as Environment;
