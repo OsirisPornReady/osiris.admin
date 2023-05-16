@@ -176,10 +176,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
           this.i = (await this.crawlService.crawlJavBusVideo(this.commonService.recognizeSerialNumber(this.record.crawlKey))) || {};
           break;
         case 2:
-          this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey })) || {};
+          this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: false })) || {};
           break;
         case 3:
-          this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey })) || {};
+          this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey, downloadImage: false })) || {};
           break;
         default:
           this.i = null;
