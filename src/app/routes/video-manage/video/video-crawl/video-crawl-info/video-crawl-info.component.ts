@@ -27,6 +27,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       serialNumber: { type: 'string', title: '番号' },
       title: { type:'string', title: '标题' },
       videoType: { type: 'string', title: '类型' },
+      videoSrc: { type: 'string', title: '视频地址' },
       publishTime: { type:'string', title: '发布时间', format: 'date' },
       duration: { type:'number', title: '时长' },
       director: { type:'string', title: '导演' },
@@ -36,6 +37,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
       series: { type:'string', title: '系列' },
       starsRaw: { type: 'string', title: '演员' },
       tagsRaw: { type: 'string', title: '标签' },
+      coverSrc: { type: 'string', title: '封面' },
+      previewImageSrcList: { type: 'string', title: '预览图' },
+      localCoverSrc: { type: 'string', title: '本地封面' },
+      localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
       description: { type: 'string', title: '描述' }
     },
     required: ['title'],
@@ -103,6 +108,27 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy, Af
     $description: {
       widget: 'textarea',
       autosize: { minRows: 3, maxRows: 6 }
+    },
+    $videoSrc: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入视频地址(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $previewImageSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入预览图(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $localPreviewImageSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入本地预览图(可多个值)',
+      mode: 'tags',
+      default: null,
     },
   };
 

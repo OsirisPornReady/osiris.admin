@@ -186,10 +186,14 @@ export class VideoManageVideoListComponent implements OnInit {
     this.isEditMode = this.commonService.isEditMode;
     this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
     this.defaultSortOptions = [
-      { label: '更新时间倒序', value: 'updateTime.descend' },
-      { label: '更新时间顺序', value: 'updateTime.ascend'  },
-      { label: '添加时间倒序', value: 'addTime.descend' },
-      { label: '添加时间顺序', value: 'addTime.ascend' },
+      { label: '标题(asc)', value: 'title.ascend' },
+      { label: '番号(asc)', value: 'serialNumber.ascend' },
+      { label: '更新时间(desc)', value: 'updateTime.descend' },
+      { label: '更新时间(asc)', value: 'updateTime.ascend'  },
+      { label: '添加时间(desc)', value: 'addTime.descend' },
+      { label: '添加时间(asc)', value: 'addTime.ascend' },
+      { label: '发行时间(desc)', value: 'publishTime.descend' },
+      { label: '发行时间(asc)', value: 'publishTime.ascend' },
     ]
     try {
       let res = (await this.videoQualityService.getDict()) || {};
