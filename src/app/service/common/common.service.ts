@@ -61,8 +61,10 @@ export class CommonService {
   //   return socket$
   // }
 
-  createWebSocketSubject(wsUrl:string = 'ws://localhost:8100/socketTest') {
-    this.socket$ = webSocket(wsUrl);
+  createWebSocketSubject(wsUrl:string = 'ws://localhost:8003/crawl/imageDownloadSocket') {
+      this.socket$ = webSocket({
+        url: wsUrl,
+      });
   }
 
 }

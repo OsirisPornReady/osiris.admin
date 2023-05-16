@@ -160,13 +160,9 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.LocalPreviewImageSrcList) ? this.i.LocalPreviewImageSrcList : []
+      this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
 
-      this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == 'Enter') {
 
-        }
-      })
       this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
         if (event.key == ' ') {
           this.close();

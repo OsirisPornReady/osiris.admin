@@ -203,14 +203,6 @@ export class VideoManageVideoListComponent implements OnInit {
         this.qualityTAG = res;
       }
       this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
-      // this.commonService.createWebSocketSubject()
-      // this.commonService.socket$.subscribe(res => {
-      //   console.log('接收到了消息', res)
-      // })
-      // setTimeout(() => {
-      //   console.log('断开连接')
-      //   this.commonService.socket$.unsubscribe()
-      // }, 5000)
     } catch (e) {
       console.error(e);
     }

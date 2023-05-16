@@ -3,6 +3,8 @@ import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
 import { _HttpClient } from '@delon/theme';
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { fromEvent } from "rxjs";
 
 import { VideoTagService } from '../../../../../service/video/video-tag.service';
@@ -133,6 +135,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   };
 
   protected readonly dateStringFormatter = dateStringFormatter;
+  crawlLoadingMsgId = ''
   coverSrc: string = ''
   javUrl: string = ''
   btdigUrl: string = ''
@@ -150,28 +153,35 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     private videoTagService: VideoTagService,
     private videoService: VideoService,
     private commonService: CommonService,
-    private crawlService: CrawlService
+    private crawlService: CrawlService,
+    private ntfService: NzNotificationService,
+    private nzModal: NzModalService
   ) {}
 
   async ngOnInit() {
-    let crawlLoadingMsgId = '';
     if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlType')) {
       if (!(typeof this.record.crawlKey == 'string' && Number.isFinite(this.record.crawlType))) { //直接在前端进行类型检查吧
         this.msgSrv.error('爬虫参数类型错误,请关闭页面');
         console.log(this.record)
+        this.close();
         return;
       }
     } else {
       this.msgSrv.error('未正确配置爬虫参数,请关闭页面');
+      this.close();
       return;
     }
     try {
+      this.commonService.createWebSocketSubject()
+      this.commonService.socket$.subscribe((res: any) => { //这里只要subscribe就行,有错误处理函数
+        this.ntfService.success('图片下载成功', res.message)
+      })
       this.record.crawlKey = this.record.crawlKey.trim();
-      crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
+      this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
       switch (this.record.crawlType) {
         case 0:
           this.i = null; //js中空对象并不为假值,置假应该用null
-          this.msgSrv.remove(crawlLoadingMsgId);
+          this.msgSrv.remove(this.crawlLoadingMsgId);
           this.msgSrv.error('未指定数据源,请关闭页面');
           return;
         case 1:
@@ -185,21 +195,22 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
           break;
         default:
           this.i = null;
-          this.msgSrv.remove(crawlLoadingMsgId);
+          this.msgSrv.remove(this.crawlLoadingMsgId);
           this.msgSrv.error('无法识别数据源,请关闭页面');
           return;
       }
-      await this.isTitleExist();
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.coverSrc = this.i.coverSrc;
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.previewImageSrcList) ? this.i.previewImageSrcList : []
+      this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
 
-      this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
         if (event.key == 'Enter') {
-          this.save(this.sf.value);
+          try {
+            this.save(this.sf.value);
+          } catch (e) {}
         }
       })
       this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
@@ -212,29 +223,30 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
           this.commonService.openNewTab(this.i.btdigUrl);
         }
       })
-      this.msgSrv.remove(crawlLoadingMsgId);
+      this.msgSrv.remove(this.crawlLoadingMsgId);
       this.msgSrv.success('信息爬取成功');
     } catch (error) {
       console.error(error)
-      this.msgSrv.remove(crawlLoadingMsgId);
+      this.msgSrv.remove(this.crawlLoadingMsgId);
       this.msgSrv.error('信息爬取失败');
       this.close();
     }
   }
 
-  async isTitleExist() {
-    try {
-      let title = this.i.title;
-      let isTitleExist: boolean = await this.videoService.isTitleExist(title);
-      if (isTitleExist) {
-        this.msgSrv.warning('此标题已存在');
-      }
-    } catch (e) {}
-  }
-
   async save(value: any) {
     try {
-      this.drawer.close({ state: 'ok', data: value });
+      let isTitleExist: boolean = await this.videoService.isTitleExist(this.i.title);
+      if (isTitleExist) {
+        this.nzModal.confirm({
+          nzTitle: '<i>此标题已存在</i>',
+          nzContent: '<b>标题已存在,是否继续提交?</b>',
+          nzOnOk: () => {
+            this.drawer.close({ state: 'ok', data: value });
+          }
+        });
+      } else {
+        this.drawer.close({ state: 'ok', data: value });
+      }
     } catch (error) {}
   }
 
@@ -253,6 +265,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     if (this.dKeyDownSubscription) {
       this.dKeyDownSubscription.unsubscribe();
     }
+    if (this.commonService.socket$) {
+      this.commonService.socket$.unsubscribe();
+    }
+    this.msgSrv.remove(this.crawlLoadingMsgId);
   }
 
 
