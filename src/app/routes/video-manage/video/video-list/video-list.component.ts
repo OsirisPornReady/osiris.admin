@@ -165,6 +165,7 @@ export class VideoManageVideoListComponent implements OnInit {
   crawlType: any= null;
   defaultSort: any = null;
   defaultSortOptions: any[] = [];
+  isDownloadImage: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -185,6 +186,7 @@ export class VideoManageVideoListComponent implements OnInit {
     this.isAutoCreate = this.commonService.isAutoCreate;
     this.isEditMode = this.commonService.isEditMode;
     this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
+    this.isDownloadImage = this.commonService.isDownloadImage;
     this.defaultSortOptions = [
       { label: '标题(asc)', value: 'title.ascend' },
       { label: '番号(asc)', value: 'serialNumber.ascend' },
@@ -255,6 +257,10 @@ export class VideoManageVideoListComponent implements OnInit {
     this.commonService.isAutoSubmit = this.isAutoSubmit;
   }
 
+  switchDownloadImage() {
+    this.commonService.isDownloadImage = this.isDownloadImage;
+  }
+
   async bulkDelete(_data: any) {
     // console.log('_data', _data)
     try {
@@ -313,7 +319,6 @@ export class VideoManageVideoListComponent implements OnInit {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlType')) {
-      console.log(value.crawlType)
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
         if (res.state == 'ok') {
           this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, automated: true, automatedData: res.data }).subscribe(res => {

@@ -12,8 +12,8 @@
       <ng-template #spaceSplit>
         <nz-divider nzType="vertical"></nz-divider>
       </ng-template>
-      <a *nzSpaceItem [href]="javUrl" target="_blank">
-        javbus
+      <a *nzSpaceItem [href]="dataSourceUrl" target="_blank">
+        数据源
         <span nz-icon nzType="share-alt" nzTheme="outline"></span>
       </a>
       <a *nzSpaceItem [href]="nyaaUrl" target="_blank">
@@ -29,7 +29,7 @@
   <nz-card nzHoverable class="mt-md mb-lg">
     <div class="d-flex justify-content-between align-items-start">
       <div>
-        <img nz-image width="824" [nzSrc]="coverSrc" alt=""/>
+        <img nz-image width="824" [nzSrc]="this.i.localCoverSrc" alt=""/>
       </div>
       <div style="width: 600px;">
         <div>

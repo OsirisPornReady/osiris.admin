@@ -348,7 +348,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   autoFillForm() {
     if (!this.commonService.isAutoFill) { return; }
     this.automatedMsgId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
-    let { stars, coverSrc, ...fillData } = this.automatedData;
+    let { ...fillData } = this.automatedData;
     Object.keys(fillData).forEach((key: string) => {
       try {
         this.safeSF.setValue(`/${key}`, fillData[key])

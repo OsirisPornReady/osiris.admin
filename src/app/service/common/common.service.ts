@@ -14,6 +14,8 @@ export class CommonService {
   isAutoFill: boolean = true;
   isAutoSubmit: boolean = true;
   crawlType: number = 0;
+  isDownloadImage: boolean = true;
+
   public socket$!: WebSocketSubject<any>;
 
   constructor(private http: _HttpClient) {}

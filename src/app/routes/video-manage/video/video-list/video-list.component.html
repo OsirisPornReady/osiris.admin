@@ -50,6 +50,11 @@
                      [nzUnCheckedChildren]="'需要确认'"
                      (ngModelChange)="switchAutoSubmit()"
                      class="ml-md"></nz-switch>
+          <nz-switch [(ngModel)]="isDownloadImage"
+                     [nzCheckedChildren]="'下载图片'"
+                     [nzUnCheckedChildren]="'不下载图片'"
+                     (ngModelChange)="switchDownloadImage()"
+                     class="ml-md"></nz-switch>
         </div>
       </div>
     </div>
