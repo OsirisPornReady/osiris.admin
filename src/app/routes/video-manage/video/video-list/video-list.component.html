@@ -1,6 +1,6 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
-  <sf mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
+  <sf mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
   <div nz-row class="my-md">
     <div nz-col [nzXs]="24" [nzLg]="24">
       <div class="mb-md d-flex justify-content-start align-items-center">
