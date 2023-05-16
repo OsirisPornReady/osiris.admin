@@ -55,7 +55,11 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       tags: { type: 'string', title: '分类标签' },
       starsRaw: { type: 'string', title: '演员' },
       tagsRaw: { type: 'string', title: '标签' },
-      description: { type: 'string', title: '描述' }
+      description: { type: 'string', title: '描述' },
+      coverSrc: { type: 'string', title: '封面' },
+      previewImageSrcList: { type: 'string', title: '预览图' },
+      localCoverSrc: { type: 'string', title: '本地封面' },
+      localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
     },
     required: ['title']
   };
@@ -221,7 +225,21 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       // widget: 'custom'
       widget: 'rate',
       text: ` {{value}} 分`
-    }
+    },
+    $previewImageSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入预览图(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $localPreviewImageSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入本地预览图(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
   };
 
   automatedMsgId: string = '';
