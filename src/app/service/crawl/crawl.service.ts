@@ -14,7 +14,7 @@ export class CrawlService {
   // }
 
   crawlJavBusVideo(entity: any) {
-    let url = `crawl/video/jav_bus`;
+    let url = `crawl/video/javbus`;
     return lastValueFrom(this.http.post(entity));
   }
 
