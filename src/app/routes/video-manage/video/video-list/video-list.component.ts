@@ -372,7 +372,7 @@ export class VideoManageVideoListComponent implements OnInit {
   editCrawlConfig(id: number) {
     this.modal.createStatic(VideoManageVideoCrawlConfigComponent, { record: { id } }).subscribe(res => {
       if (res == 'ok') {
-        this.st.reload(null, { toTop: false });
+        this.st.reload(null, { merge: true, toTop: false });
       }
     });
   }
