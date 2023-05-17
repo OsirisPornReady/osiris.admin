@@ -141,7 +141,7 @@ export class VideoManageVideoListComponent implements OnInit {
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     { title: 'ID', index: 'id', type: 'checkbox', iif: () => this.isOpenMultiSelect },
-    { title: '关注', width: 70, render: 'customVideoOnSubscription', className: 'text-center' },
+    // { title: '关注', width: 70, render: 'customVideoOnSubscription', className: 'text-center' },
     { title: '标题', index: 'title', width: 550 },
     {
       title: '番号',

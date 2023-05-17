@@ -71,25 +71,25 @@
     </ng-template>
 
     <ng-template st-row="customVideoInfoCrawlButton" let-item>
-      <button *ngIf="item.canCrawl" nz-button type="button" nzType="default" nzShape="round" (click)="crawlInfo(item)">
+      <button *ngIf="item.canCrawl" nz-button type="button" nzType="default" nzShape="round" [nzDanger]="!(item.crawlApiUrl && item.crawlKey)" (click)="crawlInfo(item)">
         <span nz-icon nzType="api" nzTheme="outline"></span>
       </button>
       <span *ngIf="!item.canCrawl" nz-typography nzDisabled>未配置</span>
     </ng-template>
 
-    <ng-template st-row="customVideoOnSubscription" let-item>
-      <span nz-icon
-            nzType="check-circle"
-            nzTheme="twotone"
-            nzTwotoneColor="#52c41a"
-            [ngClass]="['custom-twotone-checked-icon']"
-            [ngStyle]="{
-              'opacity': (item.onSubscription ? '1' : '0')
-            }"></span>
-    </ng-template>
+<!--    <ng-template st-row="customVideoOnSubscription" let-item>-->
+<!--      <span nz-icon-->
+<!--            nzType="check-circle"-->
+<!--            nzTheme="twotone"-->
+<!--            nzTwotoneColor="#52c41a"-->
+<!--            [ngClass]="['custom-twotone-checked-icon']"-->
+<!--            [ngStyle]="{-->
+<!--              'opacity': (item.onSubscription ? '1' : '0')-->
+<!--            }"></span>-->
+<!--    </ng-template>-->
 
     <ng-template st-row="customSwitchVideoSubscription" let-item>
-      <button nz-button type="button" nzType="default" nzShape="circle" (click)="switchVideoSubscription(item)">
+      <button nz-button type="button" [nzType]="item.onSubscription ? 'primary' : 'default'" nzShape="circle" (click)="switchVideoSubscription(item)">
         <span  nz-icon nzType="bell" nzTheme="outline"></span>
       </button>
     </ng-template>

@@ -22,7 +22,7 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
       crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
     },
-    required: ['crawlKey', 'crawlType'],
+    required: ['crawlKey', 'crawlApiUrl'],
   };
   ui: SFUISchema = {
     '*': {
@@ -66,11 +66,9 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
     if (this.record.id > 0) {
       this.title = '修改数据源配置';
       this.i = (await this.videoService.getById(this.record.id)) || {};
-      if (this.i.videoType == 2 && this.i.existSerialNumber && this.i.serialNumber) {
-        this.i.canCrawl = true
-        this.i.crawlType = 1
-        this.i.crawlKey = this.i.serialNumber
-      }
+      setTimeout(() => {
+        this.autoConfigJav()
+      }, 500)
     } else {
       this.title = '新增数据源配置';
       this.i = {};
@@ -92,4 +90,17 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
   close(): void {
     this.modal.destroy();
   }
+
+  autoConfigJav() {
+    if (this.i.videoType == 2 && this.i.existSerialNumber && this.i.serialNumber) {
+      try {
+        this.sf.setValue('/canCrawl', true)
+        this.sf.setValue('/crawlApiUrl', `crawl/video/javbus`)
+        this.sf.setValue('/crawlKey', this.i.serialNumber)
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
+
 }
