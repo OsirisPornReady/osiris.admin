@@ -172,7 +172,7 @@ export class VideoManageVideoListComponent implements OnInit {
   isAutoSubmit: boolean = false;
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
-  crawlType: any= null;
+  crawlApiUrl: any= null;
   defaultSort: any = null;
   defaultSortOptions: any[] = [];
   isDownloadImage: boolean = false;
@@ -320,7 +320,8 @@ export class VideoManageVideoListComponent implements OnInit {
   }
 
   crawlInfo(value: any) {
-    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlType')) {
+    console.log(value)
+    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlApiUrl')) {
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
         if (res.state == 'ok') {
           this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, automated: true, automatedData: res.data }).subscribe(res => {
@@ -336,14 +337,14 @@ export class VideoManageVideoListComponent implements OnInit {
   }
 
   autoCreate() {
-    if (!this.crawlType) {
+    if (!this.crawlApiUrl) {
       this.msgSrv.info('爬虫类型未设置');
     } else if (!this.crawlKey.trim()) { //涉及输入框的要做trim处理
       this.msgSrv.info('爬虫关键字为空');
     } else {
       let value = {
         id: 0,
-        crawlType: this.crawlType,
+        crawlApiUrl: this.crawlApiUrl,
         crawlKey: this.crawlKey
       }
       this.crawlInfo(value)

@@ -17,7 +17,8 @@ export class SystemManageCrawlTypeEditComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       name: { type: 'string', title: '名字' },
-      crawlTypeKey: { type: 'number', title: '配置值' },
+      crawlTypeKey: { type: 'number', title: 'Key' },
+      crawlApiUrl: { type: 'string', title: '接口地址' },
       isActive: { type: 'boolean', title: '是否启用' },
     },
     required: ['name', 'crawlTypeKey'],

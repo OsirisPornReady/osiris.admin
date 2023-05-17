@@ -24,8 +24,9 @@ export class SystemManageCrawlTypeListComponent implements OnInit {
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     { title: '名字', index: 'name' },
-    { title: '配置值', index: 'crawlTypeKey' },
-    { title: '是否启用', index: 'isActive' },
+    { title: 'Key', index: 'crawlTypeKey', className: 'text-center' },
+    { title: '接口地址', index: 'crawlApiUrl', className: 'text-center' },
+    { title: '是否启用', index: 'isActive', className: 'text-center' },
     {
       title: '操作',
       buttons: [

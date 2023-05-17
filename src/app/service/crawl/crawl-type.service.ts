@@ -39,7 +39,7 @@ export class CrawlTypeService {
         res.forEach((i: any) => {
           result.push({
             label: i[field],
-            value: i.crawlTypeKey
+            value: i.crawlApiUrl
           });
         });
         return result;

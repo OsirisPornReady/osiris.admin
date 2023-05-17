@@ -33,7 +33,7 @@
           <button nz-button nzType="default" nzDanger (click)="bulkDelete(st._data)" *ngIf="isOpenMultiSelect">批量删除</button>
         </div>
         <div *ngIf="isAutoCreate">
-          <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlType" [nzOptions]="crawlTypeOptions">
+          <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions">
 <!--            <nz-option [nzLabel]="option.label" [nzValue]="option.value" *ngFor="let option of crawlTypeOptions"></nz-option>-->
           </nz-select>
           <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoCreate()"/>

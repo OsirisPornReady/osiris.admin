@@ -28,4 +28,9 @@ export class CrawlService {
     return lastValueFrom(this.http.post(url, entity));
   }
 
+  crawlVideoByUrl(url: string, entity: any) {
+    // let url = `crawl/video/trans_angels`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
 }

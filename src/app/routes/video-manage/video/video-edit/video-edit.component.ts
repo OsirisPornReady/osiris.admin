@@ -29,7 +29,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   schema: SFSchema = {
     properties: {
       canCrawl: { type: 'boolean', title: '是否需要导入' },
-      crawlType: { type: 'string', title: '导入数据源' },
+      // crawlType: { type: 'string', title: '导入数据源' },
+      crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
       crawlButton: { type: 'string', title: '导入' },
       title: { type: 'string', title: '标题' },
@@ -147,7 +148,17 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
         existSerialNumber: val => val
       }
     },
-    $crawlType: {
+    // $crawlType: {
+    //   visibleIf: {
+    //     canCrawl: val => val
+    //   },
+    //   widget: 'select',
+    //   allowClear: true,
+    //   placeholder: '请选择导入数据源',
+    //   width: 400,
+    //   asyncData: () => this.crawlTypeService.getSelectAll()
+    // },
+    $crawlApiUrl: {
       visibleIf: {
         canCrawl: val => val
       },
@@ -322,7 +333,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   crawlInfo(value: any) {
-    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlType')) {
+    if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlType')) {
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
         if (res.state == 'ok') {
           this.automatedData = res.data;

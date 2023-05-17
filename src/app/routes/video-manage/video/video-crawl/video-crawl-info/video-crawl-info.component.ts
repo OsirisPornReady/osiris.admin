@@ -159,8 +159,8 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlType')) {
-      if (!(typeof this.record.crawlKey == 'string' && Number.isFinite(this.record.crawlType))) { //直接在前端进行类型检查吧
+    if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlApiUrl')) {
+      if (!(typeof this.record.crawlKey == 'string' && typeof this.record.crawlApiUrl == 'string' && this.record.crawlApiUrl != '')) { //直接在前端进行类型检查吧
         this.msgSrv.error('爬虫参数类型错误,请关闭页面');
         console.log(this.record)
         this.close();
@@ -178,27 +178,28 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       })
       this.record.crawlKey = this.record.crawlKey.trim();
       this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
-      switch (this.record.crawlType) {
-        case 0:
-          this.i = null; //js中空对象并不为假值,置假应该用null
-          this.msgSrv.remove(this.crawlLoadingMsgId);
-          this.msgSrv.error('未指定数据源,请关闭页面');
-          return;
-        case 1:
-          this.i = (await this.crawlService.crawlJavBusVideo( { crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-          break;
-        case 2:
-          this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-          break;
-        case 3:
-          this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-          break;
-        default:
-          this.i = null;
-          this.msgSrv.remove(this.crawlLoadingMsgId);
-          this.msgSrv.error('无法识别数据源,请关闭页面');
-          return;
-      }
+      // switch (this.record.crawlType) {
+      //   case 0:
+      //     this.i = null; //js中空对象并不为假值,置假应该用null
+      //     this.msgSrv.remove(this.crawlLoadingMsgId);
+      //     this.msgSrv.error('未指定数据源,请关闭页面');
+      //     return;
+      //   case 1:
+      //     this.i = (await this.crawlService.crawlJavBusVideo( { crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+      //     break;
+      //   case 2:
+      //     this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+      //     break;
+      //   case 3:
+      //     this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+      //     break;
+      //   default:
+      //     this.i = null;
+      //     this.msgSrv.remove(this.crawlLoadingMsgId);
+      //     this.msgSrv.error('无法识别数据源,请关闭页面');
+      //     return;
+      // }
+      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;
@@ -224,11 +225,13 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
           this.commonService.openNewTab(this.i.btdigUrl);
         }
       })
-      this.msgSrv.remove(this.crawlLoadingMsgId);
+      // this.msgSrv.remove(this.crawlLoadingMsgId);
+      this.msgSrv.remove('');
       this.msgSrv.success('信息爬取成功');
     } catch (error) {
       console.error(error)
-      this.msgSrv.remove(this.crawlLoadingMsgId);
+      // this.msgSrv.remove(this.crawlLoadingMsgId);
+      this.msgSrv.remove('');
       this.msgSrv.error('信息爬取失败');
       this.close();
     }
