@@ -19,7 +19,7 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       canCrawl: { type: 'boolean', title: '是否需要导入' },
-      crawlType: { type: 'string', title: '导入数据源' },
+      crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
     },
     required: ['crawlKey', 'crawlType'],
@@ -35,7 +35,7 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
       //   this.sf.getProperty('/crawlKey')?.updateFeedback();
       // },
     },
-    $crawlType: {
+    $crawlApiUrl: {
       // visibleIf: {
       //   canCrawl: val => val
       // },

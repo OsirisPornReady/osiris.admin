@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage, STMultiSort } from '@delon/abc/st';
-import { SFSchema, SFUISchema } from '@delon/form';
+import { SFCheckboxWidgetSchema, SFSchema, SFUISchema, SFSchemaEnumType } from '@delon/form';
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -16,7 +16,6 @@ import { VideoManageVideoInfoComponent } from "../video-info/video-info.componen
 
 import { dateCompare } from "../../../../shared/utils/dateUtils";
 import { lastValueFrom } from "rxjs";
-import {VideoManageVideoTagEditComponent} from "../../video-tag/video-tag-edit/video-tag-edit.component";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -32,30 +31,64 @@ export class VideoManageVideoListComponent implements OnInit {
     showQuickJumper: true
   };
   searchParam: any = {
-    searchField: null
+    // searchField: null
   }
   searchSchema: SFSchema = {
     properties: {
       searchField: {
         type: 'string',
-        title: '',
+        title: '搜索字段',
         enum: [
-          { label: '标题', value: 0 },
-          { label: '番号', value: 1 },
-          { label: '发布日期', value: 2 }
+          { label: '标题', value: 'title' },
+          { label: '番号', value: 'serialNumber' },
+          { label: '演员', value: 'starsRaw' },
+          { label: '标签', value: 'tagsRaw' },
+          { label: '发行时间', value: 'publishTimeStart' },
+          { label: '添加时间', value: 'addTimeStart' },
         ],
+        default: ['title']
       },
-      keyword: {
+      title: {
         type: 'string',
-        title: ''
+        title: '标题'
       },
       serialNumber: {
         type: 'string',
-        title: ''
+        title: '番号'
       },
-      publishTime: {
+      starsRaw: {
         type: 'string',
-        title: ''
+        title: '演员'
+      },
+      tagsRaw: {
+        type: 'string',
+        title: '标签'
+      },
+      publishTimeStart: {
+        type: 'string',
+        title: '发行时间',
+        ui: {
+          widget: 'date',
+          rangeMode: 'date',
+          end: 'publishTimeEnd',
+          format: 'yyyy-MM-dd',
+        },
+      },
+      publishTimeEnd: {
+        type: 'string',
+      },
+      addTimeStart: {
+        type: 'string',
+        title: '添加时间',
+        ui: {
+          widget: 'date',
+          rangeMode: 'date',
+          end: 'addTimeEnd',
+          format: 'yyyy-MM-dd',
+        },
+      },
+      addTimeEnd: {
+        type: 'string',
       }
     }
   };
@@ -65,26 +98,28 @@ export class VideoManageVideoListComponent implements OnInit {
       grid: { span: 22 },
     },
     $searchField: {
-      widget: 'select',
-      allowClear: false,
-      placeholder: '选择搜索字段',
-      borderless: true,
+      widget: 'checkbox',
+      span: 6, // 指定每一项 8 个单元的布局
+      checkAll: true,
     },
-    $keyword: {
-      visibleIf: {
-        searchField: val => val == 0
-      },
+    $title: {
+      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('title') : false },
     },
     $serialNumber: {
-      visibleIf: {
-        searchField: val => val == 1
-      },
+      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('serialNumber') : false },
     },
-    $publishTime: {
-      visibleIf: {
-        searchField: val => val == 2
-      },
-    }
+    $starsRaw: {
+      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('starsRaw') : false },
+    },
+    $tagsRaw: {
+      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('tagsRaw') : false },
+    },
+    $publishTimeStart: {
+      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('publishTimeStart') : false },
+    },
+    $addTimeStart: {
+      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('addTimeStart') : false },
+    },
   };
   statusBADGE: STColumnBadge = {
     1: { text: '已入库', color: 'success' },
@@ -190,7 +225,7 @@ export class VideoManageVideoListComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.searchParam.searchField = this.commonService.searchField;
+    // this.searchParam.searchField = this.commonService.searchField;
     this.isAutoFill = this.commonService.isAutoFill;
     this.isAutoSubmit = this.commonService.isAutoSubmit;
     this.isAutoCreate = this.commonService.isAutoCreate;
