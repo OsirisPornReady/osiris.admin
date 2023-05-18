@@ -268,9 +268,6 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     if (this.dKeyDownSubscription) {
       this.dKeyDownSubscription.unsubscribe();
     }
-    if (this.commonService.socket$) {
-      this.commonService.socket$.unsubscribe();
-    }
     this.msgSrv.remove('');
   }
 

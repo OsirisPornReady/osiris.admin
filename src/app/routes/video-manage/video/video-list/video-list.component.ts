@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage, STMultiSort } from '@delon/abc/st';
 import { SFCheckboxWidgetSchema, SFSchema, SFUISchema, SFSchemaEnumType } from '@delon/form';
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
@@ -23,7 +23,7 @@ import { lastValueFrom } from "rxjs";
   templateUrl: './video-list.component.html',
   styleUrls: ['./video-list.component.less']
 })
-export class VideoManageVideoListComponent implements OnInit {
+export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   url = `/api/video/get_by_page`; //?sort=publishTime desc
 
   page: STPage = {
@@ -256,6 +256,12 @@ export class VideoManageVideoListComponent implements OnInit {
       })
     } catch (e) {
       console.error(e);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.commonService.socket$) {
+      this.commonService.socket$.unsubscribe();
     }
   }
 
