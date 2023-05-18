@@ -4,6 +4,7 @@ import { SFCheckboxWidgetSchema, SFSchema, SFUISchema, SFSchemaEnumType } from '
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from "ng-zorro-antd/modal";
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
@@ -221,7 +222,8 @@ export class VideoManageVideoListComponent implements OnInit {
     private crawlTypeService: CrawlTypeService,
     private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
-    private nzModal: NzModalService
+    private nzModal: NzModalService,
+    private ntfService: NzNotificationService,
   ) {}
 
   async ngOnInit() {
@@ -248,6 +250,10 @@ export class VideoManageVideoListComponent implements OnInit {
         this.qualityTAG = res;
       }
       this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
+      this.commonService.createWebSocketSubject()
+      this.commonService.socket$.subscribe((res: any) => { //这里只要subscribe就行,有错误处理函数
+        this.ntfService.success('图片下载成功', res.message)
+      })
     } catch (e) {
       console.error(e);
     }

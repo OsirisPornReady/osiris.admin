@@ -3,7 +3,6 @@ import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
 import { _HttpClient } from '@delon/theme';
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { fromEvent } from "rxjs";
 
@@ -154,7 +153,6 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     private videoService: VideoService,
     private commonService: CommonService,
     private crawlService: CrawlService,
-    private ntfService: NzNotificationService,
     private nzModal: NzModalService
   ) {}
 
@@ -172,10 +170,6 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       return;
     }
     try {
-      this.commonService.createWebSocketSubject()
-      this.commonService.socket$.subscribe((res: any) => { //这里只要subscribe就行,有错误处理函数
-        this.ntfService.success('图片下载成功', res.message)
-      })
       this.record.crawlKey = this.record.crawlKey.trim();
       this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
       // switch (this.record.crawlType) {
