@@ -6,6 +6,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { fromEvent } from "rxjs";
 
 import { VideoTagService } from '../../../../service/video/video-tag.service';
+import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { VideoService } from '../../../../service/video/video.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { CrawlService } from '../../../../service/crawl/crawl.service';
@@ -75,6 +76,13 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
       widget: 'text',
       defaultText: '-',
       html: true
+    },
+    $videoType: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '请选择视频类型',
+      width: 400,
+      asyncData: () => this.videoTypeService.getSelectAll()
     },
     $duration: {
       unit: '分钟',
@@ -171,6 +179,7 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private videoTagService: VideoTagService,
+    private videoTypeService: VideoTypeService,
     private videoService: VideoService,
     private commonService: CommonService,
     private crawlService: CrawlService
