@@ -518,6 +518,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     const images: NzImage[] = [];
     images.push({
       src: item.localCoverSrc ? item.localCoverSrc : '',
+      width: '1000px',
       alt: item.title ? item.title : ''
     })
     if (Array.isArray(item.localPreviewImageSrcList)) {
