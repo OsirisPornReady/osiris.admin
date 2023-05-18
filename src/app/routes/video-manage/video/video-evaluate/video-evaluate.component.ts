@@ -5,12 +5,15 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
 import { VideoService } from '../../../../service/video/video.service';
+import { CommonService } from '../../../../service/common/common.service';
 
 @Component({
   selector: 'app-video-manage-video-crawl-config',
   templateUrl: './video-evaluate.component.html',
 })
 export class VideoManageVideoEvaluateComponent implements OnInit {
+  scoreTextList: string[] = this.commonService.scoreTextList;
+
   title = '';
   record: any = {};
   i: any;
@@ -29,7 +32,8 @@ export class VideoManageVideoEvaluateComponent implements OnInit {
     },
     $score: {
       widget: 'rate',
-      text: ` {{value}} 分`
+      text: ` {{value}} 分`,
+      tooltips: this.scoreTextList,
     },
     $comment: {
       widget: 'textarea'
@@ -41,6 +45,7 @@ export class VideoManageVideoEvaluateComponent implements OnInit {
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private videoService: VideoService,
+    private commonService: CommonService,
   ) {}
 
   async ngOnInit() {

@@ -5,21 +5,22 @@ import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from "ng-zorro-antd/modal";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
-import { Subscription } from "rxjs";
+import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image';
+import {Subscription} from "rxjs";
 
-import { VideoQualityService } from '../../../../service/video/video-quality.service';
-import { VideoService } from '../../../../service/video/video.service';
-import { CommonService } from '../../../../service/common/common.service';
-import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
-import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
-import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
-import { VideoManageVideoCrawlConfigComponent } from '../video-crawl/video-crawl-config/video-crawl-config.component';
-import { VideoManageVideoInfoComponent } from '../video-info/video-info.component';
-import { VideoManageVideoEvaluateComponent } from '../video-evaluate/video-evaluate.component';
+import {VideoQualityService} from '../../../../service/video/video-quality.service';
+import {VideoService} from '../../../../service/video/video.service';
+import {CommonService} from '../../../../service/common/common.service';
+import {CrawlTypeService} from '../../../../service/crawl/crawl-type.service';
+import {VideoManageVideoEditComponent} from '../video-edit/video-edit.component';
+import {VideoManageVideoCrawlInfoComponent} from '../video-crawl/video-crawl-info/video-crawl-info.component';
+import {VideoManageVideoCrawlConfigComponent} from '../video-crawl/video-crawl-config/video-crawl-config.component';
+import {VideoManageVideoInfoComponent} from '../video-info/video-info.component';
+import {VideoManageVideoEvaluateComponent} from '../video-evaluate/video-evaluate.component';
 
-import { dateCompare } from "../../../../shared/utils/dateUtils";
-import { lastValueFrom } from "rxjs";
-import { CrawlMessage } from "../../../../model/CrawlMessage";
+import {dateCompare} from "../../../../shared/utils/dateUtils";
+import {lastValueFrom} from "rxjs";
+import {CrawlMessage} from "../../../../model/CrawlMessage";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -43,12 +44,12 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         type: 'string',
         title: '搜索字段',
         enum: [
-          { label: '标题', value: 'title' },
-          { label: '番号', value: 'serialNumber' },
-          { label: '演员', value: 'starsRaw' },
-          { label: '标签', value: 'tagsRaw' },
-          { label: '发行时间', value: 'publishTimeStart' },
-          { label: '添加时间', value: 'addTimeStart' },
+          {label: '标题', value: 'title'},
+          {label: '番号', value: 'serialNumber'},
+          {label: '演员', value: 'starsRaw'},
+          {label: '标签', value: 'tagsRaw'},
+          {label: '发行时间', value: 'publishTimeStart'},
+          {label: '添加时间', value: 'addTimeStart'},
         ],
         default: ['title']
       },
@@ -99,7 +100,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   ui: SFUISchema = {
     '*': {
       spanLabelFixed: 100,
-      grid: { span: 22 },
+      grid: {span: 22},
     },
     $searchField: {
       widget: 'checkbox',
@@ -107,46 +108,52 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       checkAll: true,
     },
     $title: {
-      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('title') : false },
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('title') : false},
     },
     $serialNumber: {
-      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('serialNumber') : false },
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('serialNumber') : false},
     },
     $starsRaw: {
-      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('starsRaw') : false },
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('starsRaw') : false},
     },
     $tagsRaw: {
-      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('tagsRaw') : false },
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('tagsRaw') : false},
     },
     $publishTimeStart: {
-      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('publishTimeStart') : false },
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('publishTimeStart') : false},
     },
     $addTimeStart: {
-      visibleIf: { searchField: value => Array.isArray(value) ? value.includes('addTimeStart') : false },
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('addTimeStart') : false},
     },
   };
   statusBADGE: STColumnBadge = {
-    1: { text: '已入库', color: 'success' },
-    2: { text: '未上架', color: 'warning' },
-    3: { text: '未入库', color: 'processing' },
-    4: { text: '无资源', color: 'error' },
-    5: { text: '默认', color: 'default' }
+    1: {text: '已入库', color: 'success'},
+    2: {text: '未上架', color: 'warning'},
+    3: {text: '未入库', color: 'processing'},
+    4: {text: '无资源', color: 'error'},
+    5: {text: '默认', color: 'default'}
   };
   qualityTAG: STColumnTag = {
-    '1': { text: '成功', color: 'green' },
-    '2': { text: '错误', color: 'red' },
-    '3': { text: '进行中', color: 'blue' },
-    '4': { text: '默认', color: '' },
-    '5': { text: '警告', color: 'orange' },
+    '1': {text: '成功', color: 'green'},
+    '2': {text: '错误', color: 'red'},
+    '3': {text: '进行中', color: 'blue'},
+    '4': {text: '默认', color: ''},
+    '5': {text: '警告', color: 'orange'},
   };
   multiSort: STMultiSort = {
     arrayParam: true
   }
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
-    { title: 'ID', index: 'id', type: 'checkbox', iif: () => this.isOpenMultiSelect },
+    {title: 'ID', index: 'id', type: 'checkbox', iif: () => this.isOpenMultiSelect},
     // { title: '关注', width: 70, render: 'customVideoOnSubscription', className: 'text-center' },
-    { title: '标题', index: 'title', width: 550 },
+    // { title: '标题', index: 'title', width: 550 },
+    {
+      title: '标题',
+      index: 'title',
+      width: 550,
+      render: 'customTitle',
+    }, //即使是custom render也最好带上index,search和sort什么的用得上
     {
       title: '番号',
       index: 'serialNumber',
@@ -157,12 +164,12 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       className: 'text-center',
       sort: true
     },
-    { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime', sort: true },
-    { title: '资源状态', render: 'customVideoStatus', className: 'text-center' },
-    { title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center' },
-    { title: '评价', render: 'customVideoEvaluate', className: 'text-center' },
-    { title: '质量', render: 'customVideoQuality', className: 'text-center' },
-    { title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center' },
+    {title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime', sort: true},
+    {title: '资源状态', render: 'customVideoStatus', className: 'text-center'},
+    {title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center'},
+    {title: '评价', render: 'customVideoEvaluate', className: 'text-center'},
+    {title: '质量', render: 'customVideoQuality', className: 'text-center'},
+    {title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center'},
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
     {
       title: '操作',
@@ -212,7 +219,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   isAutoSubmit: boolean = false;
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
-  crawlApiUrl: any= null;
+  crawlApiUrl: any = null;
   defaultSort: any = null;
   defaultSortOptions: any[] = [];
   isDownloadImage: boolean = false;
@@ -231,7 +238,9 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     private drawer: DrawerHelper,
     private nzModal: NzModalService,
     private ntfService: NzNotificationService,
-  ) {}
+    private nzImageService: NzImageService
+  ) {
+  }
 
   async ngOnInit() {
     // this.searchParam.searchField = this.commonService.searchField;
@@ -242,14 +251,14 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
     this.isDownloadImage = this.commonService.isDownloadImage;
     this.defaultSortOptions = [
-      { label: '标题(asc)', value: 'title.ascend' },
-      { label: '番号(asc)', value: 'serialNumber.ascend' },
-      { label: '更新时间(desc)', value: 'updateTime.descend' },
-      { label: '更新时间(asc)', value: 'updateTime.ascend'  },
-      { label: '添加时间(desc)', value: 'addTime.descend' },
-      { label: '添加时间(asc)', value: 'addTime.ascend' },
-      { label: '发行时间(desc)', value: 'publishTime.descend' },
-      { label: '发行时间(asc)', value: 'publishTime.ascend' },
+      {label: '标题(asc)', value: 'title.ascend'},
+      {label: '番号(asc)', value: 'serialNumber.ascend'},
+      {label: '更新时间(desc)', value: 'updateTime.descend'},
+      {label: '更新时间(asc)', value: 'updateTime.ascend'},
+      {label: '添加时间(desc)', value: 'addTime.descend'},
+      {label: '添加时间(asc)', value: 'addTime.ascend'},
+      {label: '发行时间(desc)', value: 'publishTime.descend'},
+      {label: '发行时间(asc)', value: 'publishTime.ascend'},
     ]
     try {
       let res = (await this.videoQualityService.getDict()) || {};
@@ -271,7 +280,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   addEdit(id: number = 0): void {
-    this.modal.createStatic(VideoManageVideoEditComponent, { record: { id } }).subscribe(res => {
+    this.modal.createStatic(VideoManageVideoEditComponent, {record: {id}}).subscribe(res => {
       if (res == 'ok') {
         this.st.reload();
       }
@@ -324,8 +333,12 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       //   .select((o) => o.id)
       //   .toArray();
       let ids: number[] = [];
-      ids = _data.filter((item: any) => { return  (item.hasOwnProperty('checked') && item.checked) })
-                 .map((item: any) => { return item.id })
+      ids = _data.filter((item: any) => {
+        return (item.hasOwnProperty('checked') && item.checked)
+      })
+        .map((item: any) => {
+          return item.id
+        })
       if (ids.length > 0) {
         this.nzModal.confirm({
           nzTitle: '确认删除吗？',
@@ -343,7 +356,8 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         this.msgSrv.error('至少勾选一项');
         return;
       }
-    } catch (error) {}
+    } catch (error) {
+    }
   }
 
   rowClassName(record: STData, index: number) {
@@ -373,9 +387,16 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
-      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
+      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
+        size: 1600,
+        drawerOptions: {nzClosable: false}
+      }).subscribe(res => {
         if (res.state == 'ok') {
-          this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, automated: true, automatedData: res.data }).subscribe(res => {
+          this.modal.createStatic(VideoManageVideoEditComponent, {
+            record: {id: value.id},
+            automated: true,
+            automatedData: res.data
+          }).subscribe(res => {
             if (res == 'ok') {
               this.st.reload();
             }
@@ -406,11 +427,16 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     try {
       await this.videoService.switchVideoSubscription(item.id)
       item.onSubscription = !item.onSubscription;
-    } catch (e) {}
+    } catch (e) {
+    }
   }
 
   checkVideoInfo(id: number) {
-    this.drawer.create('', VideoManageVideoInfoComponent, { record: { id } }, { size: 1600, footer: false, drawerOptions: { nzPlacement: 'left', nzClosable: false } }).subscribe(res => {
+    this.drawer.create('', VideoManageVideoInfoComponent, {record: {id}}, {
+      size: 1600,
+      footer: false,
+      drawerOptions: {nzPlacement: 'left', nzClosable: false}
+    }).subscribe(res => {
       if (res.state == 'ok') {
 
       }
@@ -418,13 +444,13 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   selectDefaultSort() { // sort接口设计的是传null值就不执行
-    this.st.reload({ defaultSort: this.defaultSort }, { merge: true, toTop: false })
+    this.st.reload({defaultSort: this.defaultSort}, {merge: true, toTop: false})
   }
 
   editCrawlConfig(id: number) {
-    this.modal.createStatic(VideoManageVideoCrawlConfigComponent, { record: { id } }).subscribe(res => {
+    this.modal.createStatic(VideoManageVideoCrawlConfigComponent, {record: {id}}).subscribe(res => {
       if (res == 'ok') {
-        this.st.reload(null, { merge: true, toTop: false });
+        this.st.reload(null, {merge: true, toTop: false});
       }
     });
   }
@@ -457,17 +483,53 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   openVideoEvaluate(id: number) {
-    this.modal.createStatic(VideoManageVideoEvaluateComponent, { record: { id } }).subscribe(res => {
+    this.modal.createStatic(VideoManageVideoEvaluateComponent, {record: {id}}).subscribe(res => {
       if (res == 'ok') {
-        this.st.reload(null, { merge: true, toTop: false });
+        this.st.reload(null, {merge: true, toTop: false});
       }
     });
   }
 
   getScoreText(score: number) {
-    if (!Number.isFinite(score)) { return { text: '评分异常', status: false }; }
-    if (score < 1 || score > 10) { return { text: '评分异常', status: false }; }
+    if (!Number.isFinite(score)) {
+      return {text: '评分异常', status: false};
+    }
+    if (score < 1 || score > 10) {
+      return {text: '评分异常', status: false};
+    }
     return this.scoreTextTable[score];
+  }
+
+  previewVideoImage(item: any) {
+    // const images = [
+    //   {
+    //     src: 'https://img.alicdn.com/tfs/TB1g.mWZAL0gK0jSZFtXXXQCXXa-200-200.svg',
+    //     width: '200px',
+    //     height: '200px',
+    //     alt: 'ng-zorro'
+    //   },
+    //   {
+    //     src: 'https://img.alicdn.com/tfs/TB1Z0PywTtYBeNjy1XdXXXXyVXa-186-200.svg',
+    //     width: '200px',
+    //     height: '200px',
+    //     alt: 'angular'
+    //   }
+    // ];
+    const images: NzImage[] = [];
+    images.push({
+      src: item.localCoverSrc ? item.localCoverSrc : '',
+      alt: item.title ? item.title : ''
+    })
+    if (Array.isArray(item.localPreviewImageSrcList)) {
+      let lpisl = item.localPreviewImageSrcList
+      for (let i=0; i < lpisl.length; i++) {
+        images.push({
+          src: lpisl[i],
+          alt: item.title ? item.title : ''
+        })
+      }
+    }
+    this.nzImageService.preview(images, { nzKeyboard: true, nzMaskClosable: true, nzCloseOnNavigation: true})
   }
 
 }

@@ -26,7 +26,7 @@ export class CommonService {
     6: { text: '还不错', status: true },
     7: { text: '佳作', status: true },
     8: { text: '精品', status: true },
-    9: { text: '有特色的优秀作品', status: true },
+    9: { text: '极品', status: true },
     10: { text: '神作', status: true }
   }
   scoreTextList: any = [
@@ -38,7 +38,7 @@ export class CommonService {
     '还不错',
     '佳作',
     '精品',
-    '有特色的优秀作品',
+    '极品',
     '神作'
   ]
 

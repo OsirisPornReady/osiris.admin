@@ -106,5 +106,13 @@
         <span *ngIf="!getScoreText(item.score).status" nz-typography nzType="danger">{{getScoreText(item.score).text}}</span>
       </a>
     </ng-template>
+
+<!--    注意标签的语义化,在浏览器中不同语义化的交互细节很不一样-->
+    <ng-template st-row="customTitle" let-item>
+      <a nz-typography href="javascript:void(0);" (click)="previewVideoImage(item)">
+<!--      <span [title]="item.title">{{item.title}}</span>-->
+        <span nz-typography nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.title">{{item.title}}</span>
+      </a>
+    </ng-template>
   </st>
 </nz-card>
