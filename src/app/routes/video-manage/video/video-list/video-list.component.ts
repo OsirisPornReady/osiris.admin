@@ -14,7 +14,8 @@ import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
 import { VideoManageVideoEditComponent } from '../video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoCrawlConfigComponent } from '../video-crawl/video-crawl-config/video-crawl-config.component';
-import { VideoManageVideoInfoComponent } from "../video-info/video-info.component";
+import { VideoManageVideoInfoComponent } from '../video-info/video-info.component';
+import { VideoManageVideoEvaluateComponent } from '../video-evaluate/video-evaluate.component';
 
 import { dateCompare } from "../../../../shared/utils/dateUtils";
 import { lastValueFrom } from "rxjs";
@@ -159,6 +160,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     { title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'publishTime', sort: true },
     { title: '资源状态', render: 'customVideoStatus', className: 'text-center' },
     { title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center' },
+    { title: '评价', render: 'customVideoEvaluate', className: 'text-center' },
     { title: '质量', render: 'customVideoQuality', className: 'text-center' },
     { title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center' },
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
@@ -216,6 +218,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   isDownloadImage: boolean = false;
   messageSocketSubscription: Subscription = new Subscription();
   reloadSocketSpin: boolean = false;
+  scoreTextTable: any = this.commonService.scoreTextTable;
 
   constructor(
     private http: _HttpClient,
@@ -445,12 +448,28 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
           break;
       }
       let ntfTitle = `${picType}下载成功: ${res.index}/${res.total}`
-      this.ntfService.success(ntfTitle, res.message)
+      this.ntfService.success(ntfTitle, res.message, {
+        nzKey: 'messageSocket'
+      })
     })
     console.log('重新连接socket')
     setTimeout(() => {
       this.reloadSocketSpin = false;
     }, 500);
+  }
+
+  openVideoEvaluate(id: number) {
+    this.modal.createStatic(VideoManageVideoEvaluateComponent, { record: { id } }).subscribe(res => {
+      if (res == 'ok') {
+        this.st.reload(null, { merge: true, toTop: false });
+      }
+    });
+  }
+
+  getScoreText(score: number) {
+    if (!Number.isFinite(score)) { return { text: '评分异常', status: false }; }
+    if (score < 1 || score > 10) { return { text: '评分异常', status: false }; }
+    return this.scoreTextTable[score];
   }
 
 }

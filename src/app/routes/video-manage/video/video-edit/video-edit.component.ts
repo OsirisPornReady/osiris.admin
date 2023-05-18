@@ -20,6 +20,8 @@ import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-i
   templateUrl: './video-edit.component.html'
 })
 export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
+  scoreTextList: string[] = this.commonService.scoreTextList;
+
   title = '';
   record: any = {};
   i: any;
@@ -63,6 +65,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
       dataSourceUrl: { type: 'string', title: '数据源' },
       btdigUrl: { type: 'string', title: 'btdig' },
+      comment: { type: 'string', title: '评论' },
     },
     required: ['title']
   };
@@ -237,7 +240,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     $score: {
       // widget: 'custom'
       widget: 'rate',
-      text: ` {{value}} 分`
+      text: ` {{value}} 分`,
+      tooltips: this.scoreTextList,
     },
     $previewImageSrcList: {
       widget: 'select',
@@ -252,6 +256,9 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       placeholder: '输入本地预览图(可多个值)',
       mode: 'tags',
       default: null,
+    },
+    $comment: {
+      widget: 'textarea'
     },
   };
 

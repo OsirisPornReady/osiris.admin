@@ -19,12 +19,16 @@ import { dateStringFormatter } from "../../../../../shared/utils/dateUtils";
   styleUrls: ['/video-crawl-info.component.less']
 })
 export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
+  scoreTextList: string[] = this.commonService.scoreTextList;
+
   title = '';
   record: any = {};
   i: any;
   @ViewChild('sf') sf!: SFComponent;
   schema: SFSchema = {
     properties: {
+      score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
+      comment: { type: 'string', title: '评价' },
       serialNumber: { type: 'string', title: '番号' },
       title: { type:'string', title: '标题' },
       videoType: { type: 'string', title: '类型' },
@@ -50,6 +54,14 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     '*': {
       spanLabelFixed: 145,
       grid: { span: 22 }
+    },
+    $score: {
+      widget: 'rate',
+      text: ` {{value}} 分 `,
+      tooltips: this.scoreTextList,
+    },
+    $comment: {
+      widget: 'textarea'
     },
     $serialNumber: {
       widget: 'text',

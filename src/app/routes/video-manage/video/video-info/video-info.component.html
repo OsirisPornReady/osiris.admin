@@ -72,6 +72,13 @@
   </div>
 </div>
 
+<nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
+<sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none">
+  <div>
+    <button nz-button type="submit" nzType="default" nzShape="round" (click)="evaluate(evaluateSf.value)" [disabled]="!evaluateSf.valid" [nzLoading]="http.loading" style="margin-left: 145px">保存评分与评价</button>
+  </div>
+</sf>
+
 <nz-divider *ngIf="i" nzText="Confirm Information"></nz-divider>
 <sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
 <!--  <div class="drawer-footer">-->

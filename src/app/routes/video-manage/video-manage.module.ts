@@ -15,6 +15,7 @@ import { VideoManageVideoQualityEditComponent } from './video-quality/video-qual
 import { VideoManageVideoCrawlInfoComponent } from './video/video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoCrawlConfigComponent } from './video/video-crawl/video-crawl-config/video-crawl-config.component';
 import { VideoManageVideoInfoComponent } from './video/video-info/video-info.component';
+import { VideoManageVideoEvaluateComponent } from './video/video-evaluate/video-evaluate.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
@@ -30,7 +31,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoQualityEditComponent,
   VideoManageVideoCrawlInfoComponent,
   VideoManageVideoCrawlConfigComponent,
-  VideoManageVideoInfoComponent
+  VideoManageVideoInfoComponent,
+  VideoManageVideoEvaluateComponent
 ];
 
 @NgModule({

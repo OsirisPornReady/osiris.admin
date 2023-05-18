@@ -65,7 +65,13 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
   async ngOnInit() {
     if (this.record.id > 0) {
       this.title = '修改数据源配置';
-      this.i = (await this.videoService.getById(this.record.id)) || {};
+      let res = (await this.videoService.getById(this.record.id)) || {};
+      this.i = {
+        id: res?.id,
+        canCrawl: res?.canCrawl,
+        crawlApiUrl: res?.crawlApiUrl,
+        crawlKey: res?.crawlKey,
+      }
       setTimeout(() => {
         this.autoConfigJav()
       }, 500)

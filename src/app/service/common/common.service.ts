@@ -17,6 +17,31 @@ export class CommonService {
   crawlType: number = 0;
   isDownloadImage: boolean = true;
 
+  scoreTextTable: any = {
+    1: { text: '烂到没亮点', status: true },
+    2: { text: '有可取之处的烂', status: true },
+    3: { text: '稍微有点烂', status: true },
+    4: { text: '一般般', status: true },
+    5: { text: '有些亮点', status: true },
+    6: { text: '还不错', status: true },
+    7: { text: '佳作', status: true },
+    8: { text: '精品', status: true },
+    9: { text: '有特色的优秀作品', status: true },
+    10: { text: '神作', status: true }
+  }
+  scoreTextList: any = [
+    '烂到没亮点',
+    '有可取之处的烂',
+    '稍微有点烂',
+    '一般般',
+    '有些亮点',
+    '还不错',
+    '佳作',
+    '精品',
+    '有特色的优秀作品',
+    '神作'
+  ]
+
   public socket$!: WebSocketSubject<any>;
 
   constructor(private http: _HttpClient) {}

@@ -18,12 +18,18 @@ import { dateStringFormatter } from "../../../../shared/utils/dateUtils";
   styleUrls: ['/video-info.component.less']
 })
 export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
+  scoreTextList: string[] = this.commonService.scoreTextList;
+
   title = '';
   record: any = {};
   i: any;
+  ei: any;
   @ViewChild('sf') sf!: SFComponent;
+  @ViewChild('sf') evaluateSf!: SFComponent;
   schema: SFSchema = {
     properties: {
+      // score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
+      // comment: { type: 'string', title: '评价' },
       serialNumber: { type: 'string', title: '番号' },
       title: { type:'string', title: '标题' },
       videoType: { type: 'string', title: '类型' },
@@ -45,10 +51,25 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
     },
     required: ['title'],
   };
+  evaluateSchema: SFSchema = {
+    properties: {
+      score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
+      comment: { type: 'string', title: '评价' },
+    },
+    required: [],
+  };
   ui: SFUISchema = {
     '*': {
       spanLabelFixed: 145,
       grid: { span: 22 }
+    },
+    $score: {
+      widget: 'rate',
+      text: ` {{value}} 分`,
+      tooltips: this.scoreTextList,
+    },
+    $comment: {
+      widget: 'textarea'
     },
     $serialNumber: {
       widget: 'text',
@@ -142,6 +163,8 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
   enterKeyDownSubscription: any = null;
   spaceKeyDownSubscription: any = null;
   dKeyDownSubscription: any = null;
+  score: number = 0;
+  comment: string = '';
 
   constructor(
     private drawer: NzDrawerRef,
@@ -155,8 +178,13 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     try {
-      this.i = await this.videoService.getById(this.record.id)
-
+      let res = (await this.videoService.getById(this.record.id)) || {}
+      this.i = res
+      this.ei = {
+        id: res?.id,
+        score: res?.score,
+        comment: res?.comment
+      }
 
       this.dataSourceUrl = this.i.dataSourceUrl
 
@@ -182,6 +210,13 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
       this.msgSrv.error('读取信息失败')
       this.close();
     }
+  }
+
+  async evaluate(value: any) {
+    try {
+      await this.videoService.update(value);
+      this.msgSrv.success('评分评价保存成功');
+    } catch (error) {}
   }
 
   async save(value: any) {

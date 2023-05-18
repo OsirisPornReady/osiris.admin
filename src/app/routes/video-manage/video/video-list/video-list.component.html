@@ -99,5 +99,12 @@
         <span  nz-icon nzType="bell" nzTheme="outline"></span>
       </button>
     </ng-template>
+
+    <ng-template st-row="customVideoEvaluate" let-item>
+      <a nz-typography href="javascript:void(0);" (click)="openVideoEvaluate(item.id)">
+        <span *ngIf="getScoreText(item.score).status">{{getScoreText(item.score).text}}</span>
+        <span *ngIf="!getScoreText(item.score).status" nz-typography nzType="danger">{{getScoreText(item.score).text}}</span>
+      </a>
+    </ng-template>
   </st>
 </nz-card>
