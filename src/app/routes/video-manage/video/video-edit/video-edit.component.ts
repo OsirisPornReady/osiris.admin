@@ -364,7 +364,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     let { ...fillData } = this.automatedData;
     Object.keys(fillData).forEach((key: string) => {
       try {
-        this.safeSF.setValue(`/${key}`, fillData[key])
+        // this.safeSF.setValue(`/${key}`, fillData[key])
+        this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true)
       } catch (e) {
         console.error(`自动填充字段${key}失败`, e)
       }
