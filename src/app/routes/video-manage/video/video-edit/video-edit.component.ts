@@ -285,6 +285,9 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    //2023-5-18更新: 好像直接用this.sf?.getProperty().setValue() 或者直接 this.sf?.setValue() 就行了
+    //2023-5-18更新: 上述方法还是不行
+
     //由于sf组件没有足够的钩子,只能出此下策
     if (this.record.id > 0) {
       this.sfList.changes.subscribe(() => {
@@ -364,10 +367,10 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     let { ...fillData } = this.automatedData;
     Object.keys(fillData).forEach((key: string) => {
       try {
-        // this.safeSF.setValue(`/${key}`, fillData[key])
-        this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true)
+        // this.safeSF.setValue(`/${key}`, fillData[key]);
+        this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true);
       } catch (e) {
-        console.error(`自动填充字段${key}失败`, e)
+        console.error(`自动填充字段${key}失败`, e);
       }
     })
     this.msgSrv.remove(this.automatedMsgId);
