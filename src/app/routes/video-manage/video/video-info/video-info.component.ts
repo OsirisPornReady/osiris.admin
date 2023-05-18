@@ -203,16 +203,16 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
       this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
 
 
-      this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == ' ') {
-          this.close();
-        }
-      })
-      this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == 'd') {
-          this.commonService.openNewTab(this.i.btdigUrl);
-        }
-      })
+      // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      //   if (event.key == ' ') {
+      //     this.close();
+      //   }
+      // })
+      // this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      //   if (event.key == 'd') {
+      //     this.commonService.openNewTab(this.i.btdigUrl);
+      //   }
+      // })
 
     } catch (error) {
       console.error(error)

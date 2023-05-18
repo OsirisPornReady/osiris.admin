@@ -223,23 +223,24 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
       this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
 
-      this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
-        if (event.key == 'Enter') {
-          try {
-            this.save(this.sf.value);
-          } catch (e) {}
-        }
-      })
-      this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == ' ') {
-          this.close();
-        }
-      })
-      this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == 'd') {
-          this.commonService.openNewTab(this.i.btdigUrl);
-        }
-      })
+      // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
+      //   if (event.key == 'Enter') {
+      //     try {
+      //       this.save(this.sf.value);
+      //     } catch (e) {}
+      //   }
+      // })
+      // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      //   if (event.key == ' ') {
+      //     this.close();
+      //   }
+      // })
+      // this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      //   if (event.key == 'd') {
+      //     this.commonService.openNewTab(this.i.btdigUrl);
+      //   }
+      // })
+
       // this.msgSrv.remove(this.crawlLoadingMsgId);
       this.msgSrv.remove('');
       this.msgSrv.success('爬取成功');
