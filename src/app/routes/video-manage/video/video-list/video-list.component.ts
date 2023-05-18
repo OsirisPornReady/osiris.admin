@@ -370,7 +370,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
   crawlInfo(value: any) {
     console.log(value)
-    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlApiUrl')) {
+    if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
         if (res.state == 'ok') {
           this.modal.createStatic(VideoManageVideoEditComponent, { record: { id: value.id }, automated: true, automatedData: res.data }).subscribe(res => {
@@ -381,7 +381,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.msgSrv.info('请配置爬虫关键字与爬虫数据源');
+      this.msgSrv.info('请配置爬虫数据源与爬虫关键字');
     }
   }
 

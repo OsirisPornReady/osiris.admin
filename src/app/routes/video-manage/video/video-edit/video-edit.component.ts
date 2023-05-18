@@ -287,6 +287,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     //2023-5-18更新: 好像直接用this.sf?.getProperty().setValue() 或者直接 this.sf?.setValue() 就行了
     //2023-5-18更新: 上述方法还是不行
+    //2023-5-18更新: this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true); 会填不了tag类型的select,弃用
 
     //由于sf组件没有足够的钩子,只能出此下策
     if (this.record.id > 0) {
@@ -336,7 +337,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   crawlInfo(value: any) {
-    if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlType')) {
+    if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
         if (res.state == 'ok') {
           this.automatedData = res.data;
@@ -345,7 +346,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
         }
       });
     } else {
-      this.msgSrv.info('请配置爬虫关键字与爬虫数据源');
+      this.msgSrv.info('请配置爬虫数据源与爬虫关键字');
     }
   }
 
@@ -367,8 +368,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     let { ...fillData } = this.automatedData;
     Object.keys(fillData).forEach((key: string) => {
       try {
-        // this.safeSF.setValue(`/${key}`, fillData[key]);
-        this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true);
+        this.safeSF.setValue(`/${key}`, fillData[key]);
       } catch (e) {
         console.error(`自动填充字段${key}失败`, e);
       }
