@@ -372,7 +372,6 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   crawlInfo(value: any) {
-    console.log(value)
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(res => {
         if (res.state == 'ok') {
@@ -452,7 +451,6 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         nzKey: 'messageSocket'
       })
     })
-    console.log('重新连接socket')
     setTimeout(() => {
       this.reloadSocketSpin = false;
     }, 500);

@@ -374,6 +374,11 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     this.automatedMsgId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
     let { ...fillData } = this.automatedData;
     Object.keys(fillData).forEach((key: string) => {
+      if (this.record.id > 0) {
+        if (key == 'score' && fillData[key] == null) { return; }
+        if (key == 'comment' && fillData[key] == null) { return; }
+      }
+
       try {
         this.safeSF.setValue(`/${key}`, fillData[key]);
       } catch (e) {
