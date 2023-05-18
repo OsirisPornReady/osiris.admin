@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
-import { lastValueFrom, map, Observable } from 'rxjs';
+import { lastValueFrom, map, Observable, Subject } from 'rxjs';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { environment } from "@env/environment";
 
@@ -62,10 +62,21 @@ export class CommonService {
   //   return socket$
   // }
 
-  createWebSocketSubject(wsUrl:string = environment['imageSocketUrl']) {
+  createWebSocketSubject(socketKey: string = '') {
+    if (this.socket$) {
+      this.socket$.unsubscribe();
+    }
+    const open$ = new Subject();
+    open$.subscribe((next) => {
+
+    });
+    if (environment['socketUrlTable'].hasOwnProperty(socketKey)) {
+      let wsUrl = environment['socketUrlTable'][socketKey]
       this.socket$ = webSocket({
         url: wsUrl,
+        openObserver: open$
       });
+    }
   }
 
 }

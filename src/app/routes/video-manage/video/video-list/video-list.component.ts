@@ -5,6 +5,7 @@ import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from "ng-zorro-antd/modal";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { Subscription } from "rxjs";
 
 import { VideoQualityService } from '../../../../service/video/video-quality.service';
 import { VideoService } from '../../../../service/video/video.service';
@@ -17,6 +18,7 @@ import { VideoManageVideoInfoComponent } from "../video-info/video-info.componen
 
 import { dateCompare } from "../../../../shared/utils/dateUtils";
 import { lastValueFrom } from "rxjs";
+import { CrawlMessage } from "../../../../model/CrawlMessage";
 
 @Component({
   selector: 'app-video-manage-video-list',
@@ -212,6 +214,8 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   defaultSort: any = null;
   defaultSortOptions: any[] = [];
   isDownloadImage: boolean = false;
+  messageSocketSubscription: Subscription = new Subscription();
+  reloadSocketSpin: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -250,18 +254,16 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         this.qualityTAG = res;
       }
       this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
-      this.commonService.createWebSocketSubject()
-      this.commonService.socket$.subscribe((res: any) => { //这里只要subscribe就行,有错误处理函数
-        this.ntfService.success('图片下载成功', res.message)
-      })
+      this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
+      this.connectMessageSocket();
     } catch (e) {
       console.error(e);
     }
   }
 
   ngOnDestroy() {
-    if (this.commonService.socket$) {
-      this.commonService.socket$.unsubscribe();
+    if (this.messageSocketSubscription) {
+      this.messageSocketSubscription.unsubscribe();
     }
   }
 
@@ -423,6 +425,32 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         this.st.reload(null, { merge: true, toTop: false });
       }
     });
+  }
+
+  connectMessageSocket() {
+    this.reloadSocketSpin = true;
+    if (!this.messageSocketSubscription.closed) {
+      this.messageSocketSubscription.unsubscribe();
+    }
+    this.messageSocketSubscription = this.commonService.socket$.subscribe((res: CrawlMessage) => { //这里只要subscribe就行,有错误处理函数
+      let picType = ''
+      switch (res.msgType) {
+        case 'cover':
+          picType = '封面图'
+          break;
+        case 'preview':
+          picType = '预览图'
+          break;
+        default:
+          break;
+      }
+      let ntfTitle = `${picType}下载成功: ${res.index}/${res.total}`
+      this.ntfService.success(ntfTitle, res.message)
+    })
+    console.log('重新连接socket')
+    setTimeout(() => {
+      this.reloadSocketSpin = false;
+    }, 500);
   }
 
 }

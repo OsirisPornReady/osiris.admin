@@ -17,7 +17,10 @@ export const environment = {
     refreshTokenType: 'auth-refresh'
   },
   // modules: [DelonMockModule.forRoot({ data: MOCKDATA })]
-  imageSocketUrl: 'ws://localhost:9003/crawl/imageDownloadSocket'
+  socketUrlTable: {
+    crawlMessageSocketUrl: 'ws://localhost:9003/crawl/crawl_message_socket',
+    imageDownloadSocketUrl: 'ws://localhost:9003/crawl/image_download_socket'
+  }
 } as Environment;
 
 /*

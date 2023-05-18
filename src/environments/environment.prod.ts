@@ -9,5 +9,8 @@ export const environment = {
     refreshTokenEnabled: true,
     refreshTokenType: 'auth-refresh'
   },
-  imageSocketUrl: 'ws://localhost:9003/crawl/imageDownloadSocket'
+  socketUrlTable: {
+    crawlMessageSocketUrl: 'ws://localhost:9003/crawl/crawl_message_socket',
+    imageDownloadSocketUrl: 'ws://localhost:9003/crawl/image_download_socket'
+  }
 } as Environment;

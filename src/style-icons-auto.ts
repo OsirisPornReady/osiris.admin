@@ -56,7 +56,8 @@ import {
   DeploymentUnitOutline,
   FireOutline,
   WomanOutline,
-  ShoppingOutline
+  ShoppingOutline,
+  SyncOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -112,5 +113,6 @@ export const ICONS_AUTO = [
   DeploymentUnitOutline,
   FireOutline,
   WomanOutline,
-  ShoppingOutline
+  ShoppingOutline,
+  SyncOutline
 ];

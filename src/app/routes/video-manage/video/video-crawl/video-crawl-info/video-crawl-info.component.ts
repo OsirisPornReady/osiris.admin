@@ -221,12 +221,12 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       })
       // this.msgSrv.remove(this.crawlLoadingMsgId);
       this.msgSrv.remove('');
-      this.msgSrv.success('信息爬取成功');
+      this.msgSrv.success('爬取成功');
     } catch (error) {
       console.error(error)
       // this.msgSrv.remove(this.crawlLoadingMsgId);
       this.msgSrv.remove('');
-      this.msgSrv.error('信息爬取失败');
+      this.msgSrv.error('爬取失败');
       this.close();
     }
   }
