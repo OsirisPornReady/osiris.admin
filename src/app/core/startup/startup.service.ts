@@ -156,7 +156,7 @@ export class StartupService {
           })
         )
         .subscribe({
-          next: async (appData: NzSafeAny) => {
+          next: async (appData: NzSafeAny) => { //最好直接在初始化接口里返回,别再async await请求一次了
             // setting language data
             // this.i18n.use(defaultLang, langData);
             appData = appDataTemp;
@@ -172,7 +172,7 @@ export class StartupService {
             // Can be set page suffix title, https://ng-alain.com/theme/title
             this.titleService.suffix = appData.app.name;
 
-            await this.systemSettingService.loadGlobalSettings();
+            await this.systemSettingService.loadGlobalSettings(); //可以优化成放在init接口里获取数据
           },
           error: () => {},
           complete: () => {
