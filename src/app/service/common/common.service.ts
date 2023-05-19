@@ -3,6 +3,7 @@ import { _HttpClient } from '@delon/theme';
 import { lastValueFrom, map, Observable, Subject } from 'rxjs';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { environment } from "@env/environment";
+import { GlobalData } from "../../model/GlobalData";
 
 @Injectable({ providedIn: 'root' })
 export class CommonService {
@@ -16,6 +17,15 @@ export class CommonService {
   isAutoSubmit: boolean = true;
   crawlType: number = 0;
   isDownloadImage: boolean = true;
+
+  globalData: GlobalData = {
+    isEditMode: false,
+    isOpenMultiSelect: false,
+    isAutoCreate: true,
+    isAutoFill: true,
+    isAutoSubmit: true,
+    isDownloadImage: true,
+  }
 
   scoreTextTable: any = {
     1: { text: '烂到没亮点', status: true },
@@ -104,12 +114,18 @@ export class CommonService {
     }
   }
 
+  // setGlobalSetting(key: string, value: any) {
+  //   if (this.hasOwnProperty(key)) {
+  //     let member = this[key as keyof typeof this];
+  //     if (typeof member != 'function') {
+  //       this[key as keyof typeof this] = value;
+  //     }
+  //   }
+  // }
+
   setGlobalSetting(key: string, value: any) {
-    if (this.hasOwnProperty(key)) {
-      let member = this[key as keyof typeof this];
-      if (typeof member != 'function') {
-        this[key as keyof typeof this] = value;
-      }
+    if (this.globalData.hasOwnProperty(key)) {
+      this.globalData[key as keyof typeof this.globalData] = value;
     }
   }
 

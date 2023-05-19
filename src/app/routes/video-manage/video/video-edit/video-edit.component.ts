@@ -370,7 +370,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   }
 
   autoFillForm() {
-    if (!this.commonService.isAutoFill) { return; }
+    // if (!this.commonService.isAutoFill) { return; }
+    if (!this.commonService.globalData.isAutoFill) { return; }
     this.automatedMsgId = this.msgSrv.loading(`表单自动填充中`, { nzDuration: 0 }).messageId;
     let { ...fillData } = this.automatedData;
     Object.keys(fillData).forEach((key: string) => {
@@ -398,7 +399,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     //     this.msgSrv.error('番号已存在')
     //   }
     // } catch (e) {}
-    if (!this.commonService.isAutoSubmit) { return; }
+    // if (!this.commonService.isAutoSubmit) { return; }
+    if (!this.commonService.globalData.isAutoSubmit) { return; }
     await Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
       if (this.safeSF.valid) {
         try {

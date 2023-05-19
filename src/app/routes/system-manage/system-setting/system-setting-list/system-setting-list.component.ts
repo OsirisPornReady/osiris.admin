@@ -99,10 +99,10 @@ export class SystemManageSystemSettingListComponent implements OnInit {
   async loadGlobalSettings() {
     try {
       await this.systemSettingService.loadGlobalSettings();
-      this.msgSrv.success('载入全局变量成功');
+      this.msgSrv.success('载入全局配置成功');
     } catch (e) {
       console.error(e);
-      this.msgSrv.error('载入全局变量失败');
+      this.msgSrv.error('载入全局配置失败');
     }
   }
 

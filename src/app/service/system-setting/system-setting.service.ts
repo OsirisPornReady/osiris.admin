@@ -71,8 +71,14 @@ export class SystemSettingService {
 
   async loadGlobalSettings() {
     let settings = (await lastValueFrom(this.getSettingTable())) || {}
+    // Object.keys(settings).forEach((i: string) => {
+    //   if (this.commonService.hasOwnProperty(i)) {
+    //     this.commonService.setGlobalSetting(i, settings[i as keyof typeof settings])
+    //   }
+    // })
+
     Object.keys(settings).forEach((i: string) => {
-      if (this.commonService.hasOwnProperty(i)) {
+      if (this.commonService.globalData.hasOwnProperty(i)) {
         this.commonService.setGlobalSetting(i, settings[i as keyof typeof settings])
       }
     })

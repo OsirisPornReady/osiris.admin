@@ -244,12 +244,21 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     // this.searchParam.searchField = this.commonService.searchField;
-    this.isAutoFill = this.commonService.isAutoFill;
-    this.isAutoSubmit = this.commonService.isAutoSubmit;
-    this.isAutoCreate = this.commonService.isAutoCreate;
-    this.isEditMode = this.commonService.isEditMode;
-    this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
-    this.isDownloadImage = this.commonService.isDownloadImage;
+
+    // this.isAutoFill = this.commonService.isAutoFill;
+    // this.isAutoSubmit = this.commonService.isAutoSubmit;
+    // this.isAutoCreate = this.commonService.isAutoCreate;
+    // this.isEditMode = this.commonService.isEditMode;
+    // this.isOpenMultiSelect = this.commonService.isOpenMultiSelect;
+    // this.isDownloadImage = this.commonService.isDownloadImage;
+
+    this.isAutoFill = this.commonService.globalData.isAutoFill;
+    this.isAutoSubmit = this.commonService.globalData.isAutoSubmit;
+    this.isAutoCreate = this.commonService.globalData.isAutoCreate;
+    this.isEditMode = this.commonService.globalData.isEditMode;
+    this.isOpenMultiSelect = this.commonService.globalData.isOpenMultiSelect;
+    this.isDownloadImage = this.commonService.globalData.isDownloadImage;
+
     this.defaultSortOptions = [
       {label: '标题(asc)', value: 'title.ascend'},
       {label: '番号(asc)', value: 'serialNumber.ascend'},
@@ -299,29 +308,29 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
   async switchAutoCreate() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
     await this.st.resetColumns()
-    this.commonService.isAutoCreate = this.isAutoCreate;
+    this.commonService.globalData.isAutoCreate = this.isAutoCreate;
   }
 
   async switchEditMode() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
     await this.st.resetColumns()
-    this.commonService.isEditMode = this.isEditMode;
+    this.commonService.globalData.isEditMode = this.isEditMode;
   }
 
   async switchMultiSelect() { //有更复杂的逻辑可以另外包在函数里,简单的st操作直接在页面上写就行了
     await this.st.resetColumns()
-    this.commonService.isOpenMultiSelect = this.isOpenMultiSelect;
+    this.commonService.globalData.isOpenMultiSelect = this.isOpenMultiSelect;
   }
 
   switchAutoFill() {
-    this.commonService.isAutoFill = this.isAutoFill;
+    this.commonService.globalData.isAutoFill = this.isAutoFill;
   }
 
   switchAutoSubmit() {
-    this.commonService.isAutoSubmit = this.isAutoSubmit;
+    this.commonService.globalData.isAutoSubmit = this.isAutoSubmit;
   }
 
   switchDownloadImage() {
-    this.commonService.isDownloadImage = this.isDownloadImage;
+    this.commonService.globalData.isDownloadImage = this.isDownloadImage;
   }
 
   async bulkDelete(_data: any) {
