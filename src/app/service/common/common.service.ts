@@ -104,4 +104,13 @@ export class CommonService {
     }
   }
 
+  setGlobalSetting(key: string, value: any) {
+    if (this.hasOwnProperty(key)) {
+      let member = this[key as keyof typeof this];
+      if (typeof member != 'function') {
+        this[key as keyof typeof this] = value;
+      }
+    }
+  }
+
 }

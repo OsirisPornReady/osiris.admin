@@ -6,16 +6,20 @@ import { SystemManageAreaEditComponent } from './area/area-edit/area-edit.compon
 import { SystemManageSystemConfigComponent } from './system-config/system-config.component';
 import { SystemManageCrawlTypeListComponent } from './crawl-type/crawl-type-list/crawl-type-list.component';
 import { SystemManageCrawlTypeEditComponent } from './crawl-type/crawl-type-edit/crawl-type-edit.component';
+import { SystemManageSystemSettingListComponent } from './system-setting/system-setting-list/system-setting-list.component';
+import { SystemManageSystemSettingEditComponent } from './system-setting/system-setting-edit/system-setting-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   SystemManageAreaListComponent,
   SystemManageCrawlTypeListComponent,
-  SystemManageSystemConfigComponent
+  SystemManageSystemConfigComponent,
+  SystemManageSystemSettingListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [
   SystemManageAreaEditComponent,
-  SystemManageCrawlTypeEditComponent
+  SystemManageCrawlTypeEditComponent,
+  SystemManageSystemSettingEditComponent
 ];
 
 @NgModule({

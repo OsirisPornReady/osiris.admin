@@ -12,6 +12,8 @@ import { NzIconService } from 'ng-zorro-antd/icon';
 import { ICONS } from '../../../style-icons';
 import { ICONS_AUTO } from '../../../style-icons-auto';
 
+import { SystemSettingService } from '../../service/system-setting/system-setting.service';
+
 /**
  * Used for application startup
  * Generally used to get the basic data of the application, like: Menu Data, User Data, etc.
@@ -26,7 +28,8 @@ export class StartupService {
     private titleService: TitleService,
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
+    private systemSettingService: SystemSettingService
   ) {
     iconSrv.addIcon(...ICONS_AUTO, ...ICONS);
   }
@@ -121,13 +124,18 @@ export class StartupService {
                 icon: { type: 'icon', value: 'setting' },
                 children: [
                   {
-                    text: 'area',
-                    link: '/system-manage/area-list',
+                    text: 'setting',
+                    link: '/system-manage/system-setting',
                     icon: null
                   },
                   {
                     text: 'crawl',
                     link: '/system-manage/crawl-list',
+                    icon: null
+                  },
+                  {
+                    text: 'area',
+                    link: '/system-manage/area-list',
                     icon: null
                   }
                 ]
@@ -148,7 +156,7 @@ export class StartupService {
           })
         )
         .subscribe({
-          next: (appData: NzSafeAny) => {
+          next: async (appData: NzSafeAny) => {
             // setting language data
             // this.i18n.use(defaultLang, langData);
             appData = appDataTemp;
@@ -163,6 +171,8 @@ export class StartupService {
             this.menuService.add(appData.menu);
             // Can be set page suffix title, https://ng-alain.com/theme/title
             this.titleService.suffix = appData.app.name;
+
+            await this.systemSettingService.loadGlobalSettings();
           },
           error: () => {},
           complete: () => {
