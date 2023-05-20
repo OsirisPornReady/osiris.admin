@@ -68,6 +68,9 @@ export class StartupService {
           email: 'cipchk@qq.com',
           token: '123456789'
         },
+        layout: {
+          collapsed: false
+        },
         menu: [
           {
             text: '',
@@ -167,6 +170,10 @@ export class StartupService {
             this.settingService.setUser(appData.user);
             // ACL: Set the permissions to full, https://ng-alain.com/acl/getting-started
             this.aclService.setFull(true);
+
+            // 菜单不折叠
+            this.settingService.setLayout('collapsed', false);
+
             // Menu data, https://ng-alain.com/theme/menu
             this.menuService.add(appData.menu);
             // Can be set page suffix title, https://ng-alain.com/theme/title
