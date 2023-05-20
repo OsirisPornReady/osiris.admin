@@ -8,11 +8,11 @@
     <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">保存</button>
   </div>
 
-  <ng-template sf-template="selectButton" let-i let-ui="ui" let-schema="schema">
-    <button nz-button nzType="default" (click)="addToAlbum(sf.value)">添加到专辑</button>
+  <ng-template sf-template="addButton" let-i let-ui="ui" let-schema="schema">
+    <button nz-button nzType="default">添加到专辑</button>
   </ng-template>
 
-  <ng-template sf-template="selectedVideoList" let-i let-ui="ui" let-schema="schema">
-    <div *ngFor="let item of selectedVideoList">{{item}}</div>
+  <ng-template sf-template="videoDetail" let-i let-ui="ui" let-schema="schema">
+    <div *ngFor="let item of videoDetailList">{{item.orgData.title}}</div>
   </ng-template>
 </sf>

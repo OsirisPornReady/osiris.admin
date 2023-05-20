@@ -19,8 +19,8 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
     properties: {
       albumName: { type: 'string', title: '专辑名' },
       videoList: { type: 'string', title: '专辑视频' },
-      selectButton: { type: 'string', title: '' },
-      selectedVideoList: { type: 'string', title: '专辑细则' },
+      // addButton: { type: 'string', title: '' },
+      videoDetail: { type: 'string', title: '专辑细则' },
     },
     required: ['albumName'],
   };
@@ -33,17 +33,20 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
       widget: 'select',
       allowClear: true,
       placeholder: '请选择视频',
+      mode: 'multiple',
+      maxTagCount: 1,
       asyncData: () => this.videoService.getSelectAll('title'),
+      change: (value: any, orgData: any) => this.syncToDetail(orgData)
     },
-    $selectButton: {
+    $addButton: {
       widget: 'custom',
     },
-    $selectedVideoList: {
+    $videoDetail: {
       widget: 'custom',
     }
   };
 
-  selectedVideoList: any[] = []
+  videoDetailList: any[] = []
 
   constructor(
     private modal: NzModalRef,
@@ -79,13 +82,7 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
     this.modal.destroy();
   }
 
-  handleVideoListChange(value: any) {
-    this.selectedVideoList = value;
-    console.log(value)
-  }
-
-  addToAlbum(value: any) {
-    this.selectedVideoList.push(value.videoList);
-    console.log(value)
+  syncToDetail(value: any) {
+    this.videoDetailList = value;
   }
 }
