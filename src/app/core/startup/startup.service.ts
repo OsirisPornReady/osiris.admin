@@ -106,6 +106,11 @@ export class StartupService {
                     text: 'quality',
                     link: '/video-manage/video-quality-list',
                     icon: null
+                  },
+                  {
+                    text: 'album',
+                    link: '/video-manage/video-album-list',
+                    icon: null
                   }
                 ]
               },

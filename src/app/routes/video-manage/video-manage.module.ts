@@ -16,12 +16,15 @@ import { VideoManageVideoCrawlInfoComponent } from './video/video-crawl/video-cr
 import { VideoManageVideoCrawlConfigComponent } from './video/video-crawl/video-crawl-config/video-crawl-config.component';
 import { VideoManageVideoInfoComponent } from './video/video-info/video-info.component';
 import { VideoManageVideoEvaluateComponent } from './video/video-evaluate/video-evaluate.component';
+import { VideoManageVideoAlbumListComponent } from './video-album/video-album-list/video-album-list.component';
+import { VideoManageVideoAlbumEditComponent } from './video-album/video-album-edit/video-album-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
   VideoManageVideoTagListComponent,
   VideoManageVideoTypeListComponent,
-  VideoManageVideoQualityListComponent
+  VideoManageVideoQualityListComponent,
+  VideoManageVideoAlbumListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [
@@ -32,7 +35,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoCrawlInfoComponent,
   VideoManageVideoCrawlConfigComponent,
   VideoManageVideoInfoComponent,
-  VideoManageVideoEvaluateComponent
+  VideoManageVideoEvaluateComponent,
+  VideoManageVideoAlbumEditComponent
 ];
 
 @NgModule({

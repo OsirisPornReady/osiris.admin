@@ -51,7 +51,7 @@ export class VideoService {
 
   getSelectAll(field = ''): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
-    let url = `video/get_select_all`;
+    let url = `api/video/get_select_all`;
     let result: any[] = [];
     return this.http.get(url).pipe(
       map(res => {
@@ -59,6 +59,25 @@ export class VideoService {
         res.forEach((i: any) => {
           result.push({
             label: i[field],
+            value: i.id,
+            orgData: i
+          });
+        });
+        return result;
+      })
+    );
+  }
+
+  getTransferAll(field = ''): Observable<string[] | SFSchemaEnumType[]> {
+    //asyncData专用，不用转成promise
+    let url = `api/video/get_select_all`;
+    let result: any[] = [];
+    return this.http.get(url).pipe(
+      map(res => {
+        res = res || [];
+        res.forEach((i: any) => {
+          result.push({
+            title: i[field],
             value: i.id
           });
         });
