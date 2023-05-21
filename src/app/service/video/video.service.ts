@@ -58,7 +58,7 @@ export class VideoService {
         res = res || [];
         res.forEach((i: any) => {
           result.push({
-            label: i[field],
+            label: `${i[field]}(${i.existSerialNumber ? i.serialNumber : '-'})`,
             value: i.id,
             orgData: i
           });
@@ -85,4 +85,5 @@ export class VideoService {
       })
     );
   }
+
 }
