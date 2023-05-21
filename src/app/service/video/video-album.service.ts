@@ -47,4 +47,14 @@ export class VideoAlbumService {
     );
   }
 
+  collectVideo(entity: any) {
+    let url = `api/video_album/collect_video/${entity.id}`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
+  getAlbumCollectedVideo(id: number) {
+    let url = `api/video_album/get_album_collected_video/${id}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
 }

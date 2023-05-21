@@ -17,6 +17,7 @@ import {VideoManageVideoCrawlInfoComponent} from '../video-crawl/video-crawl-inf
 import {VideoManageVideoCrawlConfigComponent} from '../video-crawl/video-crawl-config/video-crawl-config.component';
 import {VideoManageVideoInfoComponent} from '../video-info/video-info.component';
 import {VideoManageVideoEvaluateComponent} from '../video-evaluate/video-evaluate.component';
+import {VideoManageVideoCollectComponent} from '../video-select-album/video-collect.component';
 
 import {dateCompare} from "../../../../shared/utils/dateUtils";
 import {lastValueFrom} from "rxjs";
@@ -173,6 +174,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
     {
       title: '操作',
+      width: 160,
       buttons: [
         {
           text: '查看',
@@ -206,7 +208,14 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
             await this.delete(item.id);
           },
           iif: () => this.isEditMode
-        }
+        },
+        {
+          text: '收藏',
+          click: (item: any) => {
+            // `/form/${item.id}`
+            this.collectVideo(item.id)
+          }
+        },
       ],
       className: 'text-center'
     }
@@ -540,6 +549,14 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       }
     }
     this.nzImageService.preview(images, { nzKeyboard: true, nzMaskClosable: true, nzCloseOnNavigation: true})
+  }
+
+  collectVideo(id: number) {
+    this.modal.createStatic(VideoManageVideoCollectComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        this.st.reload(null, {merge: true, toTop: false});
+      }
+    });
   }
 
 }

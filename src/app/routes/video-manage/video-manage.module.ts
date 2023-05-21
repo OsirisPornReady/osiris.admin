@@ -18,6 +18,7 @@ import { VideoManageVideoInfoComponent } from './video/video-info/video-info.com
 import { VideoManageVideoEvaluateComponent } from './video/video-evaluate/video-evaluate.component';
 import { VideoManageVideoAlbumListComponent } from './video-album/video-album-list/video-album-list.component';
 import { VideoManageVideoAlbumEditComponent } from './video-album/video-album-edit/video-album-edit.component';
+import { VideoManageVideoCollectComponent } from './video/video-select-album/video-collect.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
@@ -36,7 +37,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoCrawlConfigComponent,
   VideoManageVideoInfoComponent,
   VideoManageVideoEvaluateComponent,
-  VideoManageVideoAlbumEditComponent
+  VideoManageVideoAlbumEditComponent,
+  VideoManageVideoCollectComponent
 ];
 
 @NgModule({

@@ -58,7 +58,7 @@
                      class="ml-md"></nz-switch>
         </div>
         <div style="margin-right: 0;margin-left: auto">
-          <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬取消息已连接' : '爬取消息已断开'" class="mr-md"></nz-badge>
+          <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
           <button nz-button type="button" nzType="default" nzShape="round" (click)="connectMessageSocket()">
             <span nz-icon [nzType]="'sync'" [nzSpin]="reloadSocketSpin"></span>
           </button>
