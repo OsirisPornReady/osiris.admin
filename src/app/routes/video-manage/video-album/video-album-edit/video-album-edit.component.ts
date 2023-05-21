@@ -11,6 +11,7 @@ import {lastValueFrom} from "rxjs";
 @Component({
   selector: 'app-video-manage-video-album-edit',
   templateUrl: './video-album-edit.component.html',
+  styleUrls: ['./video-album-edit.component.less']
 })
 export class VideoManageVideoAlbumEditComponent implements OnInit {
   title = '';
@@ -128,11 +129,10 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
   }
 
   syncToDetail(value: any, orgData: any) {
-    this.videoDetailList = value;
+    this.videoDetailList = orgData;
   }
 
   addToAlbumVideoList() {
-    console.log(this.selectedVideoDetail)
     if (!this.selectedVideoDetail) {
       this.msgSrv.info('未选择要添加的视频');
       return;
@@ -143,7 +143,16 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
       return;
     }
     albumVideoList.push(this.selectedVideoDetail.value);
-    this.sf.getProperty('/albumVideoList')!.setValue(albumVideoList, true);
+    this.sf.getProperty('/albumVideoList')!.setValue(albumVideoList, false);
     this.sf.getProperty('/albumVideoList')!.widget.reset(albumVideoList);
+    this.videoDetailList.push(this.selectedVideoDetail)
+  }
+
+  deleteFromAlbumVideoList(item: any) {
+    let albumVideoList: any[] = this.sf.getValue('/albumVideoList')! || []
+    albumVideoList = albumVideoList.filter((i: any) => i != item.value);
+    this.sf.getProperty('/albumVideoList')!.setValue(albumVideoList, false);
+    this.sf.getProperty('/albumVideoList')!.widget.reset(albumVideoList);
+    this.videoDetailList = this.videoDetailList.filter((i: any) => i.value != item.value);
   }
 }

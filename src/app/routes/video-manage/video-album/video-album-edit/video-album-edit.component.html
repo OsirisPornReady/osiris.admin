@@ -15,13 +15,16 @@
   <ng-template sf-template="videoDetailList" let-i let-ui="ui" let-schema="schema">
     <nz-spin [nzSpinning]="http.loading" [nzIndicator]="indicatorTemplate">
       <ng-template #indicatorTemplate><span nz-icon nzType="loading" style="font-size: 36px"></span></ng-template>
-      <nz-card *ngFor="let item of videoDetailList" class="ant-card-body-custom-padding">
+      <nz-card *ngFor="let item of videoDetailList" class="ant-card-body-custom-padding album-detail">
         <img
           nz-image
           width="100px"
           [nzSrc]="item.orgData.localCoverSrc"
           alt=""
         />
+        <button nz-button nzType="primary" nzSize="small" nzDanger nzShape="round" class="album-delete-button" (click)="deleteFromAlbumVideoList(item)">
+          <span nz-icon nzType="minus" nzTheme="outline"></span>
+        </button>
       </nz-card>
       <nz-empty *ngIf="videoDetailList.length == 0"></nz-empty>
     </nz-spin>
