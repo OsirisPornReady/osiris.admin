@@ -36,6 +36,7 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
     $albumVideoList: {
       widget: 'select',
       allowClear: true,
+      autoClearSearchValue: false,
       placeholder: '请选择视频',
       mode: 'multiple',
       maxTagCount: 1,
