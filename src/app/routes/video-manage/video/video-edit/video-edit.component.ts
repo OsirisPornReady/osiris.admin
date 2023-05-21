@@ -284,7 +284,12 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
   async ngOnInit() {
     if (this.record.id > 0) {
       this.title = '修改';
-      this.i = (await this.videoService.getById(this.record.id)) || {};
+      try {
+        this.i = (await this.videoService.getById(this.record.id)) || {};
+      } catch (e) {
+        console.error(e)
+        this.msgSrv.error('请求失败')
+      }
     } else {
       this.title = '新增';
       this.i = {};

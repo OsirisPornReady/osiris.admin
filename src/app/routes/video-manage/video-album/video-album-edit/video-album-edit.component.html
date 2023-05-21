@@ -9,10 +9,21 @@
   </div>
 
   <ng-template sf-template="addButton" let-i let-ui="ui" let-schema="schema">
-    <button nz-button nzType="default">添加到专辑</button>
+    <button nz-button nzType="default" (click)="addToAlbumVideoList()">添加到专辑</button>
   </ng-template>
 
-  <ng-template sf-template="videoDetail" let-i let-ui="ui" let-schema="schema">
-    <div *ngFor="let item of videoDetailList">{{item.orgData.title}}</div>
+  <ng-template sf-template="videoDetailList" let-i let-ui="ui" let-schema="schema">
+    <nz-spin [nzSpinning]="http.loading" [nzIndicator]="indicatorTemplate">
+      <ng-template #indicatorTemplate><span nz-icon nzType="loading" style="font-size: 36px"></span></ng-template>
+      <nz-card *ngFor="let item of videoDetailList" class="ant-card-body-custom-padding">
+        <img
+          nz-image
+          width="100px"
+          [nzSrc]="item.orgData.localCoverSrc"
+          alt=""
+        />
+      </nz-card>
+      <nz-empty *ngIf="videoDetailList.length == 0"></nz-empty>
+    </nz-spin>
   </ng-template>
 </sf>

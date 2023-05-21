@@ -30,7 +30,7 @@ export class VideoManageVideoAlbumListComponent implements OnInit {
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     { title: '专辑名', index: 'albumName' },
-    { title: '专辑视频', index: 'videoList' },
+    { title: '专辑视频', index: 'albumVideoList' },
     {
       title: '操作',
       buttons: [
