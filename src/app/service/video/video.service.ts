@@ -58,7 +58,7 @@ export class VideoService {
         res = res || [];
         res.forEach((i: any) => {
           result.push({
-            label: `${i[field]}(${i.existSerialNumber ? i.serialNumber : '-'})`,
+            label: i.existSerialNumber ? `(${i.serialNumber})${i[field]}` : `${i[field]}`,
             value: i.id,
             orgData: i
           });
