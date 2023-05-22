@@ -28,8 +28,9 @@ const routes: Routes = [
       // 业务子模块
       // { path: 'widgets', loadChildren: () => import('./widgets/widgets.module').then(m => m.WidgetsModule) },
       { path: 'video-manage', loadChildren: () => import('./video-manage/video-manage.module').then((m) => m.VideoManageModule) },
-      { path: 'cast-manage', loadChildren: () => import('./cast-manage/cast-manage.module').then((m) => m.CastManageModule) }
-    ,  { path: 'system-manage', loadChildren: () => import('./system-manage/system-manage.module').then((m) => m.SystemManageModule) }]
+      { path: 'cast-manage', loadChildren: () => import('./cast-manage/cast-manage.module').then((m) => m.CastManageModule) },
+      { path: 'system-manage', loadChildren: () => import('./system-manage/system-manage.module').then((m) => m.SystemManageModule) },
+      { path: 'gallery', loadChildren: () => import('./gallery/gallery.module').then((m) => m.GalleryModule) }]
   },
   // 空白布局
   // {

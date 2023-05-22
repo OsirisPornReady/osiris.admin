@@ -83,6 +83,11 @@ export class StartupService {
                 icon: { type: 'icon', value: 'shopping' }
               },
               {
+                text: 'Gallery',
+                link: '/gallery/video-gallery',
+                icon: { type: 'icon', value: 'rocket' }
+              },
+              {
                 text: 'Video Manage',
                 link: '',
                 icon: { type: 'icon', value: 'appstore' },

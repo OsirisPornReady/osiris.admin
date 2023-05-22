@@ -1,0 +1,30 @@
+<page-header [home]="''" [title]="''"></page-header>
+<!--<nz-card>-->
+<!--  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>-->
+<!--  <st #st [data]="url" [columns]="columns"></st>-->
+<!--</nz-card>-->
+<div class="container">
+  <div class="grid-container d-flex justify-content-around align-items-start">
+    <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" [nzLoading]="loading" nzHoverable>
+      <img
+        nz-image
+        width="378px"
+        [nzSrc]="''"
+        alt=""
+      />
+      <span nz-typography class="d-block">{{item.title}}</span>
+      <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
+    </nz-card>
+    <nz-empty *ngIf="gridList.length == 0"></nz-empty>
+  </div>
+  <div class="gallery-pagination d-flex justify-content-end align-items-center mt-md">
+    <nz-pagination nzShowQuickJumper
+                   nzShowSizeChanger
+                   [nzPageSizeOptions]="psOptions"
+                   [(nzPageSize)]="ps"
+                   [(nzPageIndex)]="pi"
+                   [nzTotal]="total"
+                   (nzPageIndexChange)="handlePageIndexChange()"
+                   (nzPageSizeChange)="handlePageSizeChange()"></nz-pagination>
+  </div>
+</div>
