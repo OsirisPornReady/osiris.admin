@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { STColumn, STColumnBadge, STColumnTag, STComponent, STData, STPage, STMultiSort } from '@delon/abc/st';
-import { SFCheckboxWidgetSchema, SFSchema, SFUISchema, SFSchemaEnumType } from '@delon/form';
+import {SFCheckboxWidgetSchema, SFSchema, SFUISchema, SFSchemaEnumType, SFComponent} from '@delon/form';
 import { ModalHelper, _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from "ng-zorro-antd/modal";
@@ -39,6 +39,14 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   searchParam: any = {
     // searchField: null
   }
+  keywordSearchSchema: SFSchema = {
+    properties: {
+      keyword: {
+        type: 'string',
+        title: '关键字'
+      },
+    }
+  };
   searchSchema: SFSchema = {
     properties: {
       searchField: {
@@ -107,6 +115,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       widget: 'checkbox',
       span: 6, // 指定每一项 8 个单元的布局
       checkAll: true,
+      // hidden: this.isSearchKeyword
     },
     $title: {
       visibleIf: {searchField: value => Array.isArray(value) ? value.includes('title') : false},
@@ -226,6 +235,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   isAutoCreate: boolean = true;
   isAutoFill: boolean = false;
   isAutoSubmit: boolean = false;
+  isKeywordSearch: boolean = true;
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
   crawlApiUrl: any = null;

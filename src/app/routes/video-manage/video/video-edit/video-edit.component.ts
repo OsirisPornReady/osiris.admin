@@ -301,6 +301,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     //2023-5-18更新: 上述方法还是不行
     //2023-5-18更新: this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true); 会填不了tag类型的select,弃用
     //2023-5-21更新: 搞清楚了this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], false); 中的onlySelf字段会影响填写相关的行为,设置为false才能有效更新表单值
+    //2023-5-22更新: 要获得sf就得设置{ static: false },当然viewchild不传参数也可以的，因为默认参数就是 static false
 
     //由于sf组件没有足够的钩子,只能出此下策
     if (this.record.id > 0) {

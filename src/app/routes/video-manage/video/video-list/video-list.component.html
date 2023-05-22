@@ -1,6 +1,7 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
-  <sf mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
+  <sf *ngIf="isKeywordSearch" mode="search" [schema]="keywordSearchSchema" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
+  <sf *ngIf="!isKeywordSearch" mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
   <nz-divider nzText=""></nz-divider>
   <div nz-row class="my-md">
     <div nz-col [nzXs]="24" [nzLg]="24">
@@ -25,6 +26,10 @@
                    [nzUnCheckedChildren]="'单条'"
                    [nzDisabled]="!isEditMode"
                    (ngModelChange)="switchMultiSelect()"
+                   class="mr-md"></nz-switch>
+        <nz-switch [(ngModel)]="isKeywordSearch"
+                   [nzCheckedChildren]="'关键字'"
+                   [nzUnCheckedChildren]="'高级搜索'"
                    class="mr-md"></nz-switch>
       </div>
       <div class="d-flex justify-content-start align-items-center">
