@@ -58,7 +58,9 @@ import {
   WomanOutline,
   ShoppingOutline,
   SyncOutline,
-  MinusOutline
+  MinusOutline,
+  PictureOutline,
+  VideoCameraOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -116,5 +118,7 @@ export const ICONS_AUTO = [
   WomanOutline,
   ShoppingOutline,
   SyncOutline,
-  MinusOutline
+  MinusOutline,
+  PictureOutline,
+  VideoCameraOutline
 ];

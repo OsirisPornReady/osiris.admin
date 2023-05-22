@@ -1,0 +1,123 @@
+<page-header [home]="''" [title]="''"></page-header>
+<nz-card>
+  <sf *ngIf="isKeywordSearch" mode="search" [schema]="keywordSearchSchema" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
+  <sf *ngIf="!isKeywordSearch" mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
+  <nz-divider nzText=""></nz-divider>
+  <div nz-row class="my-md">
+    <div nz-col [nzXs]="24" [nzLg]="24">
+      <div class="mb-md d-flex justify-content-start align-items-center">
+        <span nz-typography class="mr-md">排序 : </span>
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="列表默认排序" [(ngModel)]="defaultSort" [nzOptions]="defaultSortOptions" (ngModelChange)="selectDefaultSort()" class="width-md"></nz-select>
+      </div>
+      <div class="mb-md d-flex justify-content-start align-items-center">
+        <span nz-typography class="mr-md">选项 : </span>
+        <nz-switch [(ngModel)]="isAutoCreate"
+                   [nzCheckedChildren]="'自动'"
+                   [nzUnCheckedChildren]="'手动'"
+                   (ngModelChange)="switchAutoCreate()"
+                   class="mr-md"></nz-switch>
+        <nz-switch [(ngModel)]="isEditMode"
+                   [nzCheckedChildren]="'编辑'"
+                   [nzUnCheckedChildren]="'查看'"
+                   (ngModelChange)="switchEditMode()"
+                   class="mr-md"></nz-switch>
+        <nz-switch [(ngModel)]="isOpenMultiSelect"
+                   [nzCheckedChildren]="'批量'"
+                   [nzUnCheckedChildren]="'单条'"
+                   [nzDisabled]="!isEditMode"
+                   (ngModelChange)="switchMultiSelect()"
+                   class="mr-md"></nz-switch>
+        <nz-switch [(ngModel)]="isKeywordSearch"
+                   [nzCheckedChildren]="'关键字'"
+                   [nzUnCheckedChildren]="'高级搜索'"
+                   class="mr-md"></nz-switch>
+      </div>
+      <div class="d-flex justify-content-start align-items-center">
+        <span nz-typography class="mr-md">操作 : </span>
+        <div *ngIf="!isAutoCreate">
+          <button nz-button nzType="dashed" (click)="addEdit()">添加</button>
+          <button nz-button nzType="default" nzDanger (click)="bulkDelete(st._data)" *ngIf="isOpenMultiSelect">批量删除</button>
+        </div>
+        <div *ngIf="isAutoCreate">
+          <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions">
+<!--            <nz-option [nzLabel]="option.label" [nzValue]="option.value" *ngFor="let option of crawlTypeOptions"></nz-option>-->
+          </nz-select>
+          <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoCreate()"/>
+          <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
+            <span nz-icon nzType="api" nzTheme="outline"></span>
+          </button>
+          <nz-switch [(ngModel)]="isAutoFill"
+                     [nzCheckedChildren]="'自动填充'"
+                     [nzUnCheckedChildren]="'手动填充'"
+                     (ngModelChange)="switchAutoFill()"
+                     class="ml-md"></nz-switch>
+          <nz-switch [(ngModel)]="isDownloadImage"
+                     [nzCheckedChildren]="'下载图片'"
+                     [nzUnCheckedChildren]="'不下载图片'"
+                     (ngModelChange)="switchDownloadImage()"
+                     class="ml-md"></nz-switch>
+          <nz-switch [(ngModel)]="isAutoSubmit"
+                     [nzCheckedChildren]="'无需确认'"
+                     [nzUnCheckedChildren]="'需要确认'"
+                     (ngModelChange)="switchAutoSubmit()"
+                     class="ml-md"></nz-switch>
+        </div>
+        <div style="margin-right: 0;margin-left: auto">
+          <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
+          <button nz-button type="button" nzType="default" nzShape="round" (click)="connectMessageSocket()">
+            <span nz-icon [nzType]="'sync'" [nzSpin]="reloadSocketSpin"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <st #st [data]="url" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }" [multiSort]="multiSort">
+    <ng-template st-row="customVideoStatus" let-item>
+      <nz-badge [nzStatus]="statusBADGE[getVideoStatus(item)].color" [nzText]="statusBADGE[getVideoStatus(item)].text"></nz-badge>
+    </ng-template>
+
+    <ng-template st-row="customVideoQuality" let-item>
+      <nz-tag *ngIf="getVideoQuality(item)" [nzColor]="qualityTAG[getVideoQuality(item)].color" class="st-single-nz-tag">{{ qualityTAG[getVideoQuality(item)].text }}</nz-tag>
+      <span *ngIf="!getVideoQuality(item)" nz-typography nzDisabled>未知</span>
+    </ng-template>
+
+    <ng-template st-row="customVideoInfoCrawlButton" let-item>
+      <button *ngIf="item.canCrawl" nz-button type="button" nzType="default" nzShape="round" [nzDanger]="!(item.crawlApiUrl && item.crawlKey)" (click)="crawlInfo(item)">
+        <span nz-icon nzType="api" nzTheme="outline"></span>
+      </button>
+      <span *ngIf="!item.canCrawl" nz-typography nzDisabled>未配置</span>
+    </ng-template>
+
+<!--    <ng-template st-row="customVideoOnSubscription" let-item>-->
+<!--      <span nz-icon-->
+<!--            nzType="check-circle"-->
+<!--            nzTheme="twotone"-->
+<!--            nzTwotoneColor="#52c41a"-->
+<!--            [ngClass]="['custom-twotone-checked-icon']"-->
+<!--            [ngStyle]="{-->
+<!--              'opacity': (item.onSubscription ? '1' : '0')-->
+<!--            }"></span>-->
+<!--    </ng-template>-->
+
+    <ng-template st-row="customSwitchVideoSubscription" let-item>
+      <button nz-button type="button" [nzType]="item.onSubscription ? 'primary' : 'default'" nzShape="circle" (click)="switchVideoSubscription(item)">
+        <span  nz-icon nzType="bell" nzTheme="outline"></span>
+      </button>
+    </ng-template>
+
+    <ng-template st-row="customVideoEvaluate" let-item>
+      <a nz-typography href="javascript:void(0);" (click)="openVideoEvaluate(item.id)">
+        <span *ngIf="getScoreText(item.score).status">{{getScoreText(item.score).text}}</span>
+        <span *ngIf="!getScoreText(item.score).status" nz-typography nzType="danger">{{getScoreText(item.score).text}}</span>
+      </a>
+    </ng-template>
+
+<!--    注意标签的语义化,在浏览器中不同语义化的交互细节很不一样-->
+    <ng-template st-row="customTitle" let-item>
+      <a nz-typography href="javascript:void(0);" (click)="previewVideoImage(item)">
+<!--      <span [title]="item.title">{{item.title}}</span>-->
+        <span nz-typography nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.title">{{item.title}}</span>
+      </a>
+    </ng-template>
+  </st>
+</nz-card>

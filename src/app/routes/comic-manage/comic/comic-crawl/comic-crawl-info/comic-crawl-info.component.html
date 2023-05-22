@@ -1,0 +1,85 @@
+<!--<div class="modal-header">-->
+<!--  <div class="modal-title">{{ title }}</div>-->
+<!--</div>-->
+<!--<nz-spin *ngIf="!i" class="modal-spin"></nz-spin>-->
+<!--<nz-card *ngIf="true" [nzLoading]="true" class="loading-card"></nz-card>-->
+<nz-skeleton *ngIf="!i" [nzActive]="true" [nzParagraph]="{ rows: 22 }"></nz-skeleton>
+
+<div *ngIf="i" class="mb-md">
+  <div>
+    <h3 nz-typography [nzContent]="i.title" [nzCopyable]="true"></h3>
+    <nz-space nzSize="middle" [nzSplit]="spaceSplit">
+      <ng-template #spaceSplit>
+        <nz-divider nzType="vertical"></nz-divider>
+      </ng-template>
+      <a *nzSpaceItem [href]="dataSourceUrl" target="_blank">
+        数据源
+        <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+      </a>
+<!--      <a *nzSpaceItem [href]="nyaaUrl" target="_blank">-->
+<!--        nyaa-->
+<!--        <span nz-icon nzType="share-alt" nzTheme="outline"></span>-->
+<!--      </a>-->
+      <a *nzSpaceItem [href]="i.btdigUrl" target="_blank">
+        btDigg
+        <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+      </a>
+    </nz-space>
+  </div>
+  <nz-card nzHoverable class="mt-md mb-lg">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <img nz-image width="824" [nzSrc]="this.i.localCoverSrc" alt=""/>
+      </div>
+      <div style="width: 600px;">
+        <div>
+          <span class="font-weight-bold">番号: </span>
+          <span nz-typography nzType="danger" [nzContent]="i.serialNumber ? i.serialNumber : '--'" [nzCopyable]="true" class="text-md d-inline-block mb-sm"></span>
+        </div>
+        <div class="av-info mb-sm">
+          <span class="font-weight-bold">日期:</span>
+          <span nz-typography [nzContent]="dateStringFormatter(i.publishTime)" class="text-md font-weight-normal"></span>
+        </div>
+        <div class="av-info mb-sm" *ngIf="i.duration">
+          <span class="font-weight-bold">时长:</span>
+          <span nz-typography [nzContent]="i.duration ? (i.duration + '分钟') : ''" class="text-md font-weight-normal"></span>
+        </div>
+        <div class="av-info mb-sm" *ngIf="i.director">
+          <span class="font-weight-bold">导演:</span>
+          <span nz-typography [nzContent]="i.director" class="text-md font-weight-normal"></span>
+        </div>
+        <div class="av-info mb-sm" *ngIf="i.producer">
+          <span class="font-weight-bold">制作商:</span>
+          <span nz-typography [nzContent]="i.producer" class="text-md font-weight-normal"></span>
+        </div>
+        <div class="av-info mb-sm" *ngIf="i.releaser">
+          <span class="font-weight-bold">发行商:</span>
+          <span nz-typography [nzContent]="i.releaser" class="text-md font-weight-normal"></span>
+        </div>
+        <div class="av-info mb-sm" *ngIf="i.brand">
+          <span class="font-weight-bold">厂牌:</span>
+          <span nz-typography [nzContent]="i.brand" class="text-md font-weight-normal"></span>
+        </div>
+      </div>
+    </div>
+  </nz-card>
+
+  <nz-divider nzText="Preview Image"></nz-divider>
+
+  <div>
+    <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
+      <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
+        <img nz-image width="150" [nzSrc]="item" alt=""/>
+      </nz-card>
+    </nz-image-group>
+    <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>
+  </div>
+</div>
+
+<nz-divider *ngIf="i" nzText="Confirm Information"></nz-divider>
+<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
+  <div class="drawer-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">自动{{record.id > 0 ? '填充' : '创建' }}</button>
+  </div>
+</sf>

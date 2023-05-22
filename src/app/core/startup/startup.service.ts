@@ -80,7 +80,7 @@ export class StartupService {
               {
                 text: 'Dashboard',
                 link: '/dashboard',
-                icon: { type: 'icon', value: 'shopping' }
+                icon: { type: 'icon', value: 'appstore' }
               },
               {
                 text: 'Gallery',
@@ -90,7 +90,7 @@ export class StartupService {
               {
                 text: 'Video Manage',
                 link: '',
-                icon: { type: 'icon', value: 'appstore' },
+                icon: { type: 'icon', value: 'video-camera' },
                 children: [
                   {
                     text: 'video',
@@ -115,6 +115,18 @@ export class StartupService {
                   {
                     text: 'album',
                     link: '/video-manage/video-album-list',
+                    icon: null
+                  }
+                ]
+              },
+              {
+                text: 'Comic Manage',
+                link: '',
+                icon: { type: 'icon', value: 'picture' },
+                children: [
+                  {
+                    text: 'comic',
+                    link: '/comic-manage/comic-list',
                     icon: null
                   }
                 ]

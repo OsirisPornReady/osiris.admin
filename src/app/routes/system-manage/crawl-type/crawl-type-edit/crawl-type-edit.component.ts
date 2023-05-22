@@ -21,7 +21,7 @@ export class SystemManageCrawlTypeEditComponent implements OnInit {
       crawlApiUrl: { type: 'string', title: '接口地址' },
       isActive: { type: 'boolean', title: '是否启用' },
     },
-    required: ['name', 'crawlTypeKey'],
+    required: ['name', 'crawlTypeKey', 'crawlApiUrl'],
   };
   ui: SFUISchema = {
     '*': {
@@ -30,6 +30,9 @@ export class SystemManageCrawlTypeEditComponent implements OnInit {
     },
     $crawlTypeKey: {
       precision: 0
+    },
+    $crawlApiUrl: {
+
     }
   };
 

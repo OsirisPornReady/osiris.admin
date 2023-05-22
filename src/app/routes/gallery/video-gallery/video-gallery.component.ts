@@ -36,7 +36,7 @@ export class GalleryVideoGalleryComponent implements OnInit {
   ];
 
   pi: number = 1;
-  ps: number = 12;
+  ps: number = 8;
   total: number = 0;
   psOptions: number[] = [8, 12, 16]
   gridList: any[] = []

@@ -30,7 +30,7 @@ const routes: Routes = [
       { path: 'video-manage', loadChildren: () => import('./video-manage/video-manage.module').then((m) => m.VideoManageModule) },
       { path: 'cast-manage', loadChildren: () => import('./cast-manage/cast-manage.module').then((m) => m.CastManageModule) },
       { path: 'system-manage', loadChildren: () => import('./system-manage/system-manage.module').then((m) => m.SystemManageModule) },
-      { path: 'gallery', loadChildren: () => import('./gallery/gallery.module').then((m) => m.GalleryModule) }]
+      { path: 'gallery', loadChildren: () => import('./gallery/gallery.module').then((m) => m.GalleryModule) },  { path: 'comic-manage', loadChildren: () => import('./comic-manage/comic-manage.module').then((m) => m.ComicManageModule) }]
   },
   // 空白布局
   // {
