@@ -6,7 +6,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from "ng-zorro-antd/modal";
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image';
-import {Subscription} from "rxjs";
+import {finalize, Subscription} from "rxjs";
 
 import {VideoQualityService} from '../../../../service/video/video-quality.service';
 import {ComicService} from '../../../../service/comic/comic.service';
@@ -639,7 +639,9 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       comicPicSrcList: item.comicPicSrcList ? item.comicPicSrcList : []
     }
     let url = `crawl/comic/download_comic`
-    this.http.post(url, entity).subscribe({
+    this.http.post(url, entity).pipe(finalize(() => {
+      this.onDownloadingComic = false;
+    })).subscribe({
       next: async (res: any) => {
         this.msgSrv.success('Comic下载成功');
         try {
@@ -654,8 +656,10 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
           this.msgSrv.error('Comic数据更新失败');
         }
       },
-      error:() => { this.msgSrv.success('Comic下载失败'); },
-      complete: () => { this.onDownloadingComic = false; }
+      error:() => {
+        this.msgSrv.success('Comic下载失败');
+      },
+      complete: () => {}
     })
   }
 
