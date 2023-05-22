@@ -30,7 +30,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   schema: SFSchema = {
     properties: {
       title: { type: 'string', title: '标题' },
-      titleEng: { type: 'string', title: '英文标题' },
+      titleJap: { type: 'string', title: '日文标题' },
+      secureFileName: { type: 'string', title: '安全的文件名' },
       pageSize: { type: 'number', title: '页数' },
       languageTags: { type: 'string', title: '语言' },
       parodyTags: { type: 'string', title: '同人原作' },
@@ -41,6 +42,10 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       femaleTags: { type: 'string', title: '女性标签' },
       mixedTags: { type: 'string', title: '混合标签' },
       otherTags: { type: 'string', title: '其他标签' },
+      coverSrc: { type: 'string', title: '封面' },
+      previewImageSrcList: { type: 'string', title: '预览图' },
+      localCoverSrc: { type: 'string', title: '本地封面' },
+      localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
     },
     required: ['title'],
   };
@@ -57,7 +62,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       grid: { span: 22 }
     },
     $title: { placeholder: '输入标题' },
-    $titleEng: { placeholder: '输入英文标题' },
+    $titleJap: { placeholder: '输入日文标题' },
     $score: {
       // widget: 'custom'
       widget: 'rate',
@@ -132,6 +137,20 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       widget: 'select',
       allowClear: true,
       placeholder: '请添加其他标签',
+      mode: 'tags',
+      default: null,
+    },
+    $previewImageSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入预览图(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $localPreviewImageSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入本地预览图(可多个值)',
       mode: 'tags',
       default: null,
     },

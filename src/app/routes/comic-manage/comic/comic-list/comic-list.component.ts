@@ -22,6 +22,7 @@ import {ComicManageComicInfoComponent} from '../comic-info/comic-info.component'
 import {dateCompare} from "../../../../shared/utils/dateUtils";
 import {lastValueFrom} from "rxjs";
 import {CrawlMessage} from "../../../../model/CrawlMessage";
+import {ComicManageComicCrawlInfoComponent} from "../comic-crawl/comic-crawl-info/comic-crawl-info.component";
 
 
 @Component({
@@ -55,10 +56,17 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         title: '搜索字段',
         enum: [
           {label: '标题', value: 'title'},
-          {label: '番号', value: 'serialNumber'},
-          {label: '演员', value: 'starsRaw'},
-          {label: '标签', value: 'tagsRaw'},
-          {label: '发行时间', value: 'publishTimeStart'},
+          {label: '日文标题', value: 'titleJap'},
+          {label: '语言', value: 'languageTags'},
+          {label: '同人原作', value: 'parodyTags'},
+          {label: '角色', value: 'characterTags'},
+          {label: '创作团体', value: 'groupTags'},
+          {label: '创作者', value: 'artistTags'},
+          {label: '男性标签', value: 'maleTags'},
+          {label: '女性标签', value: 'femaleTags'},
+          {label: '混合标签', value: 'mixedTags'},
+          {label: '其他标签', value: 'otherTags'},
+          {label: '发行时间', value: 'postedTimeStart'},
           {label: '添加时间', value: 'addTimeStart'},
         ],
         default: ['title']
@@ -67,29 +75,57 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         type: 'string',
         title: '标题'
       },
-      serialNumber: {
+      titleJap: {
         type: 'string',
-        title: '番号'
+        title: '日文标题'
       },
-      starsRaw: {
+      languageTags: {
         type: 'string',
-        title: '演员'
+        title: '语言'
       },
-      tagsRaw: {
+      parodyTags: {
         type: 'string',
-        title: '标签'
+        title: '同人原作'
       },
-      publishTimeStart: {
+      characterTags: {
+        type: 'string',
+        title: '角色'
+      },
+      groupTags: {
+        type: 'string',
+        title: '创作团体'
+      },
+      artistTags: {
+        type: 'string',
+        title: '创作者'
+      },
+      maleTags: {
+        type: 'string',
+        title: '男性标签'
+      },
+      femaleTags: {
+        type: 'string',
+        title: '女性标签'
+      },
+      mixedTags: {
+        type: 'string',
+        title: '混合标签'
+      },
+      otherTags: {
+        type: 'string',
+        title: '其他标签'
+      },
+      postedTimeStart: {
         type: 'string',
         title: '发行时间',
         ui: {
           widget: 'date',
           rangeMode: 'date',
-          end: 'publishTimeEnd',
+          end: 'postedTimeEnd',
           format: 'yyyy-MM-dd',
         },
       },
-      publishTimeEnd: {
+      postedTimeEnd: {
         type: 'string',
       },
       addTimeStart: {
@@ -121,16 +157,37 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     $title: {
       visibleIf: {searchField: value => Array.isArray(value) ? value.includes('title') : false},
     },
-    $serialNumber: {
-      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('serialNumber') : false},
+    $titleJap: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('titleJap') : false},
     },
-    $starsRaw: {
-      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('starsRaw') : false},
+    $languageTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('languageTags') : false},
     },
-    $tagsRaw: {
-      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('tagsRaw') : false},
+    $parodyTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('parodyTags') : false},
     },
-    $publishTimeStart: {
+    $characterTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('characterTags') : false},
+    },
+    $groupTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('groupTags') : false},
+    },
+    $artistTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('artistTags') : false},
+    },
+    $maleTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('maleTags') : false},
+    },
+    $femaleTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('femaleTags') : false},
+    },
+    $mixedTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('mixedTags') : false},
+    },
+    $otherTags: {
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('otherTags') : false},
+    },
+    $postedTimeStart: {
       visibleIf: {searchField: value => Array.isArray(value) ? value.includes('publishTimeStart') : false},
     },
     $addTimeStart: {
@@ -271,13 +328,13 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
 
     this.defaultSortOptions = [
       {label: '标题(asc)', value: 'title.ascend'},
-      {label: '番号(asc)', value: 'serialNumber.ascend'},
+      {label: '英文标题(asc)', value: 'titleJap.ascend'},
       {label: '更新时间(desc)', value: 'updateTime.descend'},
       {label: '更新时间(asc)', value: 'updateTime.ascend'},
       {label: '添加时间(desc)', value: 'addTime.descend'},
       {label: '添加时间(asc)', value: 'addTime.ascend'},
-      {label: '发行时间(desc)', value: 'publishTime.descend'},
-      {label: '发行时间(asc)', value: 'publishTime.ascend'},
+      {label: '发行时间(desc)', value: 'postedTime.descend'},
+      {label: '发行时间(asc)', value: 'postedTime.ascend'},
     ]
     try {
       let res = (await this.videoQualityService.getDict()) || {};
@@ -405,26 +462,26 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   }
 
   crawlInfo(value: any) {
-    // if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
-    //   this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
-    //     size: 1600,
-    //     drawerOptions: {nzClosable: false}
-    //   }).subscribe(res => {
-    //     if (res.state == 'ok') {
-    //       this.modal.createStatic(VideoManageVideoEditComponent, {
-    //         record: {id: value.id},
-    //         automated: true,
-    //         automatedData: res.data
-    //       }).subscribe(res => {
-    //         if (res == 'ok') {
-    //           this.st.reload();
-    //         }
-    //       });
-    //     }
-    //   });
-    // } else {
-    //   this.msgSrv.info('请配置爬虫数据源与爬虫关键字');
-    // }
+    if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
+      this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {
+        size: 1600,
+        drawerOptions: {nzClosable: false}
+      }).subscribe(res => {
+        if (res.state == 'ok') {
+          this.modal.createStatic(ComicManageComicEditComponent, {
+            record: {id: value.id},
+            automated: true,
+            automatedData: res.data
+          }).subscribe(res => {
+            if (res == 'ok') {
+              this.st.reload();
+            }
+          });
+        }
+      });
+    } else {
+      this.msgSrv.info('请配置爬虫数据源与爬虫关键字');
+    }
   }
 
   autoCreate() {

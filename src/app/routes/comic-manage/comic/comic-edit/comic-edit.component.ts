@@ -1,4 +1,4 @@
-import {Component, OnInit, AfterViewInit, ViewChild, QueryList, ViewChildren} from '@angular/core';
+import {Component, OnInit, AfterViewInit, ViewChild, QueryList, ViewChildren, ChangeDetectorRef} from '@angular/core';
 import {SFComponent, SFSchema, SFUISchema} from '@delon/form';
 import { _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -35,7 +35,8 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       crawlKey: { type: 'string', title: '导入关键字' },
       crawlButton: { type: 'string', title: '导入' },
       title: { type: 'string', title: '标题' },
-      titleEng: { type: 'string', title: '英文标题' },
+      titleJap: { type: 'string', title: '日文标题' },
+      secureFileName: { type: 'string', title: '安全的文件名' },
       score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
       pageSize: { type: 'number', title: '页数' },
       languageTags: { type: 'string', title: '语言' },
@@ -50,7 +51,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       onStorage: { type: 'boolean', title: '入库情况' },
       comicSrc: { type: 'string', title: '本地地址' },
       comicResolution: { type: 'string', title: '漫画分辨率' },
-      postedTime: { type: 'string', title: '发行日期', format: 'date' },
+      postedTime: { type: 'string', title: '发行日期', format: 'date-time' },
       comicType: { type: 'string', title: '类型' },
       inSeries: { type: 'boolean', title: '是否系列作品' },
       series: { type: 'string', title: '系列' },
@@ -93,7 +94,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       widget: 'custom'
     },
     $title: { placeholder: '输入标题' },
-    $titleEng: { placeholder: '输入英文标题' },
+    $titleJap: { placeholder: '输入日文标题' },
     $score: {
       // widget: 'custom'
       widget: 'rate',
@@ -238,6 +239,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     private videoAreaService: AreaService,
     private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -253,6 +255,11 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       this.title = '新增';
       this.i = {};
     }
+    setTimeout(async () => {
+      if (this.automated) {
+        await this.automatedOperate();
+      }
+    })
   }
 
   ngAfterViewInit() {
@@ -261,33 +268,34 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     //2023-5-18更新: this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true); 会填不了tag类型的select,弃用
     //2023-5-21更新: 搞清楚了this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], false); 中的onlySelf字段会影响填写相关的行为,设置为false才能有效更新表单值
     //2023-5-22更新: 要获得sf就得设置{ static: false },当然viewchild不传参数也可以的，因为默认参数就是 static false
+    //2023-5-23更新: 在setTimeout中执行是更好的方法
 
     //由于sf组件没有足够的钩子,只能出此下策
-    if (this.record.id > 0) {
-      this.sfList.changes.subscribe(() => {
-        let sfArray = this.sfList.toArray();
-        if (sfArray.length > 0) {
-          this.safeSF = sfArray[0];
-          // promise语法糖,相当于
-          // new Promise((resolve) => {
-          //   resolve(42)
-          // })
-          Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-            if (this.automated) {
-              await this.automatedOperate();
-            }
-          })
-        }
-      })
-    } else {
-      this.safeSF = this.sf
-      // this.safeSF.validator()
-      Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-        if (this.automated) {
-          await this.automatedOperate();
-        }
-      })
-    }
+    // if (this.record.id > 0) {
+    //   this.sfList.changes.subscribe(() => {
+    //     let sfArray = this.sfList.toArray();
+    //     if (sfArray.length > 0) {
+    //       this.safeSF = sfArray[0];
+    //       // promise语法糖,相当于
+    //       // new Promise((resolve) => {
+    //       //   resolve(42)
+    //       // })
+    //       Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+    //         if (this.automated) {
+    //           await this.automatedOperate();
+    //         }
+    //       })
+    //     }
+    //   })
+    // } else {
+    //   this.safeSF = this.sf
+    //   // this.safeSF.validator()
+    //   Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+    //     if (this.automated) {
+    //       await this.automatedOperate();
+    //     }
+    //   })
+    // }
   }
 
   async save(value: any) {
@@ -332,7 +340,25 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     //     this.msgSrv.warning('此标题已存在');
     //   }
     // } catch (e) {}
-    await this.autoSubmitForm();
+
+    // settimeout可以,promise比settimeout快总之别连续访问值(特别是在改变值之后)
+    // https://www.google.com/search?q=promise.resolve.then+vs+settimeout&sxsrf=APwXEdfY7MK32DIt_p73CWi0-mfIo98qqw%3A1684781684066&source=hp&ei=dLprZPKwAtnmhwOfkbmADw&iflsig=AOEireoAAAAAZGvIhDdJUWUx4nNIEvSWoqYUJHN162ow&oq=Promise.resolve%28%29.then+set&gs_lcp=Cgdnd3Mtd2l6EAMYADIGCAAQCBAeOgUIABCiBDoFCCEQoAE6BQgAEIAEOgQIABAeOgUIABDLAVAAWL1LYKNUaAJwAHgAgAGGAYgB1wmSAQQxMC4zmAEAoAECoAEB&sclient=gws-wiz
+    // setTimeout(async () => {
+    //   await this.autoSubmitForm();
+    // })
+    //
+    // setTimeout(async () => {
+    //   await this.autoSubmitForm();
+    // }, 0)
+
+    // 这个居然不好使了, 奇怪
+    // await Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+    //
+    // })
+
+    setTimeout(async () => {
+      await this.autoSubmitForm();
+    })
   }
 
   autoFillForm() {
@@ -347,7 +373,8 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       }
 
       try {
-        this.safeSF.setValue(`/${key}`, fillData[key]);
+        // this.safeSF.setValue(`/${key}`, fillData[key]);
+        this.sf.setValue(`/${key}`, fillData[key]);
       } catch (e) {
         console.error(`自动填充字段${key}失败`, e);
       }
@@ -367,15 +394,14 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     // } catch (e) {}
     // if (!this.commonService.isAutoSubmit) { return; }
     if (!this.commonService.globalData.isAutoSubmit) { return; }
-    await Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-      if (this.safeSF.valid) {
-        try {
-          await this.save(this.safeSF.value);
-        } catch (e) {}
-      } else {
-        this.msgSrv.error('表单存在非法值,无法自动提交')
-      }
-    })
+    // if (this.safeSF.valid) {
+    if (this.sf.valid) {
+      try {
+        await this.save(this.sf.value);
+      } catch (e) {}
+    } else {
+      this.msgSrv.error('表单存在非法值,无法自动提交')
+    }
   }
 
 }

@@ -294,6 +294,11 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       this.title = '新增';
       this.i = {};
     }
+    setTimeout(async () => {
+      if (this.automated) {
+        await this.automatedOperate();
+      }
+    })
   }
 
   ngAfterViewInit() {
@@ -302,33 +307,34 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     //2023-5-18更新: this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], true); 会填不了tag类型的select,弃用
     //2023-5-21更新: 搞清楚了this.safeSF.getProperty(`/${key}`)?.setValue(fillData[key], false); 中的onlySelf字段会影响填写相关的行为,设置为false才能有效更新表单值
     //2023-5-22更新: 要获得sf就得设置{ static: false },当然viewchild不传参数也可以的，因为默认参数就是 static false
+    //2023-5-23更新: 在setTimeout中执行是更好的方法
 
     //由于sf组件没有足够的钩子,只能出此下策
-    if (this.record.id > 0) {
-      this.sfList.changes.subscribe(() => {
-        let sfArray = this.sfList.toArray();
-        if (sfArray.length > 0) {
-          this.safeSF = sfArray[0];
-          // promise语法糖,相当于
-          // new Promise((resolve) => {
-          //   resolve(42)
-          // })
-          Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-            if (this.automated) {
-              await this.automatedOperate();
-            }
-          })
-        }
-      })
-    } else {
-      this.safeSF = this.sf
-      // this.safeSF.validator()
-      Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-        if (this.automated) {
-          await this.automatedOperate();
-        }
-      })
-    }
+    // if (this.record.id > 0) {
+    //   this.sfList.changes.subscribe(() => {
+    //     let sfArray = this.sfList.toArray();
+    //     if (sfArray.length > 0) {
+    //       this.safeSF = sfArray[0];
+    //       // promise语法糖,相当于
+    //       // new Promise((resolve) => {
+    //       //   resolve(42)
+    //       // })
+    //       Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+    //         if (this.automated) {
+    //           await this.automatedOperate();
+    //         }
+    //       })
+    //     }
+    //   })
+    // } else {
+    //   this.safeSF = this.sf
+    //   // this.safeSF.validator()
+    //   Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+    //     if (this.automated) {
+    //       await this.automatedOperate();
+    //     }
+    //   })
+    // }
   }
 
   async save(value: any) {
@@ -388,7 +394,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       }
 
       try {
-        this.safeSF.setValue(`/${key}`, fillData[key]);
+        // this.safeSF.setValue(`/${key}`, fillData[key]);
+        this.sf.setValue(`/${key}`, fillData[key]);
       } catch (e) {
         console.error(`自动填充字段${key}失败`, e);
       }
@@ -408,15 +415,22 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     // } catch (e) {}
     // if (!this.commonService.isAutoSubmit) { return; }
     if (!this.commonService.globalData.isAutoSubmit) { return; }
-    await Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
-      if (this.safeSF.valid) {
-        try {
-          await this.save(this.safeSF.value);
-        } catch (e) {}
-      } else {
-        this.msgSrv.error('表单存在非法值,无法自动提交')
-      }
-    })
+    // await Promise.resolve().then(async () => { // 应对Error: NG0100,用setTimeout(() => {}, 0)也可以,相当于在第二次更新检测时再更新值,类似vue中的nextTick
+    //   if (this.safeSF.valid) {
+    //     try {
+    //       await this.save(this.safeSF.value);
+    //     } catch (e) {}
+    //   } else {
+    //     this.msgSrv.error('表单存在非法值,无法自动提交')
+    //   }
+    // })
+    if (this.sf.valid) {
+      try {
+        await this.save(this.sf.value);
+      } catch (e) {}
+    } else {
+      this.msgSrv.error('表单存在非法值,无法自动提交')
+    }
   }
 
 }
