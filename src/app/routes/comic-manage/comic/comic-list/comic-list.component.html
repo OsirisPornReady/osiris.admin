@@ -119,5 +119,11 @@
         <span nz-typography nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.title">{{item.title}}</span>
       </a>
     </ng-template>
+
+    <ng-template st-row="customDownloadComic" let-item>
+      <button nz-button type="button" [nzType]="'default'" nzShape="circle" [nzLoading]="onDownloadingComic" (click)="downloadComic(item)">
+        <span  nz-icon nzType="download" nzTheme="outline"></span>
+      </button>
+    </ng-template>
   </st>
 </nz-card>

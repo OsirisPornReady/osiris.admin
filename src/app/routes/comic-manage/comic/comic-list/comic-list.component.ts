@@ -222,9 +222,11 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       width: 550,
       render: 'customTitle',
     }, //即使是custom render也最好带上index,search和sort什么的用得上
+    {title: '页数', index: 'pageSize', sort: true},
     {title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'postedTime', sort: true},
     {title: '资源状态', render: 'customVideoStatus', className: 'text-center'},
-    {title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center'},
+    // {title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center'},
+    {title: '下载', render: 'customDownloadComic', className: 'text-center'},
     {title: '评价', render: 'customVideoEvaluate', className: 'text-center'},
     {title: '质量', render: 'customVideoQuality', className: 'text-center'},
     {title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center'},
@@ -293,6 +295,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   messageSocketSubscription: Subscription = new Subscription();
   reloadSocketSpin: boolean = false;
   scoreTextTable: any = this.commonService.scoreTextTable;
+  onDownloadingComic: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -545,6 +548,9 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         case 'preview':
           picType = '预览图'
           break;
+        case 'comic':
+          picType = '漫画'
+          break;
         default:
           break;
       }
@@ -615,6 +621,42 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     //     this.st.reload(null, {merge: true, toTop: false});
     //   }
     // });
+  }
+
+  downloadComic(item: any) {
+    if (this.onDownloadingComic) {
+      this.msgSrv.info('正在下载其他漫画');
+      return;
+    }
+    if (!(item.hasOwnProperty('secureFileName') && item.secureFileName)) {
+      this.msgSrv.info('还未爬取信息');
+      return;
+    }
+    this.onDownloadingComic = true;
+    let entity: any = {
+      secureFileName: item.secureFileName,
+      comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
+      comicPicSrcList: item.comicPicSrcList ? item.comicPicSrcList : []
+    }
+    let url = `crawl/comic/download_comic`
+    this.http.post(url, entity).subscribe({
+      next: async (res: any) => {
+        this.msgSrv.success('Comic下载成功');
+        try {
+          await this.comicService.update({
+            id: item.id,
+            comicPicSrcList: res?.comicPicSrcList,
+            localComicPicSrcList: res?.localComicPicSrcList
+          });
+          this.st.reload(null, {merge: true, toTop: false});
+          this.msgSrv.success('Comic数据更新成功');
+        } catch (e) {
+          this.msgSrv.error('Comic数据更新失败');
+        }
+      },
+      error:() => { this.msgSrv.success('Comic下载失败'); },
+      complete: () => { this.onDownloadingComic = false; }
+    })
   }
 
 }

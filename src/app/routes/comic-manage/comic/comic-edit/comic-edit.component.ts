@@ -62,6 +62,9 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       previewImageSrcList: { type: 'string', title: '预览图' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
+      comicPicLinkList: { type: 'string', title: '漫画链接' },
+      comicPicSrcList: { type: 'string', title: '漫画图源' },
+      localComicPicSrcList: { type: 'string', title: '本地漫画链接' },
       dataSourceUrl: { type: 'string', title: '数据源' },
       comment: { type: 'string', title: '评论' },
     },
@@ -219,6 +222,27 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     },
     $comment: {
       widget: 'textarea'
+    },
+    $comicPicLinkList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入图(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $comicPicSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入图(可多个值)',
+      mode: 'tags',
+      default: null,
+    },
+    $localComicPicSrcList: {
+      widget: 'select',
+      allowClear: true,
+      placeholder: '输入图(可多个值)',
+      mode: 'tags',
+      default: null,
     },
   };
 
