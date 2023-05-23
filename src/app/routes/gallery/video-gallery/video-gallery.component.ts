@@ -89,6 +89,10 @@ export class GalleryVideoGalleryComponent implements OnInit {
     event.stopPropagation();
   }
 
+  handleLink(event: any) {
+    event.stopPropagation();
+  }
+
   openInfo(id: number) {
     this.drawer.create('', VideoManageVideoInfoComponent, {record: {id}}, {
       size: 1600,
