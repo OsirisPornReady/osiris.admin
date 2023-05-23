@@ -8,15 +8,12 @@ import { AreaService } from '../../../../service/area/area.service';
 import { CastService } from '../../../../service/cast/cast.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { CrawlTypeService } from '../../../../service/crawl/crawl-type.service';
-import { VideoQualityService } from '../../../../service/video/video-quality.service';
-import { VideoTagService } from '../../../../service/video/video-tag.service';
-import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { ComicService } from "../../../../service/comic/comic.service";
 
 import { ComicManageComicCrawlInfoComponent } from '../comic-crawl/comic-crawl-info/comic-crawl-info.component';
 
 @Component({
-  selector: 'app-video-manage-comic-edit',
+  selector: 'app-comic-manage-comic-edit',
   templateUrl: './comic-edit.component.html'
 })
 export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
@@ -37,6 +34,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       title: { type: 'string', title: '标题' },
       titleJap: { type: 'string', title: '日文标题' },
       secureFileName: { type: 'string', title: '安全的文件名' },
+      existSeed: { type: 'boolean', title: '是否有种子' },
       score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
       pageSize: { type: 'number', title: '页数' },
       languageTags: { type: 'string', title: '语言' },
@@ -258,10 +256,6 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     private crawlTypeService: CrawlTypeService,
     private castService: CastService,
     private comicService: ComicService,
-    private videoTagService: VideoTagService,
-    private videoTypeService: VideoTypeService,
-    private videoAreaService: AreaService,
-    private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
     private changeDetectorRef: ChangeDetectorRef
   ) {}

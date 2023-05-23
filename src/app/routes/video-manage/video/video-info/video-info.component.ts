@@ -173,6 +173,8 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
   dKeyDownSubscription: any = null;
   score: number = 0;
   comment: string = '';
+  onStorage: boolean = false;
+  switchLoading: boolean = false;
 
   constructor(
     private drawer: NzDrawerRef,
@@ -194,6 +196,8 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
         score: res?.score,
         comment: res?.comment
       }
+
+      this.onStorage = res.onStorage;
 
       this.dataSourceUrl = this.i.dataSourceUrl
 
@@ -251,5 +255,17 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
     }
   }
 
+  async switchOnStorage() {
+    let value: any = {
+      id: this.i.id,
+      onStorage: !this.onStorage
+    }
+    this.switchLoading = true;
+    try {
+      await this.videoService.update(value);
+      this.onStorage = !this.onStorage;
+    } catch (e) {}
+    this.switchLoading = false;
+  }
 
 }

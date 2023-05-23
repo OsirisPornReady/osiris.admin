@@ -8,15 +8,14 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image';
 import {finalize, Subscription} from "rxjs";
 
-import {VideoQualityService} from '../../../../service/video/video-quality.service';
 import {ComicService} from '../../../../service/comic/comic.service';
 import {CommonService} from '../../../../service/common/common.service';
 import {CrawlTypeService} from '../../../../service/crawl/crawl-type.service';
 import {ComicManageComicEditComponent} from '../comic-edit/comic-edit.component';
 import {ComicManageComicCrawlConfigComponent} from '../comic-crawl/comic-crawl-config/comic-crawl-config.component';
 import {ComicManageComicInfoComponent} from '../comic-info/comic-info.component';
+import {ComicManageComicEvaluateComponent} from '../comic-evaluate/comic-evaluate.component';
 
-// import {VideoManageVideoEvaluateComponent} from '../video-evaluate/video-evaluate.component';
 // import {VideoManageVideoCollectComponent} from '../video-select-album/video-collect.component';
 
 import {dateCompare} from "../../../../shared/utils/dateUtils";
@@ -26,7 +25,7 @@ import {ComicManageComicCrawlInfoComponent} from "../comic-crawl/comic-crawl-inf
 
 
 @Component({
-  selector: 'app-video-manage-comic-list',
+  selector: 'app-comic-manage-comic-list',
   templateUrl: './comic-list.component.html',
   styleUrls: ['./comic-list.component.less']
 })
@@ -196,7 +195,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   };
   statusBADGE: STColumnBadge = {
     1: {text: '已入库', color: 'success'},
-    2: {text: '未上架', color: 'warning'},
+    2: {text: '有种子', color: 'warning'},
     3: {text: '未入库', color: 'processing'},
     4: {text: '无资源', color: 'error'},
     5: {text: '默认', color: 'default'}
@@ -214,23 +213,19 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
     {title: 'ID', index: 'id', type: 'checkbox', iif: () => this.isOpenMultiSelect},
-    // { title: '关注', width: 70, render: 'customVideoOnSubscription', className: 'text-center' },
-    // { title: '标题', index: 'title', width: 550 },
     {
       title: '标题',
       index: 'title',
       width: 550,
       render: 'customTitle',
     }, //即使是custom render也最好带上index,search和sort什么的用得上
-    {title: '页数', index: 'pageSize', sort: true},
+    {title: '页数', index: 'pageSize', sort: true, className: 'text-left'},
     {title: '发行时间', type: 'date', dateFormat: 'yyyy-MM-dd', index: 'postedTime', sort: true},
-    {title: '资源状态', render: 'customVideoStatus', className: 'text-center'},
-    // {title: '订阅', render: 'customSwitchVideoSubscription', className: 'text-center'},
+    {title: '资源状态', render: 'customComicStatus', className: 'text-center'},
+    {title: '种子状态', index: 'existSeed', type: 'yn', className: 'text-center'},
     {title: '下载', render: 'customDownloadComic', className: 'text-center'},
-    {title: '评价', render: 'customVideoEvaluate', className: 'text-center'},
-    {title: '质量', render: 'customVideoQuality', className: 'text-center'},
-    {title: '爬虫', render: 'customVideoInfoCrawlButton', className: 'text-center'},
-    // { title: '头像', type: 'img', width: '50px', index: 'avatar' },
+    {title: '评价', render: 'customComicEvaluate', className: 'text-center'},
+    {title: '爬虫', render: 'customComicInfoCrawlButton', className: 'text-center'},
     {
       title: '操作',
       width: 160,
@@ -296,6 +291,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   reloadSocketSpin: boolean = false;
   scoreTextTable: any = this.commonService.scoreTextTable;
   onDownloadingComic: boolean = false;
+  comicIdOnDownloading: number = -1;
 
   constructor(
     private http: _HttpClient,
@@ -304,7 +300,6 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     private comicService: ComicService,
     private commonService: CommonService,
     private crawlTypeService: CrawlTypeService,
-    private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
     private nzModal: NzModalService,
     private ntfService: NzNotificationService,
@@ -331,7 +326,9 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
 
     this.defaultSortOptions = [
       {label: '标题(asc)', value: 'title.ascend'},
-      {label: '英文标题(asc)', value: 'titleJap.ascend'},
+      {label: '标题(desc)', value: 'title.descend'},
+      {label: '日文标题(asc)', value: 'titleJap.ascend'},
+      {label: '日文标题(desc)', value: 'titleJap.descend'},
       {label: '更新时间(desc)', value: 'updateTime.descend'},
       {label: '更新时间(asc)', value: 'updateTime.ascend'},
       {label: '添加时间(desc)', value: 'addTime.descend'},
@@ -340,10 +337,6 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       {label: '发行时间(asc)', value: 'postedTime.ascend'},
     ]
     try {
-      let res = (await this.videoQualityService.getDict()) || {};
-      if (res) {
-        this.qualityTAG = res;
-      }
       this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
       this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
       this.connectMessageSocket();
@@ -445,23 +438,18 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     } else return '';
   }
 
-  getVideoStatus(item: any): number {
-    let publishTime = new Date(item.publishTime);
-    let today = new Date();
+  getComicStatus(item: any): number {
     let onStorage = item.onStorage;
+    let existSeed = item.existSeed;
     if (item.onStorage) {
       return 1;
     } else {
-      if (dateCompare(today, publishTime) < 0) {
+      if (existSeed) {
         return 2;
       } else {
         return 3;
       }
     }
-  }
-
-  getVideoQuality(item: any): string {
-    return item.videoResolution;
   }
 
   crawlInfo(value: any) {
@@ -499,14 +487,6 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         crawlKey: this.crawlKey
       }
       this.crawlInfo(value)
-    }
-  }
-
-  async switchVideoSubscription(item: any) {
-    try {
-      // await this.comicService.switchVideoSubscription(item.id)
-      item.onSubscription = !item.onSubscription;
-    } catch (e) {
     }
   }
 
@@ -564,12 +544,12 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  openVideoEvaluate(id: number) {
-    // this.modal.createStatic(VideoManageVideoEvaluateComponent, {record: {id}}).subscribe(res => {
-    //   if (res == 'ok') {
-    //     this.st.reload(null, {merge: true, toTop: false});
-    //   }
-    // });
+  openComicEvaluate(id: number) {
+    this.modal.createStatic(ComicManageComicEvaluateComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        this.st.reload(null, {merge: true, toTop: false});
+      }
+    });
   }
 
   getScoreText(score: number) {
@@ -582,7 +562,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     return this.scoreTextTable[score];
   }
 
-  previewVideoImage(item: any) {
+  previewComicImage(item: any) {
     // const images = [
     //   {
     //     src: 'https://img.alicdn.com/tfs/TB1g.mWZAL0gK0jSZFtXXXQCXXa-200-200.svg',
@@ -600,11 +580,11 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     const images: NzImage[] = [];
     images.push({
       src: item.localCoverSrc ? item.localCoverSrc : '',
-      width: '1000px',
+      height: '700px',
       alt: item.title ? item.title : ''
     })
-    if (Array.isArray(item.localPreviewImageSrcList)) {
-      let lpisl = item.localPreviewImageSrcList
+    if (Array.isArray(item.localComicPicSrcList)) {
+      let lpisl = item.localComicPicSrcList
       for (let i=0; i < lpisl.length; i++) {
         images.push({
           src: lpisl[i],
@@ -633,22 +613,23 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       return;
     }
     this.onDownloadingComic = true;
+    this.comicIdOnDownloading = item.id;
     let entity: any = {
       secureFileName: item.secureFileName,
       comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
-      comicPicSrcList: item.comicPicSrcList ? item.comicPicSrcList : []
     }
     let url = `crawl/comic/download_comic`
     this.http.post(url, entity).pipe(finalize(() => {
       this.onDownloadingComic = false;
+      this.comicIdOnDownloading = -1;
     })).subscribe({
       next: async (res: any) => {
         this.msgSrv.success('Comic下载成功');
         try {
           await this.comicService.update({
             id: item.id,
-            comicPicSrcList: res?.comicPicSrcList,
-            localComicPicSrcList: res?.localComicPicSrcList
+            localComicPicSrcList: res?.localComicPicSrcList,
+            onStorage: true
           });
           this.st.reload(null, {merge: true, toTop: false});
           this.msgSrv.success('Comic数据更新成功');
@@ -656,11 +637,38 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
           this.msgSrv.error('Comic数据更新失败');
         }
       },
-      error:() => {
-        this.msgSrv.success('Comic下载失败');
+      error:async () => {
+        this.msgSrv.error('Comic下载失败');
+        try {
+          await this.comicService.update({
+            id: item.id,
+            onStorage: false
+          });
+          this.st.reload(null, {merge: true, toTop: false});
+          this.msgSrv.info('Comic入库状态更新');
+        } catch (e) {
+          this.msgSrv.error('Comic数据更新失败');
+        }
       },
       complete: () => {}
     })
+  }
+
+  checkComicSeed(item: any) {
+    if (item.existSeed) {
+      this.nzModal.confirm({
+        nzTitle: '<i>已有种子,是否直接跳转至E站</i>',
+        nzContent: '<b>有种子建议直接下载,不太建议爬取</b>',
+        nzOkText: '跳转E站',
+        nzCancelText: '继续下载',
+        nzOnOk: () => {
+          this.commonService.openNewTab(item.dataSourceUrl);
+        },
+        nzOnCancel: () => {
+          this.downloadComic(item);
+        }
+      })
+    }
   }
 
 }

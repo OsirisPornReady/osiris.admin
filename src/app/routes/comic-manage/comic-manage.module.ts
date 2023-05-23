@@ -6,6 +6,7 @@ import { ComicManageComicEditComponent } from './comic/comic-edit/comic-edit.com
 import { ComicManageComicCrawlInfoComponent } from './comic/comic-crawl/comic-crawl-info/comic-crawl-info.component';
 import { ComicManageComicCrawlConfigComponent } from './comic/comic-crawl/comic-crawl-config/comic-crawl-config.component';
 import { ComicManageComicInfoComponent } from './comic/comic-info/comic-info.component';
+import { ComicManageComicEvaluateComponent } from './comic/comic-evaluate/comic-evaluate.component';
 
 const COMPONENTS: Type<void>[] = [
   ComicManageComicListComponent,
@@ -15,7 +16,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   ComicManageComicEditComponent,
   ComicManageComicCrawlInfoComponent,
   ComicManageComicCrawlConfigComponent,
-  ComicManageComicInfoComponent
+  ComicManageComicInfoComponent,
+  ComicManageComicEvaluateComponent
 ]
 
 @NgModule({

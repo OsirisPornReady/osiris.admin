@@ -20,6 +20,14 @@
         btDigg
         <span nz-icon nzType="share-alt" nzTheme="outline"></span>
       </a>
+      <nz-switch *nzSpaceItem
+                 [(ngModel)]="onStorage"
+                 [nzControl]="true"
+                 [nzLoading]="switchLoading"
+                 nzCheckedChildren="已入库"
+                 nzUnCheckedChildren="未入库"
+                 (click)="switchOnStorage()"
+                 class="mr-xl"></nz-switch>
     </nz-space>
   </div>
   <nz-card nzHoverable class="mt-md mb-lg">

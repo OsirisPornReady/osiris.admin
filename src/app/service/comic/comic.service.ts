@@ -34,6 +34,11 @@ export class ComicService {
     // return lastValueFrom(this.http.get(url, { id }));
   }
 
+  isTitleExist(title: string) {
+    let url = `api/comic/is_title_exist`;
+    return lastValueFrom(this.http.post(url, title));
+  }
+
   getSelectAll(field = 'title'): Observable<string[] | SFSchemaEnumType[]> {
     //asyncData专用，不用转成promise
     let url = `api/comic/get_select_all`;

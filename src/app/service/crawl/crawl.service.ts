@@ -33,4 +33,9 @@ export class CrawlService {
     return lastValueFrom(this.http.post(url, entity));
   }
 
+  crawlComicByUrl(url: string, entity: any) {
+    // let url = `crawl/comic/exhentai`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
 }

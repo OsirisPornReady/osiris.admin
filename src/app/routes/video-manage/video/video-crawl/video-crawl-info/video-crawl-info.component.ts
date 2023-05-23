@@ -28,6 +28,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   @ViewChild('sf') sf!: SFComponent;
   schema: SFSchema = {
     properties: {
+      onStorage: { type: 'boolean', title: '入库情况' },
       score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
       comment: { type: 'string', title: '评价' },
       serialNumber: { type: 'string', title: '番号' },
@@ -55,6 +56,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     '*': {
       spanLabelFixed: 145,
       grid: { span: 22 }
+    },
+    $onStorage: {
+      checkedChildren: "已入库",
+      unCheckedChildren: "未入库"
     },
     $score: {
       widget: 'rate',
@@ -164,6 +169,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   enterKeyDownSubscription: any = null;
   spaceKeyDownSubscription: any = null;
   dKeyDownSubscription: any = null;
+  onStorage: boolean = false;
 
   constructor(
     private drawer: NzDrawerRef,
@@ -293,5 +299,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     this.msgSrv.remove('');
   }
 
+  switchOnStorage() {
+    setTimeout(() => {
+      this.sf.getProperty('/onStorage')?.setValue(this.onStorage, false);
+    })
+  }
 
 }

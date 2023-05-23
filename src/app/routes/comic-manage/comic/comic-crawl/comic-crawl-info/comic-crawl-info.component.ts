@@ -6,11 +6,9 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { fromEvent } from "rxjs";
 
-import { VideoTagService } from '../../../../../service/video/video-tag.service';
-import { VideoTypeService } from '../../../../../service/video/video-type.service';
-import { VideoService } from '../../../../../service/video/video.service';
 import { CommonService } from '../../../../../service/common/common.service';
 import { CrawlService } from '../../../../../service/crawl/crawl.service';
+import { ComicService } from '../../../../../service/comic/comic.service';
 
 import { dateStringFormatter } from "../../../../../shared/utils/dateUtils";
 
@@ -31,6 +29,7 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
       title: { type: 'string', title: '标题' },
       titleJap: { type: 'string', title: '日文标题' },
       secureFileName: { type: 'string', title: '安全的文件名' },
+      existSeed: { type: 'boolean', title: '是否有种子' },
       score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
       comment: { type: 'string', title: '评论' },
       pageSize: { type: 'number', title: '页数' },
@@ -190,11 +189,9 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
-    private videoTagService: VideoTagService,
-    private videoTypeService: VideoTypeService,
-    private videoService: VideoService,
     private commonService: CommonService,
     private crawlService: CrawlService,
+    private comicService: ComicService,
     private nzModal: NzModalService
   ) {}
 
@@ -214,35 +211,13 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
     try {
       this.record.crawlKey = this.record.crawlKey.trim();
       this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
-      // switch (this.record.crawlType) {
-      //   case 0:
-      //     this.i = null; //js中空对象并不为假值,置假应该用null
-      //     this.msgSrv.remove(this.crawlLoadingMsgId);
-      //     this.msgSrv.error('未指定数据源,请关闭页面');
-      //     return;
-      //   case 1:
-      //     this.i = (await this.crawlService.crawlJavBusVideo( { crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      //     break;
-      //   case 2:
-      //     this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      //     break;
-      //   case 3:
-      //     this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      //     break;
-      //   default:
-      //     this.i = null;
-      //     this.msgSrv.remove(this.crawlLoadingMsgId);
-      //     this.msgSrv.error('无法识别数据源,请关闭页面');
-      //     return;
-      // }
-      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
+      this.i = (await this.crawlService.crawlComicByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
       this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
+      this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
 
       // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
       //   if (event.key == 'Enter') {
@@ -277,7 +252,7 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
   async save(value: any) {
     if (this.record.id == 0) {  //只在新建的时候检验标题是否重复
       try {
-        let isTitleExist: boolean = await this.videoService.isTitleExist(this.i.title);
+        let isTitleExist: boolean = await this.comicService.isTitleExist(this.i.title);
         if (isTitleExist) {
           this.nzModal.confirm({
             nzTitle: '<i>此标题已存在</i>',

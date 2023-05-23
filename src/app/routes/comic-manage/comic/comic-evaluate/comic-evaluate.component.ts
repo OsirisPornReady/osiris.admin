@@ -4,14 +4,14 @@ import { _HttpClient } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
 
-import { VideoService } from '../../../../service/video/video.service';
+import { ComicService } from '../../../../service/comic/comic.service';
 import { CommonService } from '../../../../service/common/common.service';
 
 @Component({
-  selector: 'app-video-manage-video-evaluate',
-  templateUrl: './video-evaluate.component.html',
+  selector: 'app-comic-manage-comic-evaluate',
+  templateUrl: './comic-evaluate.component.html',
 })
-export class VideoManageVideoEvaluateComponent implements OnInit {
+export class ComicManageComicEvaluateComponent implements OnInit {
   scoreTextList: string[] = this.commonService.scoreTextList;
 
   title = '';
@@ -44,21 +44,21 @@ export class VideoManageVideoEvaluateComponent implements OnInit {
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
-    private videoService: VideoService,
+    private comicService: ComicService,
     private commonService: CommonService,
   ) {}
 
   async ngOnInit() {
     if (this.record.id > 0) {
-      this.title = '视频评价';
-      let res = (await this.videoService.getById(this.record.id)) || {};
+      this.title = '漫画评价';
+      let res = (await this.comicService.getById(this.record.id)) || {};
       this.i = {  // 少量更新可以用这种方法,这样不用写多余接口,前提是update接口为忽略null的策略
         id: res?.id,
         score: res?.score,
         comment: res?.comment
       }
     } else {
-      this.title = '视频评价';
+      this.title = '漫画评价';
       this.i = {};
     }
   }
@@ -66,9 +66,9 @@ export class VideoManageVideoEvaluateComponent implements OnInit {
   async save(value: any) {
     try {
       if (this.record.id > 0) {
-        await this.videoService.update(value);
+        await this.comicService.update(value);
       } else {
-        await this.videoService.add(value);
+        await this.comicService.add(value);
       }
       this.msgSrv.success('保存成功');
       this.modal.close('ok');
@@ -77,18 +77,6 @@ export class VideoManageVideoEvaluateComponent implements OnInit {
 
   close(): void {
     this.modal.destroy();
-  }
-
-  autoConfigJav() {
-    if (this.i.videoType == 2 && this.i.existSerialNumber && this.i.serialNumber) {
-      try {
-        this.sf.setValue('/canCrawl', true)
-        this.sf.setValue('/crawlApiUrl', `crawl/video/javbus`)
-        this.sf.setValue('/crawlKey', this.i.serialNumber)
-      } catch (e) {
-        console.error(e)
-      }
-    }
   }
 
 }

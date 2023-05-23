@@ -280,7 +280,9 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
     this.defaultSortOptions = [
       {label: '标题(asc)', value: 'title.ascend'},
+      {label: '标题(desc)', value: 'title.descend'},
       {label: '番号(asc)', value: 'serialNumber.ascend'},
+      {label: '番号(desc)', value: 'serialNumber.descend'},
       {label: '更新时间(desc)', value: 'updateTime.descend'},
       {label: '更新时间(asc)', value: 'updateTime.ascend'},
       {label: '添加时间(desc)', value: 'addTime.descend'},

@@ -5,8 +5,6 @@ import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { fromEvent } from "rxjs";
 
-import { VideoTagService } from '../../../../service/video/video-tag.service';
-import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { ComicService } from '../../../../service/comic/comic.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { CrawlService } from '../../../../service/crawl/crawl.service';
@@ -32,6 +30,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       title: { type: 'string', title: '标题' },
       titleJap: { type: 'string', title: '日文标题' },
       secureFileName: { type: 'string', title: '安全的文件名' },
+      existSeed: { type: 'boolean', title: '是否有种子' },
       pageSize: { type: 'number', title: '页数' },
       languageTags: { type: 'string', title: '语言' },
       parodyTags: { type: 'string', title: '同人原作' },
@@ -197,8 +196,6 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
-    private videoTagService: VideoTagService,
-    private videoTypeService: VideoTypeService,
     private comicService: ComicService,
     private commonService: CommonService,
     private crawlService: CrawlService
@@ -219,7 +216,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
+      this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
 
 
       // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {

@@ -72,41 +72,20 @@
     </div>
   </div>
   <st #st [data]="url" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }" [multiSort]="multiSort">
-    <ng-template st-row="customVideoStatus" let-item>
-      <nz-badge [nzStatus]="statusBADGE[getVideoStatus(item)].color" [nzText]="statusBADGE[getVideoStatus(item)].text"></nz-badge>
+
+    <ng-template st-row="customComicStatus" let-item>
+      <nz-badge [nzStatus]="statusBADGE[getComicStatus(item)].color" [nzText]="statusBADGE[getComicStatus(item)].text"></nz-badge>
     </ng-template>
 
-    <ng-template st-row="customVideoQuality" let-item>
-      <nz-tag *ngIf="getVideoQuality(item)" [nzColor]="qualityTAG[getVideoQuality(item)].color" class="st-single-nz-tag">{{ qualityTAG[getVideoQuality(item)].text }}</nz-tag>
-      <span *ngIf="!getVideoQuality(item)" nz-typography nzDisabled>未知</span>
-    </ng-template>
-
-    <ng-template st-row="customVideoInfoCrawlButton" let-item>
+    <ng-template st-row="customComicInfoCrawlButton" let-item>
       <button *ngIf="item.canCrawl" nz-button type="button" nzType="default" nzShape="round" [nzDanger]="!(item.crawlApiUrl && item.crawlKey)" (click)="crawlInfo(item)">
         <span nz-icon nzType="api" nzTheme="outline"></span>
       </button>
       <span *ngIf="!item.canCrawl" nz-typography nzDisabled>未配置</span>
     </ng-template>
 
-<!--    <ng-template st-row="customVideoOnSubscription" let-item>-->
-<!--      <span nz-icon-->
-<!--            nzType="check-circle"-->
-<!--            nzTheme="twotone"-->
-<!--            nzTwotoneColor="#52c41a"-->
-<!--            [ngClass]="['custom-twotone-checked-icon']"-->
-<!--            [ngStyle]="{-->
-<!--              'opacity': (item.onSubscription ? '1' : '0')-->
-<!--            }"></span>-->
-<!--    </ng-template>-->
-
-    <ng-template st-row="customSwitchVideoSubscription" let-item>
-      <button nz-button type="button" [nzType]="item.onSubscription ? 'primary' : 'default'" nzShape="circle" (click)="switchVideoSubscription(item)">
-        <span  nz-icon nzType="bell" nzTheme="outline"></span>
-      </button>
-    </ng-template>
-
-    <ng-template st-row="customVideoEvaluate" let-item>
-      <a nz-typography href="javascript:void(0);" (click)="openVideoEvaluate(item.id)">
+    <ng-template st-row="customComicEvaluate" let-item>
+      <a nz-typography href="javascript:void(0);" (click)="openComicEvaluate(item.id)">
         <span *ngIf="getScoreText(item.score).status">{{getScoreText(item.score).text}}</span>
         <span *ngIf="!getScoreText(item.score).status" nz-typography nzType="danger">{{getScoreText(item.score).text}}</span>
       </a>
@@ -114,14 +93,23 @@
 
 <!--    注意标签的语义化,在浏览器中不同语义化的交互细节很不一样-->
     <ng-template st-row="customTitle" let-item>
-      <a nz-typography href="javascript:void(0);" (click)="previewVideoImage(item)">
+      <a nz-typography href="javascript:void(0);" (click)="previewComicImage(item)">
 <!--      <span [title]="item.title">{{item.title}}</span>-->
         <span nz-typography nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.title">{{item.title}}</span>
       </a>
     </ng-template>
 
     <ng-template st-row="customDownloadComic" let-item>
-      <button nz-button type="button" [nzType]="'default'" nzShape="circle" [nzLoading]="onDownloadingComic" (click)="downloadComic(item)">
+
+      <button nz-button
+              type="button"
+              [nzType]="'default'"
+              nzShape="circle"
+              [nzLoading]="onDownloadingComic && item.id == comicIdOnDownloading"
+              [disabled]="onDownloadingComic && item.id != comicIdOnDownloading && !item.existSeed"
+              nz-popconfirm
+              nzPopconfirmTitle="注意e站额度,确定要下载吗?"
+              (nzOnConfirm)="checkComicSeed(item)">
         <span  nz-icon nzType="download" nzTheme="outline"></span>
       </button>
     </ng-template>
