@@ -5,13 +5,14 @@ import {ModalHelper, _HttpClient, DrawerHelper} from '@delon/theme';
 import {NzMessageService} from "ng-zorro-antd/message";
 
 import { VideoService } from '../../../service/video/video.service';
+import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
-import {VideoManageVideoEditComponent} from '../../video-manage/video/video-edit/video-edit.component';
+import { VideoManageVideoEditComponent } from '../../video-manage/video/video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../../video-manage/video/video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoInfoComponent } from '../../video-manage/video/video-info/video-info.component';
-import {
-  VideoManageVideoCrawlConfigComponent
-} from "../../video-manage/video/video-crawl/video-crawl-config/video-crawl-config.component";
+import { VideoManageVideoCrawlConfigComponent } from '../../video-manage/video/video-crawl/video-crawl-config/video-crawl-config.component';
+import {lastValueFrom} from "rxjs";
+import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 
 
 @Component({
@@ -51,16 +52,27 @@ export class GalleryVideoGalleryComponent implements OnInit {
   gridList: any[] = []
   loading: boolean = false;
 
+  crawlKey: string = '';
+  crawlTypeOptions: any[] = [];
+  crawlApiUrl: any = null;
+
+  showDelete: boolean = false;
+  keyword: string = '';
+
+  savedPi: any = null;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private videoService: VideoService,
+    private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
     private msgSrv: NzMessageService,
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.getByPage();
+    this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
   }
 
   add(): void {
@@ -71,6 +83,9 @@ export class GalleryVideoGalleryComponent implements OnInit {
 
   getByPage() {
     let url = `api/video/get_by_page?pi=${this.pi}&ps=${this.ps}`
+    if (this.keyword) {
+      url = `${url}&keyword=${this.keyword}`;
+    }
     this.http.get(url).subscribe((res: any) => {
       this.total = res.total;
       this.gridList = res.list;
@@ -115,7 +130,9 @@ export class GalleryVideoGalleryComponent implements OnInit {
   }
 
   getCrawl(event: any, item: any) {
-    event.stopPropagation();
+    if (event) {
+      event.stopPropagation();
+    }
     let value = {
       id: item.id,
       crawlApiUrl: item.crawlApiUrl,
@@ -143,4 +160,54 @@ export class GalleryVideoGalleryComponent implements OnInit {
     }
   }
 
+  autoCreate() {
+    if (!this.crawlApiUrl) {
+      this.msgSrv.info('爬虫类型未设置');
+    } else if (!this.crawlKey.trim()) { //涉及输入框的要做trim处理
+      this.msgSrv.info('爬虫关键字为空');
+    } else {
+      let value = {
+        id: 0,
+        crawlApiUrl: this.crawlApiUrl,
+        crawlKey: this.crawlKey
+      }
+      this.getCrawl(null, value);
+    }
+  }
+
+  async delete(id: number = 0) {
+    try {
+      await this.videoService.delete(id);
+      this.msgSrv.success('删除成功');
+      this.getByPage();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  resetCrawlKey() {
+    this.crawlKey = '';
+  }
+
+  search() {
+    if (this.savedPi == null) {
+      this.savedPi = this.pi;
+    }
+    this.pi = 1;
+    this.getByPage();
+  }
+
+  resetSearch() {
+    this.keyword = '';
+    if (this.savedPi == null) {
+      this.pi = 1;
+    } else {
+      this.pi = this.savedPi;
+      this.savedPi = null;
+    }
+    this.getByPage();
+  }
+
+
+  protected readonly dateStringFormatter = dateStringFormatter;
 }

@@ -60,7 +60,8 @@ import {
   SyncOutline,
   MinusOutline,
   PictureOutline,
-  VideoCameraOutline
+  VideoCameraOutline,
+  ReloadOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -120,5 +121,6 @@ export const ICONS_AUTO = [
   SyncOutline,
   MinusOutline,
   PictureOutline,
-  VideoCameraOutline
+  VideoCameraOutline,
+  ReloadOutline
 ];
