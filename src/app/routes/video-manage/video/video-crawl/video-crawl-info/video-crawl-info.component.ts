@@ -220,7 +220,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       //     this.msgSrv.error('无法识别数据源,请关闭页面');
       //     return;
       // }
-      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.globalData.isDownloadImage })) || {};
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;
