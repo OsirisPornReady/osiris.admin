@@ -211,7 +211,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
         this.record.imagePhysicalDirectoryName = (typeof this.record.imagePhysicalDirectoryName == 'string') ? this.record.imagePhysicalDirectoryName : ''
         this.record.imageServerDirectoryName = (typeof this.record.imageServerDirectoryName == 'string') ? this.record.imageServerDirectoryName : ''
       } else {
-        this.msgSrv.info('未正确图片相关配置,请关闭页面');
+        this.msgSrv.info('图片相关配置不正确,请关闭页面');
         this.close();
         return;
       }

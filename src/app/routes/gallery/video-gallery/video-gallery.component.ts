@@ -59,6 +59,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
   crawlApiUrl: any = null;
+  imagePhysicalPath: string = '';
+  imageServerPath: string = '';
+  imagePhysicalDirectoryName: string = '';
+  imageServerDirectoryName: string = '';
 
   showDelete: boolean = false;
   keyword: string = '';
@@ -84,6 +88,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
+    this.imagePhysicalPath = this.commonService.globalData.imagePhysicalPath
+    this.imageServerPath = this.commonService.globalData.imageServerPath
+    this.imagePhysicalDirectoryName = this.commonService.globalData.imagePhysicalDirectoryName
+    this.imageServerDirectoryName = this.commonService.globalData.imageServerDirectoryName
     this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
     this.connectMessageSocket();
   }
@@ -153,7 +161,11 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     let value = {
       id: item.id,
       crawlApiUrl: item.crawlApiUrl,
-      crawlKey: item.crawlKey
+      crawlKey: item.crawlKey,
+      imagePhysicalPath: item.imagePhysicalPath,
+      imageServerPath: item.imageServerPath,
+      imagePhysicalDirectoryName: item.imagePhysicalDirectoryName,
+      imageServerDirectoryName: item.imageServerDirectoryName,
     }
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
@@ -186,7 +198,11 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       let value = {
         id: 0,
         crawlApiUrl: this.crawlApiUrl,
-        crawlKey: this.crawlKey
+        crawlKey: this.crawlKey,
+        imagePhysicalPath: this.imagePhysicalPath,
+        imageServerPath: this.imageServerPath,
+        imagePhysicalDirectoryName: this.imagePhysicalDirectoryName,
+        imageServerDirectoryName: this.imageServerDirectoryName,
       }
       this.getCrawl(null, value);
     }
