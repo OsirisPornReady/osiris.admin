@@ -246,6 +246,11 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   reloadSocketSpin: boolean = false;
   scoreTextTable: any = this.commonService.scoreTextTable;
 
+  imagePhysicalPath: string = '';
+  imageServerPath: string = '';
+  imagePhysicalDirectoryName: string = '';
+  imageServerDirectoryName: string = '';
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -277,6 +282,10 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     this.isEditMode = this.commonService.globalData.isEditMode;
     this.isOpenMultiSelect = this.commonService.globalData.isOpenMultiSelect;
     this.isDownloadImage = this.commonService.globalData.isDownloadImage;
+    this.imagePhysicalPath = this.commonService.globalData.imagePhysicalPath
+    this.imageServerPath = this.commonService.globalData.imageServerPath
+    this.imagePhysicalDirectoryName = this.commonService.globalData.imagePhysicalDirectoryName
+    this.imageServerDirectoryName = this.commonService.globalData.imageServerDirectoryName
 
     this.defaultSortOptions = [
       {label: '标题(asc)', value: 'title.ascend'},
@@ -418,6 +427,12 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
+      if (this.commonService.globalData.isDownloadImage) {
+        if (!(value.hasOwnProperty('imagePhysicalPath') && value.hasOwnProperty('imageServerPath') && value.hasOwnProperty('imagePhysicalDirectoryName') && value.hasOwnProperty('imageServerDirectoryName'))){
+          this.msgSrv.info('如果要下载图片,请配置图片相关的文件地址');
+          return;
+        }
+      }
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
         size: 1600,
         drawerOptions: {nzClosable: false}
@@ -440,6 +455,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   autoCreate() {
+    console.log('此处')
     if (!this.crawlApiUrl) {
       this.msgSrv.info('爬虫类型未设置');
     } else if (!this.crawlKey.trim()) { //涉及输入框的要做trim处理
@@ -448,7 +464,11 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       let value = {
         id: 0,
         crawlApiUrl: this.crawlApiUrl,
-        crawlKey: this.crawlKey
+        crawlKey: this.crawlKey,
+        imagePhysicalPath: this.imagePhysicalPath,
+        imageServerPath: this.imageServerPath,
+        imagePhysicalDirectoryName: this.imagePhysicalDirectoryName,
+        imageServerDirectoryName: this.imageServerDirectoryName
       }
       this.crawlInfo(value)
     }
@@ -479,9 +499,25 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   editCrawlConfig(id: number) {
-    this.modal.createStatic(VideoManageVideoCrawlConfigComponent, {record: {id}}).subscribe(res => {
-      if (res == 'ok') {
+    let autoCreateConfig: any = {
+      canCrawl: true,
+      crawlKey: this.crawlKey,
+      crawlApiUrl: this.crawlApiUrl,
+      imagePhysicalPath: this.imagePhysicalPath,
+      imageServerPath: this.imageServerPath,
+      imagePhysicalDirectoryName: this.imagePhysicalDirectoryName,
+      imageServerDirectoryName: this.imageServerDirectoryName,
+    }
+    this.modal.createStatic(VideoManageVideoCrawlConfigComponent, {record: {id}, autoCreateConfig }).subscribe(res => {
+      if (res.state == 'updateOk') {
         this.st.reload(null, {merge: true, toTop: false});
+      } else if (res.state == 'configOk') {
+          this.crawlKey = res.data.crawlKey
+          this.crawlApiUrl = res.data.crawlApiUrl
+          this.imagePhysicalPath = res.data.imagePhysicalPath
+          this.imageServerPath = res.data.imageServerPath
+          this.imagePhysicalDirectoryName = res.data.imagePhysicalDirectoryName
+          this.imageServerDirectoryName = res.data.imageServerDirectoryName
       }
     });
   }
@@ -548,7 +584,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     // ];
     const images: NzImage[] = [];
     images.push({
-      src: item.localCoverSrc ? item.localCoverSrc : '',
+      src: item.localCoverSrc ? item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc : '',
       width: '1000px',
       alt: item.title ? item.title : ''
     })
@@ -556,7 +592,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       let lpisl = item.localPreviewImageSrcList
       for (let i=0; i < lpisl.length; i++) {
         images.push({
-          src: lpisl[i],
+          src: item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + lpisl[i],
           alt: item.title ? item.title : ''
         })
       }

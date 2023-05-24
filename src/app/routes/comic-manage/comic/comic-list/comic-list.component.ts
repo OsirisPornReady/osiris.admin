@@ -195,9 +195,9 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   };
   statusBADGE: STColumnBadge = {
     1: {text: '已入库', color: 'success'},
-    2: {text: '有种子', color: 'warning'},
-    3: {text: '未入库', color: 'processing'},
-    4: {text: '无资源', color: 'error'},
+    2: {text: '有缺失页', color: 'warning'},
+    3: {text: '有种子', color: 'processing'},
+    4: {text: '未入库', color: 'error'},
     5: {text: '默认', color: 'default'}
   };
   qualityTAG: STColumnTag = {
@@ -617,6 +617,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     let entity: any = {
       secureFileName: item.secureFileName,
       comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
+      comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
     }
     let url = `crawl/comic/download_comic`
     this.http.post(url, entity).pipe(finalize(() => {
@@ -629,6 +630,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
           await this.comicService.update({
             id: item.id,
             localComicPicSrcList: res?.localComicPicSrcList,
+            comicFailOrderList: res?.comicFailOrderList,
             onStorage: true
           });
           this.st.reload(null, {merge: true, toTop: false});

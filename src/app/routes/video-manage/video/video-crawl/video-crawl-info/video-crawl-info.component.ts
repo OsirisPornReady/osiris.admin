@@ -48,6 +48,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       previewImageSrcList: { type: 'string', title: '预览图' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
+      // imagePhysicalPath: { type: 'string', title: '图片物理根路径' },
+      // imageServerPath: { type: 'string', title: '图片服务器根路径' },
+      imagePhysicalDirectoryName: { type: 'string', title: '图片物理文件夹名路径' },
+      imageServerDirectoryName: { type: 'string', title: '图片服务器文件夹名路径' },
       description: { type: 'string', title: '描述' }
     },
     required: ['title'],
@@ -200,6 +204,18 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       this.close();
       return;
     }
+    if (this.commonService.globalData.isDownloadImage) {
+      if (this.record.hasOwnProperty('imagePhysicalPath') && this.record.hasOwnProperty('imageServerPath') && this.record.hasOwnProperty('imagePhysicalDirectoryName') && this.record.hasOwnProperty('imageServerDirectoryName')) {
+        this.record.imagePhysicalPath = (typeof this.record.imagePhysicalPath == 'string') ? this.record.imagePhysicalPath : ''
+        this.record.imageServerPath = (typeof this.record.imageServerPath == 'string') ? this.record.imageServerPath : ''
+        this.record.imagePhysicalDirectoryName = (typeof this.record.imagePhysicalDirectoryName == 'string') ? this.record.imagePhysicalDirectoryName : ''
+        this.record.imageServerDirectoryName = (typeof this.record.imageServerDirectoryName == 'string') ? this.record.imageServerDirectoryName : ''
+      } else {
+        this.msgSrv.info('未正确图片相关配置,请关闭页面');
+        this.close();
+        return;
+      }
+    }
     try {
       this.record.crawlKey = this.record.crawlKey.trim();
       this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
@@ -224,7 +240,14 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       //     this.msgSrv.error('无法识别数据源,请关闭页面');
       //     return;
       // }
-      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.globalData.isDownloadImage })) || {};
+      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{
+        crawlKey: this.record.crawlKey,
+        downloadImage: this.commonService.globalData.isDownloadImage,
+        imagePhysicalPath: this.record.imagePhysicalPath,
+        imageServerPath: this.record.imageServerPath,
+        imagePhysicalDirectoryName: this.record.imagePhysicalDirectoryName,
+        imageServerDirectoryName: this.record.imageServerDirectoryName
+      })) || {};
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;

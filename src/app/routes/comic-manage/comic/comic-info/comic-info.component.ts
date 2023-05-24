@@ -46,7 +46,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
       comicPicLinkList: { type: 'string', title: '漫画链接' },
-      comicPicSrcList: { type: 'string', title: '漫画图源' },
+      comicFailOrderList: { type: 'string', title: '缺失图片序号(从1开始)' },
       localComicPicSrcList: { type: 'string', title: '本地漫画链接' },
     },
     required: ['title'],
@@ -163,7 +163,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       mode: 'tags',
       default: null,
     },
-    $comicPicSrcList: {
+    $comicFailOrderList: {
       widget: 'select',
       allowClear: true,
       placeholder: '输入图(可多个值)',

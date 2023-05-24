@@ -48,6 +48,10 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
       previewImageSrcList: { type: 'string', title: '预览图' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
+      imagePhysicalPath: { type: 'string', title: '图片物理根路径' },
+      imageServerPath: { type: 'string', title: '图片服务器根路径' },
+      imagePhysicalDirectoryName: { type: 'string', title: '图片物理文件夹名路径' },
+      imageServerDirectoryName: { type: 'string', title: '图片服务器文件夹名路径' },
       description: { type: 'string', title: '描述' }
     },
     required: ['title'],

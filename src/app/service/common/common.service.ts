@@ -18,13 +18,17 @@ export class CommonService {
   crawlType: number = 0;
   isDownloadImage: boolean = true;
 
-  globalData: GlobalData = {
+  globalData: any = {
     isEditMode: false,
     isOpenMultiSelect: false,
     isAutoCreate: true,
     isAutoFill: true,
     isAutoSubmit: true,
     isDownloadImage: true,
+    imagePhysicalPath: '',
+    imageServerPath: '',
+    imagePhysicalDirectoryName: '',
+    imageServerDirectoryName: ''
   }
 
   scoreTextTable: any = {

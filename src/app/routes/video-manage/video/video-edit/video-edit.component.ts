@@ -34,6 +34,10 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       // crawlType: { type: 'string', title: '导入数据源' },
       crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
+      imagePhysicalPath: { type: 'string', title: '图片物理根路径' },
+      imageServerPath: { type: 'string', title: '图片服务器根路径' },
+      imagePhysicalDirectoryName: { type: 'string', title: '图片物理文件夹名路径' },
+      imageServerDirectoryName: { type: 'string', title: '图片服务器文件夹名路径' },
       crawlButton: { type: 'string', title: '导入' },
       title: { type: 'string', title: '标题' },
       score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
@@ -358,6 +362,12 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
+      if (this.commonService.globalData.isDownloadImage) {
+        if (!(value.hasOwnProperty('imagePhysicalPath') && value.hasOwnProperty('imageServerPath') && value.hasOwnProperty('imagePhysicalDirectoryName') && value.hasOwnProperty('imageServerDirectoryName'))){
+          this.msgSrv.info('如果要下载图片,请配置图片相关的文件地址');
+          return;
+        }
+      }
       this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
         if (res.state == 'ok') {
           this.automatedData = res.data;

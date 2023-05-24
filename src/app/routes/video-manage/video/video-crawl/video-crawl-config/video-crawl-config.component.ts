@@ -6,12 +6,14 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 
 import { VideoService } from '../../../../../service/video/video.service';
 import { CrawlTypeService } from '../../../../../service/crawl/crawl-type.service';
+import { CommonService } from '../../../../../service/common/common.service';
 
 @Component({
   selector: 'app-video-manage-video-crawl-config',
   templateUrl: './video-crawl-config.component.html',
 })
 export class VideoManageVideoCrawlConfigComponent implements OnInit {
+  autoCreateConfig: any = {};
   title = '';
   record: any = {};
   i: any;
@@ -21,6 +23,10 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
       canCrawl: { type: 'boolean', title: '是否需要导入' },
       crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
+      imagePhysicalPath: { type: 'string', title: '图片物理根路径' },
+      imageServerPath: { type: 'string', title: '图片服务器根路径' },
+      imagePhysicalDirectoryName: { type: 'string', title: '图片物理文件夹名路径' },
+      imageServerDirectoryName: { type: 'string', title: '图片服务器文件夹名路径' },
     },
     required: ['crawlKey', 'crawlApiUrl'],
   };
@@ -59,6 +65,7 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private videoService: VideoService,
+    private commonService: CommonService,
     private crawlTypeService: CrawlTypeService
   ) {}
 
@@ -71,13 +78,18 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
         canCrawl: res?.canCrawl,
         crawlApiUrl: res?.crawlApiUrl,
         crawlKey: res?.crawlKey,
+        imagePhysicalPath: res?.imagePhysicalPath,
+        imageServerPath: res?.imageServerPath,
+        imagePhysicalDirectoryName: res?.imagePhysicalDirectoryName,
+        imageServerDirectoryName: res?.imageServerDirectoryName
       }
       setTimeout(() => {
-        this.autoConfigJav()
-      }, 500)
+        this.autoConfig()
+      }, 200)
     } else {
       this.title = '新增数据源配置';
-      this.i = {};
+      // this.i = {};
+      this.i = this.autoCreateConfig;
     }
   }
 
@@ -85,11 +97,12 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
     try {
       if (this.record.id > 0) {
         await this.videoService.update(value);
+        this.modal.close({ state: 'updateOk', data: {} });
       } else {
-        await this.videoService.add(value);
+        // await this.videoService.add(value);
+        this.modal.close({ state: 'configOk', data: value });
       }
       this.msgSrv.success('保存成功');
-      this.modal.close('ok');
     } catch (error) {}
   }
 
@@ -97,12 +110,29 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
     this.modal.destroy();
   }
 
-  autoConfigJav() {
+  autoConfig() {
+    try {
+      if (!this.i.imagePhysicalPath) {
+        this.sf.setValue('/imagePhysicalPath', this.commonService.globalData.imagePhysicalPath)
+      }
+      if (!this.i.imageServerPath) {
+        this.sf.setValue('/imageServerPath', this.commonService.globalData.imageServerPath)
+      }
+      if (!this.i.imagePhysicalDirectoryName) {
+        this.sf.setValue('/imagePhysicalDirectoryName', this.commonService.globalData.imagePhysicalDirectoryName)
+      }
+      if (!this.i.imageServerDirectoryName) {
+        this.sf.setValue('/imageServerDirectoryName', this.commonService.globalData.imageServerDirectoryName)
+      }
+    } catch (e) {
+      console.error(e)
+    }
     if (this.i.videoType == 2 && this.i.existSerialNumber && this.i.serialNumber) {
       try {
         this.sf.setValue('/canCrawl', true)
         this.sf.setValue('/crawlApiUrl', `crawl/video/javbus`)
         this.sf.setValue('/crawlKey', this.i.serialNumber)
+
       } catch (e) {
         console.error(e)
       }

@@ -44,17 +44,17 @@ export class SystemManageSystemSettingEditComponent implements OnInit {
     },
     $settingStringValue: {
       visibleIf: {
-        settingType: val => (val == 1 ? { required: true, show: true } : null)
+        settingType: val => (val == 1 ? { required: false, show: true } : null)
       }
     },
     $settingIntegerValue: {
       visibleIf: {
-        settingType: val => (val == 2 ? { required: true, show: true } : null)
+        settingType: val => (val == 2 ? { required: false, show: true } : null)
       }
     },
     $settingBooleanValue: {
       visibleIf: {
-        settingType: val => (val == 3 ? { required: true, show: true } : null)
+        settingType: val => (val == 3 ? { required: false, show: true } : null)
       }
     },
   };

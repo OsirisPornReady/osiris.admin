@@ -43,6 +43,9 @@
 <!--            <nz-option [nzLabel]="option.label" [nzValue]="option.value" *ngFor="let option of crawlTypeOptions"></nz-option>-->
           </nz-select>
           <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoCreate()"/>
+          <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="editCrawlConfig(0)">
+            <span nz-icon nzType="setting" nzTheme="outline"></span>
+          </button>
           <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
             <span nz-icon nzType="api" nzTheme="outline"></span>
           </button>

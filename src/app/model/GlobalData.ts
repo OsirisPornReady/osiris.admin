@@ -5,4 +5,8 @@ export interface GlobalData {
   isAutoFill: boolean
   isAutoSubmit: boolean
   isDownloadImage: boolean
+  imagePhysicalPath: string
+  imageServerPath: string
+  imagePhysicalDirectoryName: string
+  imageServerDirectoryName: string
 }
