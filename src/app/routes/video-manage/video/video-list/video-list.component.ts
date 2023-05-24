@@ -304,9 +304,10 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.messageSocketSubscription) {
-      this.messageSocketSubscription.unsubscribe();
-    }
+    // if (this.messageSocketSubscription) {
+    //   this.messageSocketSubscription.unsubscribe();
+    // }
+    this.messageSocketSubscription.unsubscribe();
   }
 
   addEdit(id: number = 0): void {

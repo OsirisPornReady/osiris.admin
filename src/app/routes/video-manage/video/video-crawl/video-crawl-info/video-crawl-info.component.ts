@@ -4,7 +4,7 @@ import { _HttpClient } from '@delon/theme';
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { fromEvent } from "rxjs";
+import {fromEvent, Subscription} from "rxjs";
 
 import { VideoTagService } from '../../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../../service/video/video-type.service';
@@ -171,6 +171,10 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   dKeyDownSubscription: any = null;
   onStorage: boolean = false;
 
+  keydownSubscription: Subscription = new Subscription();
+  keyupSubscription: Subscription = new Subscription();
+  ctrlPressed: boolean = true;
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
@@ -247,6 +251,24 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       //   }
       // })
 
+      this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+        if (event.key == 'Control') {
+          this.ctrlPressed = true;
+        }
+        if (this.ctrlPressed && event.key == 'Enter') {
+          setTimeout(async () => {
+            try {
+              await this.save(this.sf.value);
+            } catch (e) {}
+          })
+        }
+      })
+      this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
+        if (event.key == 'Control') {
+          this.ctrlPressed = false;
+        }
+      })
+
       // this.msgSrv.remove(this.crawlLoadingMsgId);
       this.msgSrv.remove('');
       this.msgSrv.success('爬取成功');
@@ -287,15 +309,17 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.coverSrc = ''
-    if (this.enterKeyDownSubscription) {
-      this.enterKeyDownSubscription.unsubscribe();
-    }
-    if (this.spaceKeyDownSubscription) {
-      this.spaceKeyDownSubscription.unsubscribe();
-    }
-    if (this.dKeyDownSubscription) {
-      this.dKeyDownSubscription.unsubscribe();
-    }
+    // if (this.enterKeyDownSubscription) {
+    //   this.enterKeyDownSubscription.unsubscribe();
+    // }
+    // if (this.spaceKeyDownSubscription) {
+    //   this.spaceKeyDownSubscription.unsubscribe();
+    // }
+    // if (this.dKeyDownSubscription) {
+    //   this.dKeyDownSubscription.unsubscribe();
+    // }
+    this.keydownSubscription.unsubscribe();
+    this.keyupSubscription.unsubscribe();
     this.msgSrv.remove('');
   }
 

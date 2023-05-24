@@ -1,18 +1,22 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { STColumn, STComponent } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import {ModalHelper, _HttpClient, DrawerHelper} from '@delon/theme';
 import {NzMessageService} from "ng-zorro-antd/message";
+import {NzNotificationService} from 'ng-zorro-antd/notification';
 
 import { VideoService } from '../../../service/video/video.service';
+import {CommonService} from '../../../service/common/common.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
 import { VideoManageVideoEditComponent } from '../../video-manage/video/video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../../video-manage/video/video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoInfoComponent } from '../../video-manage/video/video-info/video-info.component';
 import { VideoManageVideoCrawlConfigComponent } from '../../video-manage/video/video-crawl/video-crawl-config/video-crawl-config.component';
-import {lastValueFrom} from "rxjs";
+import {lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
+import {CrawlMessage} from "../../../model/CrawlMessage";
+
 
 
 @Component({
@@ -20,7 +24,7 @@ import {dateStringFormatter} from "../../../shared/utils/dateUtils";
   templateUrl: './video-gallery.component.html',
   styleUrls: ['./video-gallery.component.less']
 })
-export class GalleryVideoGalleryComponent implements OnInit {
+export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   url = `/user`;
   searchSchema: SFSchema = {
     properties: {
@@ -61,18 +65,31 @@ export class GalleryVideoGalleryComponent implements OnInit {
 
   savedPi: any = null;
 
+  messageSocketSubscription: Subscription = new Subscription();
+  reloadSocketSpin: boolean = false;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private videoService: VideoService,
+    private commonService: CommonService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
     private msgSrv: NzMessageService,
+    private ntfService: NzNotificationService,
   ) { }
+
+  protected readonly dateStringFormatter = dateStringFormatter;
 
   async ngOnInit() {
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
+    this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
+    this.connectMessageSocket();
+  }
+
+  ngOnDestroy() {
+    this.messageSocketSubscription.unsubscribe();
   }
 
   add(): void {
@@ -208,6 +225,32 @@ export class GalleryVideoGalleryComponent implements OnInit {
     this.getByPage();
   }
 
+  connectMessageSocket() {
+    this.reloadSocketSpin = true;
+    if (!this.messageSocketSubscription.closed) {
+      this.messageSocketSubscription.unsubscribe();
+    }
+    this.messageSocketSubscription = this.commonService.socket$.subscribe((res: CrawlMessage) => { //这里只要subscribe就行,有错误处理函数
+      let picType = ''
+      switch (res.msgType) {
+        case 'cover':
+          picType = '封面图'
+          break;
+        case 'preview':
+          picType = '预览图'
+          break;
+        default:
+          break;
+      }
+      let ntfTitle = `${picType}下载成功: ${res.index}/${res.total}`
+      this.ntfService.success(ntfTitle, res.message, {
+        nzKey: 'messageSocket'
+      })
+    })
+    setTimeout(() => {
+      this.reloadSocketSpin = false;
+    }, 500);
+  }
 
-  protected readonly dateStringFormatter = dateStringFormatter;
+
 }

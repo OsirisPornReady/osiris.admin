@@ -15,6 +15,12 @@
       <span nz-icon nzType="reload" nzTheme="outline"></span>
     </button>
   </div>
+  <div class="header-content" style="margin-left: 200px">
+    <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
+    <button nz-button type="button" nzType="default" nzShape="round" (click)="connectMessageSocket()">
+      <span nz-icon [nzType]="'sync'" [nzSpin]="reloadSocketSpin"></span>
+    </button>
+  </div>
   <div class="header-content search-keyword">
     <button nz-button nzType="default" nzShape="round" class="mr-md" (click)="resetSearch()">
       <span nz-icon nzType="reload" nzTheme="outline"></span>
