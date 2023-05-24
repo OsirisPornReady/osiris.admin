@@ -42,8 +42,12 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
       femaleTags: { type: 'string', title: '女性标签' },
       mixedTags: { type: 'string', title: '混合标签' },
       otherTags: { type: 'string', title: '其他标签' },
-      coverSrc: { type: 'string', title: '封面' },
-      previewImageSrcList: { type: 'string', title: '预览图' },
+      comicPhysicalPath: { type: 'string', title: '物理地址' },
+      comicServerPath: { type: 'string', title: '服务器地址' },
+      comicPhysicalDirectoryName: { type: 'string', title: '物理文件夹名' },
+      comicServerDirectoryName: { type: 'string', title: '服务器文件夹名' },
+      // coverSrc: { type: 'string', title: '封面' },
+      // previewImageSrcList: { type: 'string', title: '预览图' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
       comicPicLinkList: { type: 'string', title: '漫画链接' },
@@ -208,10 +212,29 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
       this.close();
       return;
     }
+    if (this.commonService.globalData.isDownloadImage) {
+      if (this.record.hasOwnProperty('comicPhysicalPath') && this.record.hasOwnProperty('comicServerPath') && this.record.hasOwnProperty('comicPhysicalDirectoryName') && this.record.hasOwnProperty('comicServerDirectoryName')) {
+        this.record.comicPhysicalPath = (typeof this.record.comicPhysicalPath == 'string') ? this.record.comicPhysicalPath : ''
+        this.record.comicServerPath = (typeof this.record.comicServerPath == 'string') ? this.record.comicServerPath : ''
+        this.record.comicPhysicalDirectoryName = (typeof this.record.comicPhysicalDirectoryName == 'string') ? this.record.comicPhysicalDirectoryName : ''
+        this.record.comicServerDirectoryName = (typeof this.record.comicServerDirectoryName == 'string') ? this.record.comicServerDirectoryName : ''
+      } else {
+        this.msgSrv.info('图片相关配置不正确,请关闭页面');
+        this.close();
+        return;
+      }
+    }
     try {
       this.record.crawlKey = this.record.crawlKey.trim();
       this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
-      this.i = (await this.crawlService.crawlComicByUrl(this.record.crawlApiUrl,{ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+      this.i = (await this.crawlService.crawlComicByUrl(this.record.crawlApiUrl,{
+        crawlKey: this.record.crawlKey,
+        downloadImage: this.commonService.isDownloadImage,
+        comicPhysicalPath: this.record.comicPhysicalPath,
+        comicServerPath: this.record.comicServerPath,
+        comicPhysicalDirectoryName: this.record.comicPhysicalDirectoryName,
+        comicServerDirectoryName: this.record.comicServerDirectoryName
+      })) || {};
       this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)

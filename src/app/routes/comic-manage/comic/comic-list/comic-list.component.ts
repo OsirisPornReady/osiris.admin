@@ -15,6 +15,7 @@ import {ComicManageComicEditComponent} from '../comic-edit/comic-edit.component'
 import {ComicManageComicCrawlConfigComponent} from '../comic-crawl/comic-crawl-config/comic-crawl-config.component';
 import {ComicManageComicInfoComponent} from '../comic-info/comic-info.component';
 import {ComicManageComicEvaluateComponent} from '../comic-evaluate/comic-evaluate.component';
+import {ComicManageComicDownloadConfigComponent} from '../comic-download-config/comic-download-config.component';
 
 // import {VideoManageVideoCollectComponent} from '../video-select-album/video-collect.component';
 
@@ -293,6 +294,11 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   onDownloadingComic: boolean = false;
   comicIdOnDownloading: number = -1;
 
+  comicPhysicalPath: string = '';
+  comicServerPath: string = '';
+  comicPhysicalDirectoryName: string = '';
+  comicServerDirectoryName: string = '';
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -323,6 +329,10 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     this.isEditMode = this.commonService.globalData.isEditMode;
     this.isOpenMultiSelect = this.commonService.globalData.isOpenMultiSelect;
     this.isDownloadImage = this.commonService.globalData.isDownloadImage;
+    this.comicPhysicalPath = this.commonService.globalData.comicPhysicalPath
+    this.comicServerPath = this.commonService.globalData.comicServerPath
+    this.comicPhysicalDirectoryName = this.commonService.globalData.comicPhysicalDirectoryName
+    this.comicServerDirectoryName = this.commonService.globalData.comicServerDirectoryName
 
     this.defaultSortOptions = [
       {label: '标题(asc)', value: 'title.ascend'},
@@ -454,6 +464,12 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
+      if (this.commonService.globalData.isDownloadImage) {
+        if (!(value.hasOwnProperty('comicPhysicalPath') && value.hasOwnProperty('comicServerPath') && value.hasOwnProperty('comicPhysicalDirectoryName') && value.hasOwnProperty('comicServerDirectoryName'))){
+          this.msgSrv.info('如果要下载图片,请配置图片相关的文件地址');
+          return;
+        }
+      }
       this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {
         size: 1600,
         drawerOptions: {nzClosable: false}
@@ -484,7 +500,11 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       let value = {
         id: 0,
         crawlApiUrl: this.crawlApiUrl,
-        crawlKey: this.crawlKey
+        crawlKey: this.crawlKey,
+        comicPhysicalPath: this.comicPhysicalPath,
+        comicServerPath: this.comicServerPath,
+        comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
+        comicServerDirectoryName: this.comicServerDirectoryName
       }
       this.crawlInfo(value)
     }
@@ -507,9 +527,25 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   }
 
   editCrawlConfig(id: number) {
-    this.modal.createStatic(ComicManageComicCrawlConfigComponent, {record: {id}}).subscribe(res => {
-      if (res == 'ok') {
+    let autoCreateConfig: any = {
+      canCrawl: true,
+      crawlKey: this.crawlKey,
+      crawlApiUrl: this.crawlApiUrl,
+      comicPhysicalPath: this.comicPhysicalPath,
+      comicServerPath: this.comicServerPath,
+      comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
+      comicServerDirectoryName: this.comicServerDirectoryName,
+    }
+    this.modal.createStatic(ComicManageComicCrawlConfigComponent, {record: {id}, autoCreateConfig}).subscribe(res => {
+      if (res == 'updateOk') {
         this.st.reload(null, {merge: true, toTop: false});
+      } else if (res.state == 'configOk') {
+        this.crawlKey = res.data.crawlKey
+        this.crawlApiUrl = res.data.crawlApiUrl
+        this.comicPhysicalPath = res.data.comicPhysicalPath
+        this.comicServerPath = res.data.comicServerPath
+        this.comicPhysicalDirectoryName = res.data.comicPhysicalDirectoryName
+        this.comicServerDirectoryName = res.data.comicServerDirectoryName
       }
     });
   }
@@ -579,7 +615,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     // ];
     const images: NzImage[] = [];
     images.push({
-      src: item.localCoverSrc ? item.localCoverSrc : '',
+      src: item.localCoverSrc ? item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc : '',
       height: '700px',
       alt: item.title ? item.title : ''
     })
@@ -587,7 +623,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       let lpisl = item.localComicPicSrcList
       for (let i=0; i < lpisl.length; i++) {
         images.push({
-          src: lpisl[i],
+          src: item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + lpisl[i],
           alt: item.title ? item.title : ''
         })
       }
@@ -612,65 +648,75 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       this.msgSrv.info('还未爬取信息');
       return;
     }
-    this.onDownloadingComic = true;
-    this.comicIdOnDownloading = item.id;
-    let entity: any = {
-      secureFileName: item.secureFileName,
-      comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
-      comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
-    }
-    let url = `crawl/comic/download_comic`
-    this.http.post(url, entity).pipe(finalize(() => {
-      this.onDownloadingComic = false;
-      this.comicIdOnDownloading = -1;
-    })).subscribe({
-      next: async (res: any) => {
-        this.msgSrv.success('Comic下载成功');
-        try {
-          await this.comicService.update({
-            id: item.id,
-            localComicPicSrcList: res?.localComicPicSrcList,
-            comicFailOrderList: res?.comicFailOrderList,
-            onStorage: true
-          });
-          this.st.reload(null, {merge: true, toTop: false});
-          this.msgSrv.success('Comic数据更新成功');
-        } catch (e) {
-          this.msgSrv.error('Comic数据更新失败');
-        }
-      },
-      error:async () => {
-        this.msgSrv.error('Comic下载失败');
-        try {
-          await this.comicService.update({
-            id: item.id,
-            onStorage: false
-          });
-          this.st.reload(null, {merge: true, toTop: false});
-          this.msgSrv.info('Comic入库状态更新');
-        } catch (e) {
-          this.msgSrv.error('Comic数据更新失败');
-        }
-      },
-      complete: () => {}
-    })
+    this.modal.createStatic(ComicManageComicDownloadConfigComponent, {record: { id: item.id }}, { size: 'md' }).subscribe(res => {
+      if (res.state == 'ok') {
+        console.log(res.data)
+      }
+    });
+    // this.onDownloadingComic = true;
+    // this.comicIdOnDownloading = item.id;
+    // let entity: any = {
+    //   secureFileName: item.secureFileName,
+    //   comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
+    //   comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
+    // }
+    // let url = `crawl/comic/download_comic`
+    // this.http.post(url, entity).pipe(finalize(() => {
+    //   this.onDownloadingComic = false;
+    //   this.comicIdOnDownloading = -1;
+    // })).subscribe({
+    //   next: async (res: any) => {
+    //     this.msgSrv.success('Comic下载成功');
+    //     try {
+    //       await this.comicService.update({
+    //         id: item.id,
+    //         localComicPicSrcList: res?.localComicPicSrcList,
+    //         comicFailOrderList: res?.comicFailOrderList,
+    //         onStorage: true
+    //       });
+    //       this.st.reload(null, {merge: true, toTop: false});
+    //       this.msgSrv.success('Comic数据更新成功');
+    //     } catch (e) {
+    //       this.msgSrv.error('Comic数据更新失败');
+    //     }
+    //   },
+    //   error:async () => {
+    //     this.msgSrv.error('Comic下载失败');
+    //     try {
+    //       await this.comicService.update({
+    //         id: item.id,
+    //         onStorage: false
+    //       });
+    //       this.st.reload(null, {merge: true, toTop: false});
+    //       this.msgSrv.info('Comic入库状态更新');
+    //     } catch (e) {
+    //       this.msgSrv.error('Comic数据更新失败');
+    //     }
+    //   },
+    //   complete: () => {}
+    // })
   }
 
   checkComicSeed(item: any) {
+    // this.nzModal.confirm({
+    //   nzTitle: '<i>已有种子,是否直接跳转至E站</i>',
+    //   nzContent: '<b>有种子建议直接下载,不太建议爬取</b>',
+    //   nzOkText: '跳转E站',
+    //   nzCancelText: '继续下载',
+    //   nzOnOk: () => {
+    //     this.commonService.openNewTab(item.dataSourceUrl);
+    //   },
+    //   nzOnCancel: () => {
+    //     this.downloadComic(item);
+    //   }
+    // })
     if (item.existSeed) {
-      this.nzModal.confirm({
-        nzTitle: '<i>已有种子,是否直接跳转至E站</i>',
-        nzContent: '<b>有种子建议直接下载,不太建议爬取</b>',
-        nzOkText: '跳转E站',
-        nzCancelText: '继续下载',
-        nzOnOk: () => {
-          this.commonService.openNewTab(item.dataSourceUrl);
-        },
-        nzOnCancel: () => {
-          this.downloadComic(item);
-        }
-      })
+
     }
+  }
+
+  gotoDataSourceUrl(item: any) {
+    this.commonService.openNewTab(item.dataSourceUrl);
   }
 
 }

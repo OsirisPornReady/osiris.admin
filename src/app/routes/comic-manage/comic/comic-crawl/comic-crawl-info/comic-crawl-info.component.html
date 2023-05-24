@@ -29,7 +29,7 @@
   <nz-card nzHoverable class="mt-md mb-lg">
     <div class="d-flex justify-content-between align-items-start">
       <div>
-        <img nz-image width="824" [nzSrc]="this.i.localCoverSrc" alt=""/>
+        <img nz-image width="824" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + i.localCoverSrc" alt=""/>
       </div>
       <div style="width: 600px;">
         <div>
@@ -69,7 +69,7 @@
   <div>
     <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
       <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
-        <img nz-image width="150" [nzSrc]="item" alt=""/>
+        <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" alt=""/>
       </nz-card>
     </nz-image-group>
     <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>

@@ -28,7 +28,11 @@ export class CommonService {
     imagePhysicalPath: '',
     imageServerPath: '',
     imagePhysicalDirectoryName: '',
-    imageServerDirectoryName: ''
+    imageServerDirectoryName: '',
+    comicPhysicalPath: '',
+    comicServerPath: '',
+    comicPhysicalDirectoryName: '',
+    comicServerDirectoryName: ''
   }
 
   scoreTextTable: any = {

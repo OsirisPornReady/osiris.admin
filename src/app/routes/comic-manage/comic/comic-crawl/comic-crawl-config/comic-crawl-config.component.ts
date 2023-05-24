@@ -6,12 +6,14 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 
 import { ComicService } from '../../../../../service/comic/comic.service';
 import { CrawlTypeService } from '../../../../../service/crawl/crawl-type.service';
+import { CommonService } from '../../../../../service/common/common.service';
 
 @Component({
   selector: 'app-comic-manage-comic-crawl-config',
   templateUrl: './comic-crawl-config.component.html',
 })
 export class ComicManageComicCrawlConfigComponent implements OnInit {
+  autoCreateConfig: any = {};
   title = '';
   record: any = {};
   i: any;
@@ -21,6 +23,10 @@ export class ComicManageComicCrawlConfigComponent implements OnInit {
       canCrawl: { type: 'boolean', title: '是否需要导入' },
       crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
+      comicPhysicalPath: { type: 'string', title: '物理地址' },
+      comicServerPath: { type: 'string', title: '服务器地址' },
+      comicPhysicalDirectoryName: { type: 'string', title: '物理文件夹名' },
+      comicServerDirectoryName: { type: 'string', title: '服务器文件夹名' }
     },
     required: ['crawlKey', 'crawlApiUrl'],
   };
@@ -59,6 +65,7 @@ export class ComicManageComicCrawlConfigComponent implements OnInit {
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private comicService: ComicService,
+    private commonService: CommonService,
     private crawlTypeService: CrawlTypeService
   ) {}
 
@@ -71,10 +78,18 @@ export class ComicManageComicCrawlConfigComponent implements OnInit {
         canCrawl: res?.canCrawl,
         crawlApiUrl: res?.crawlApiUrl,
         crawlKey: res?.crawlKey,
+        comicPhysicalPath: res?.comicPhysicalPath,
+        comicServerPath: res?.comicServerPath,
+        comicPhysicalDirectoryName: res?.comicPhysicalDirectoryName,
+        comicServerDirectoryName: res?.comicServerDirectoryName
       }
+      setTimeout(() => {
+        this.autoConfig()
+      }, 200)
     } else {
       this.title = '新增数据源配置';
-      this.i = {};
+      // this.i = {};
+      this.i = this.autoCreateConfig;
     }
   }
 
@@ -82,16 +97,36 @@ export class ComicManageComicCrawlConfigComponent implements OnInit {
     try {
       if (this.record.id > 0) {
         await this.comicService.update(value);
+        this.modal.close({ state: 'updateOk', data: {} });
       } else {
-        await this.comicService.add(value);
+        // await this.comicService.add(value);
+        this.modal.close({ state: 'configOk', data: value });
       }
       this.msgSrv.success('保存成功');
-      this.modal.close('ok');
     } catch (error) {}
   }
 
   close(): void {
     this.modal.destroy();
+  }
+
+  autoConfig() {
+    try {
+      if (!this.i.comicPhysicalPath) {
+        this.sf.setValue('/comicPhysicalPath', this.commonService.globalData.comicPhysicalPath)
+      }
+      if (!this.i.comicServerPath) {
+        this.sf.setValue('/comicServerPath', this.commonService.globalData.comicServerPath)
+      }
+      if (!this.i.comicPhysicalDirectoryName) {
+        this.sf.setValue('/comicPhysicalDirectoryName', this.commonService.globalData.comicPhysicalDirectoryName)
+      }
+      if (!this.i.comicServerDirectoryName) {
+        this.sf.setValue('/comicServerDirectoryName', this.commonService.globalData.comicServerDirectoryName)
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
 }
