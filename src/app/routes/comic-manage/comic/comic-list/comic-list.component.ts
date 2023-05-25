@@ -648,53 +648,57 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       this.msgSrv.info('还未爬取信息');
       return;
     }
-    this.modal.createStatic(ComicManageComicDownloadConfigComponent, {record: { id: item.id }}, { size: 'md' }).subscribe(res => {
+    this.modal.createStatic(ComicManageComicDownloadConfigComponent, {record: { id: item.id }}, { size: 'xl' }).subscribe(res => {
       if (res.state == 'ok') {
-        console.log(res.data)
+        this.onDownloadingComic = true;
+        this.comicIdOnDownloading = item.id;
+        let entity: any = {
+          comicPhysicalPath: item.comicPhysicalPath,
+          comicServerPath: item.comicServerPath,
+          comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
+          comicServerDirectoryName: item.comicServerDirectoryName,
+          comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
+          localComicPicSrcList: item.localComicPicSrcList ? item.localComicPicSrcList : [],
+          comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
+          downloadPageList: res.data.downloadPageList
+        }
+        let url = `crawl/comic/download_comic`
+        this.http.post(url, entity).pipe(finalize(() => {
+          this.onDownloadingComic = false;
+          this.comicIdOnDownloading = -1;
+        })).subscribe({
+          next: async (res: any) => {
+            this.msgSrv.success('Comic下载成功');
+            try {
+              await this.comicService.update({
+                id: item.id,
+                localComicPicSrcList: res?.localComicPicSrcList,
+                comicFailOrderList: res?.comicFailOrderList,
+                onStorage: true
+              });
+              this.st.reload(null, {merge: true, toTop: false});
+              this.msgSrv.success('Comic数据更新成功');
+            } catch (e) {
+              this.msgSrv.error('Comic数据更新失败');
+            }
+          },
+          error:async () => {
+            this.msgSrv.error('Comic下载失败');
+            try {
+              await this.comicService.update({
+                id: item.id,
+                onStorage: false
+              });
+              this.st.reload(null, {merge: true, toTop: false});
+              this.msgSrv.info('Comic入库状态更新');
+            } catch (e) {
+              this.msgSrv.error('Comic数据更新失败');
+            }
+          },
+          complete: () => {}
+        })
       }
     });
-    // this.onDownloadingComic = true;
-    // this.comicIdOnDownloading = item.id;
-    // let entity: any = {
-    //   secureFileName: item.secureFileName,
-    //   comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
-    //   comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
-    // }
-    // let url = `crawl/comic/download_comic`
-    // this.http.post(url, entity).pipe(finalize(() => {
-    //   this.onDownloadingComic = false;
-    //   this.comicIdOnDownloading = -1;
-    // })).subscribe({
-    //   next: async (res: any) => {
-    //     this.msgSrv.success('Comic下载成功');
-    //     try {
-    //       await this.comicService.update({
-    //         id: item.id,
-    //         localComicPicSrcList: res?.localComicPicSrcList,
-    //         comicFailOrderList: res?.comicFailOrderList,
-    //         onStorage: true
-    //       });
-    //       this.st.reload(null, {merge: true, toTop: false});
-    //       this.msgSrv.success('Comic数据更新成功');
-    //     } catch (e) {
-    //       this.msgSrv.error('Comic数据更新失败');
-    //     }
-    //   },
-    //   error:async () => {
-    //     this.msgSrv.error('Comic下载失败');
-    //     try {
-    //       await this.comicService.update({
-    //         id: item.id,
-    //         onStorage: false
-    //       });
-    //       this.st.reload(null, {merge: true, toTop: false});
-    //       this.msgSrv.info('Comic入库状态更新');
-    //     } catch (e) {
-    //       this.msgSrv.error('Comic数据更新失败');
-    //     }
-    //   },
-    //   complete: () => {}
-    // })
   }
 
   checkComicSeed(item: any) {

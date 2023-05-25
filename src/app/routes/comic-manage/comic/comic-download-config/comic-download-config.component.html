@@ -7,4 +7,62 @@
     <button nz-button type="button" (click)="close()">关闭</button>
     <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">保存</button>
   </div>
+
+  <ng-template sf-template="pageSelect" let-i let-ui="ui" let-schema="schema">
+    <nz-transfer
+      [nzDataSource]="pageList"
+      [nzTitles]="['漫画页', '待下载']"
+      [nzDisabled]="pageSelectDisabled"
+      [nzShowSearch]="pageSelectShowSearch"
+      [nzShowSelectAll]="true"
+      [nzOperations]="['添加下载', '取消下载']"
+      [nzRenderList]="[renderList, renderList]"
+      (nzSelectChange)="selectPage($event)"
+      (nzChange)="transferPage($event)"
+    >
+      <ng-template
+        #renderList
+        let-items
+        let-direction="direction"
+        let-stat="stat"
+        let-disabled="disabled"
+        let-onItemSelectAll="onItemSelectAll"
+        let-onItemSelect="onItemSelect"
+      >
+        <nz-table #t [nzData]="$asTransferItems(items)" nzSize="small">
+          <thead>
+            <tr>
+              <th
+                [nzDisabled]="pageSelectDisabled"
+                [nzChecked]="stat.checkAll"
+                [nzIndeterminate]="stat.checkHalf"
+                (nzCheckedChange)="onItemSelectAll($event)"
+              ></th>
+              <th>Name</th>
+              <th *ngIf="direction === 'left'">Tag</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of t.data" (click)="onItemSelect(data)">
+              <td
+                [nzChecked]="!!data.checked"
+                [nzDisabled]="disabled || data.disabled"
+                (nzCheckedChange)="onItemSelect(data)"
+              ></td>
+              <td>{{ data.title }}</td>
+              <td *ngIf="direction === 'left'">
+                <nz-tag [nzColor]="data['tag'].value ? 'success' : 'error'">{{ data['tag'].label }}</nz-tag>
+              </td>
+              <td>{{ data['description'] }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </ng-template>
+    </nz-transfer>
+  </ng-template>
+
+  <ng-template sf-template="downloadAllButton" let-i let-ui="ui" let-schema="schema">
+    <button nz-button type="button" nzType="default" (click)="downloadAll()">全部下载</button>
+  </ng-template>
 </sf>
