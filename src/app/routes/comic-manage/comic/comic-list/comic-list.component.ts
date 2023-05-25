@@ -504,7 +504,8 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         comicPhysicalPath: this.comicPhysicalPath,
         comicServerPath: this.comicServerPath,
         comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
-        comicServerDirectoryName: this.comicServerDirectoryName
+        comicServerDirectoryName: this.comicServerDirectoryName,
+        firstTouch: true
       }
       this.crawlInfo(value)
     }
