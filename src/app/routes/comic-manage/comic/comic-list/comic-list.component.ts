@@ -451,11 +451,11 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   getComicStatus(item: any): number {
     let onStorage = item.onStorage;
     let existSeed = item.existSeed;
-    if (item.comicFailOrderList.filter((i: any) => i == '-').length > 0) {
-      return 2;
+    if (item.comicFailOrderList.filter((i: any) => i != '-').length == 0 && onStorage) {
+      return 1;
     } else {
       if (onStorage) {
-        return 1;
+        return 2;
       } else {
         if (existSeed) {
           return 3;
