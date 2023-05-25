@@ -131,6 +131,11 @@ export class ComicManageComicDownloadConfigComponent implements OnInit {
         checked: false
       });
     }
+
+    setTimeout(() => {
+      this.sf.getProperty('/startPage')?.setValue(1, false);
+      this.sf.getProperty('/endPage')?.setValue(this.pageSize, false);
+    },200)
   }
 
   async save(value: any) {
