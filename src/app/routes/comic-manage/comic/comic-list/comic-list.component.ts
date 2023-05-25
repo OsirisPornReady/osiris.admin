@@ -198,7 +198,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     1: {text: '已入库', color: 'success'},
     2: {text: '有缺失页', color: 'warning'},
     3: {text: '有种子', color: 'processing'},
-    4: {text: '未入库', color: 'error'},
+    4: {text: '无种子', color: 'error'},
     5: {text: '默认', color: 'default'}
   };
   qualityTAG: STColumnTag = {
@@ -451,13 +451,17 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   getComicStatus(item: any): number {
     let onStorage = item.onStorage;
     let existSeed = item.existSeed;
-    if (item.onStorage) {
-      return 1;
+    if (item.comicFailOrderList.filter((i: any) => i == '-').length > 0) {
+      return 2;
     } else {
-      if (existSeed) {
-        return 2;
+      if (onStorage) {
+        return 1;
       } else {
-        return 3;
+        if (existSeed) {
+          return 3;
+        } else {
+          return 4;
+        }
       }
     }
   }
