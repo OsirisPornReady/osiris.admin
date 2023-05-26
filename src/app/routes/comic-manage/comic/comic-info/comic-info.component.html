@@ -85,7 +85,9 @@
       >
         全选
       </label>
-      <button nz-button type="button" class="ml-md" (click)="batchDownload()">批量下载</button>
+      <button nz-button type="button" class="ml-md" (click)="autoSelectFailOrder()">自动选中未下载</button>
+      <button nz-button type="button" class="ml-md" (click)="downloadBatch()">批量下载</button>
+      <button nz-button type="button" class="ml-md" (click)="downloadAll()">全部下载</button>
     </div>
     <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
       <ng-template st-row="customCheck" let-item>

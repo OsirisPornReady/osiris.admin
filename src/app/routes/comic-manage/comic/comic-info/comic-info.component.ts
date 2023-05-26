@@ -354,7 +354,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         let item: any = {
           pageIndex: index + 1,
           pageName: `page ${index + 1}`,
-          pageStatus: this.i.comicFailOrderList[index] == '-',
+          pageStatus: index % 2 == 0 ? this.i.comicFailOrderList[index] == '-' : false,
           pageLink: this.i.comicPicLinkList[index],
           pageSrc: this.i.localComicPicSrcList[index],
           pageChecked: false,
@@ -456,7 +456,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     })
   }
 
-  batchDownload() {
+  downloadBatch() {
     let pageList: number[] = this.comicPageList.filter((i: any) => {
       return i.pageChecked;
     }).map((i: any) => {
@@ -467,6 +467,21 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     this.downloadPages(pageList);
   }
 
+  downloadAll() {
+    let pageList: number[] = this.comicPageList.map((i: any) => {
+      return i.pageIndex;
+    })
+    this.downloadPages(pageList);
+  }
+
+  autoSelectFailOrder() {
+    this.comicPageList = this.comicPageList.map((i: any) => {
+      if (!i.pageStatus) {
+        i.pageChecked = true;
+      }
+      return i;
+    })
+  }
 
   protected readonly fallbackImageBase64 = fallbackImageBase64;
 }
