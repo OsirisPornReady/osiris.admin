@@ -17,7 +17,7 @@ export class CommonService {
   isAutoSubmit: boolean = true;
   crawlType: number = 0;
   isDownloadImage: boolean = true;
-
+  
   globalData: any = {
     isEditMode: false,
     isOpenMultiSelect: false,

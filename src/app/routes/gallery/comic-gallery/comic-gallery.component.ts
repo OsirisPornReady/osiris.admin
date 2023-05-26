@@ -17,7 +17,7 @@ import { ComicManageComicCrawlConfigComponent } from "../../comic-manage/comic/c
 import {lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
-
+import { fallbackImageBase64 } from "../../../../assets/image-base64";
 
 
 @Component({
@@ -270,4 +270,5 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   }
 
 
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

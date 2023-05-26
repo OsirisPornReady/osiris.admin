@@ -7,6 +7,7 @@ import { NzModalRef } from 'ng-zorro-antd/modal';
 import { VideoAlbumService } from '../../../../service/video/video-album.service';
 import { VideoService } from '../../../../service/video/video.service';
 import {lastValueFrom} from "rxjs";
+import {fallbackImageBase64} from "../../../../../assets/image-base64";
 
 @Component({
   selector: 'app-video-manage-video-album-edit',
@@ -156,4 +157,6 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
     this.sf.getProperty('/albumVideoList')!.widget.reset(albumVideoList);
     this.videoDetailList = this.videoDetailList.filter((i: any) => i.value != item.value);
   }
+
+    protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

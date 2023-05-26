@@ -29,7 +29,7 @@
   <nz-card nzHoverable class="mt-md mb-lg">
     <div class="d-flex justify-content-between align-items-start">
       <div>
-        <img nz-image width="824" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + i.localCoverSrc" alt=""/>
+        <img nz-image width="824" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + i.localCoverSrc" [nzFallback]="fallbackImageBase64" alt=""/>
       </div>
       <div style="width: 600px;">
         <div>
@@ -38,7 +38,7 @@
         </div>
         <div class="av-info mb-sm">
           <span class="font-weight-bold">日期:</span>
-          <span nz-typography [nzContent]="dateStringFormatter(i.publishTime)" class="text-md font-weight-normal"></span>
+          <span nz-typography [nzContent]="dateStringFormatter(i.postedTime)" class="text-md font-weight-normal"></span>
         </div>
         <div class="av-info mb-sm" *ngIf="i.duration">
           <span class="font-weight-bold">时长:</span>
@@ -64,12 +64,12 @@
     </div>
   </nz-card>
 
-  <nz-divider nzText="Preview Image"></nz-divider>
+  <nz-divider nzText="Comic Pages"></nz-divider>
 
   <div>
     <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
       <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
-        <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" alt=""/>
+        <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
       </nz-card>
     </nz-image-group>
     <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>

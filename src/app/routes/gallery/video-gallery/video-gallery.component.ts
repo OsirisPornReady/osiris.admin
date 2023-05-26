@@ -16,6 +16,7 @@ import { VideoManageVideoCrawlConfigComponent } from '../../video-manage/video/v
 import {lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
+import {fallbackImageBase64} from "../../../../assets/image-base64";
 
 
 
@@ -269,4 +270,5 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   }
 
 
+    protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

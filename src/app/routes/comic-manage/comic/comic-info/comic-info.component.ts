@@ -10,6 +10,7 @@ import { CommonService } from '../../../../service/common/common.service';
 import { CrawlService } from '../../../../service/crawl/crawl.service';
 
 import { dateStringFormatter } from "../../../../shared/utils/dateUtils";
+import { fallbackImageBase64 } from "../../../../../assets/image-base64";
 
 @Component({
   selector: 'app-comic-manage-comic-info',
@@ -272,4 +273,5 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   }
 
 
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

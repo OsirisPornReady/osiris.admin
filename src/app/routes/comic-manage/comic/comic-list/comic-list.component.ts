@@ -31,7 +31,7 @@ import {ComicManageComicCrawlInfoComponent} from "../comic-crawl/comic-crawl-inf
   styleUrls: ['./comic-list.component.less']
 })
 export class ComicManageComicListComponent implements OnInit, OnDestroy {
-  url = `/api/comic/get_by_page`; //?sort=publishTime desc
+  url = `/api/comic/get_by_page`; //?sort=postedTime desc
 
   page: STPage = {
     showSize: true,
@@ -188,7 +188,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       visibleIf: {searchField: value => Array.isArray(value) ? value.includes('otherTags') : false},
     },
     $postedTimeStart: {
-      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('publishTimeStart') : false},
+      visibleIf: {searchField: value => Array.isArray(value) ? value.includes('postedTimeStart') : false},
     },
     $addTimeStart: {
       visibleIf: {searchField: value => Array.isArray(value) ? value.includes('addTimeStart') : false},

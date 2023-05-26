@@ -12,6 +12,7 @@ import { CommonService } from '../../../../service/common/common.service';
 import { CrawlService } from '../../../../service/crawl/crawl.service';
 
 import { dateStringFormatter } from "../../../../shared/utils/dateUtils";
+import {fallbackImageBase64} from "../../../../../assets/image-base64";
 
 @Component({
   selector: 'app-video-manage-video-info',
@@ -272,4 +273,5 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
     this.switchLoading = false;
   }
 
+    protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

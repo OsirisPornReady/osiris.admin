@@ -11,6 +11,7 @@ import { CrawlService } from '../../../../../service/crawl/crawl.service';
 import { ComicService } from '../../../../../service/comic/comic.service';
 
 import { dateStringFormatter } from "../../../../../shared/utils/dateUtils";
+import { fallbackImageBase64 } from "../../../../../../assets/image-base64";
 
 @Component({
   selector: 'app-comic-manage-comic-crawl-info',
@@ -338,4 +339,5 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
   }
 
 
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

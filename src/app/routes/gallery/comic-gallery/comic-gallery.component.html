@@ -44,12 +44,12 @@
         nz-image
         width="378px"
         [nzSrc]="item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc"
+        [nzFallback]="fallbackImageBase64"
         alt=""
         (click)="handlePreview($event)"
       />
       <span nz-typography class="d-block">{{item.title}}</span>
-      <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
-      <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
+      <span nz-typography class="d-block"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
       <nz-space nzSize="small" [nzSplit]="spaceSplit">
         <ng-template #spaceSplit>
           <nz-divider nzType="vertical"></nz-divider>

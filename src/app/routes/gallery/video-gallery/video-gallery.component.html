@@ -44,6 +44,7 @@
         nz-image
         width="378px"
         [nzSrc]="item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc"
+        [nzFallback]="fallbackImageBase64"
         alt=""
         (click)="handlePreview($event)"
       />
