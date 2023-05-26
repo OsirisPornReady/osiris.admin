@@ -25,12 +25,12 @@ export class CommonService {
     isAutoFill: true,
     isAutoSubmit: true,
     isDownloadImage: true,
-    imagePhysicalPath: '',
-    imageServerPath: '',
+    imagePhysicalPath: 'E:/CrawlDist/image',
+    imageServerPath: 'http://localhost:9004/image',
     imagePhysicalDirectoryName: '',
     imageServerDirectoryName: '',
-    comicPhysicalPath: '',
-    comicServerPath: '',
+    comicPhysicalPath: 'E:/CrawlDist/comic',
+    comicServerPath: 'http://localhost:9004/image',
     comicPhysicalDirectoryName: '',
     comicServerDirectoryName: ''
   }

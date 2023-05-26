@@ -1,0 +1,90 @@
+<!--<page-header [home]="''" [title]="''"></page-header>-->
+<div class="page-header d-flex justify-content-start align-items-center">
+  <div class="header-content">
+    <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
+    <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoCreate()"/>
+    <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
+      <span nz-icon nzType="api" nzTheme="outline"></span>
+    </button>
+    <nz-switch [(ngModel)]="showDelete"
+               nzCheckedChildren="删除"
+               nzUnCheckedChildren="查看"
+               class="ml-md">
+    </nz-switch>
+    <button nz-button nzType="default" nzShape="circle" class="ml-md" (click)="resetCrawlKey()">
+      <span nz-icon nzType="reload" nzTheme="outline"></span>
+    </button>
+  </div>
+  <div class="header-content" style="margin-left: 200px">
+    <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
+    <button nz-button type="button" nzType="default" nzShape="round" (click)="connectMessageSocket()">
+      <span nz-icon [nzType]="'sync'" [nzSpin]="reloadSocketSpin"></span>
+    </button>
+  </div>
+  <div class="header-content search-keyword">
+    <button nz-button nzType="default" nzShape="round" class="mr-md" (click)="resetSearch()">
+      <span nz-icon nzType="reload" nzTheme="outline"></span>
+    </button>
+    <nz-input-group [nzSuffix]="suffixIconSearch">
+      <input type="text" nz-input [(ngModel)]="keyword" placeholder="关键字搜索" class="width-md" (keydown.enter)="search()"/>
+    </nz-input-group>
+    <ng-template #suffixIconSearch>
+      <span nz-icon nzType="search"></span>
+    </ng-template>
+  </div>
+</div>
+<!--<nz-card>-->
+<!--  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>-->
+<!--  <st #st [data]="url" [columns]="columns"></st>-->
+<!--</nz-card>-->
+<div class="container">
+  <div class="grid-container d-flex justify-content-around align-items-start">
+    <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" [nzLoading]="loading" nzHoverable (click)="openInfo(item.id)">
+      <img
+        nz-image
+        width="378px"
+        [nzSrc]="item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc"
+        alt=""
+        (click)="handlePreview($event)"
+      />
+      <span nz-typography class="d-block">{{item.title}}</span>
+      <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
+      <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
+      <nz-space nzSize="small" [nzSplit]="spaceSplit">
+        <ng-template #spaceSplit>
+          <nz-divider nzType="vertical"></nz-divider>
+        </ng-template>
+        <ng-template [ngIf]="showDelete">
+          <a *nzSpaceItem
+             nz-typography
+             nzType="danger"
+             (click)="handleLink($event)"
+             nz-popconfirm
+             nzPopconfirmTitle="是否删除?"
+             (nzOnConfirm)="delete(item.id)">删除</a>
+        </ng-template>
+        <a *nzSpaceItem nz-typography (click)="setConfig($event, item.id)">配置</a>
+        <a *nzSpaceItem nz-typography (click)="getCrawl($event, item)">爬取</a>
+        <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
+          数据源
+          <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+        </a>
+        <a *nzSpaceItem [href]="item.btdigUrl" target="_blank" (click)="handleLink($event)">
+          btDigg
+          <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+        </a>
+      </nz-space>
+    </nz-card>
+    <nz-empty *ngIf="gridList.length == 0"></nz-empty>
+  </div>
+  <div class="gallery-pagination d-flex justify-content-end align-items-center mt-md">
+    <nz-pagination nzShowQuickJumper
+                   nzShowSizeChanger
+                   [nzPageSizeOptions]="psOptions"
+                   [(nzPageSize)]="ps"
+                   [(nzPageIndex)]="pi"
+                   [nzTotal]="total"
+                   (nzPageIndexChange)="handlePageIndexChange()"
+                   (nzPageSizeChange)="handlePageSizeChange()"></nz-pagination>
+  </div>
+</div>
