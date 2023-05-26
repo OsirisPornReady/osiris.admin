@@ -405,8 +405,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         try {
           await this.comicService.update({
             id: this.record.id,
-            localComicPicSrcList: this.i.localComicPicSrcList,
-            comicFailOrderList: this.i.comicFailOrderList,
+            localComicPicSrcList: res?.localComicPicSrcList,
+            comicFailOrderList: res?.comicFailOrderList,
             onStorage: true
           });
           await this.getComicData();
