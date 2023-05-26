@@ -354,7 +354,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         let item: any = {
           pageIndex: index + 1,
           pageName: `page ${index + 1}`,
-          pageStatus: index % 2 == 0 ? this.i.comicFailOrderList[index] == '-' : false,
+          pageStatus: this.i.comicFailOrderList[index] == '-',
           pageLink: this.i.comicPicLinkList[index],
           pageSrc: this.i.localComicPicSrcList[index],
           pageChecked: false,

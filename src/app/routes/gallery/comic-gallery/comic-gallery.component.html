@@ -65,7 +65,7 @@
         </ng-template>
         <a *nzSpaceItem nz-typography (click)="setConfig($event, item.id)">配置</a>
         <a *nzSpaceItem nz-typography (click)="getCrawl($event, item)">爬取</a>
-        <a *nzSpaceItem nz-typography (click)="getCrawl($event, item)">爬取</a>
+        <a *nzSpaceItem nz-typography>下载</a>
         <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
           数据源
           <span nz-icon nzType="share-alt" nzTheme="outline"></span>
