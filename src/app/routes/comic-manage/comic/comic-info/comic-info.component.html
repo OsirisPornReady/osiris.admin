@@ -49,26 +49,66 @@
   <nz-divider nzText="Comic Pages"></nz-divider>
 
   <div>
-    <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
-      <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
+    <nz-image-group *ngIf="comicImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
+      <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of comicImageSrcList">
         <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
       </nz-card>
     </nz-image-group>
-    <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>
+    <nz-empty *ngIf="comicImageSrcList.length == 0"></nz-empty>
   </div>
 </div>
 
 <nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
-<sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none">
+<sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none" class="mb-md">
   <div>
     <button nz-button type="submit" nzType="default" nzShape="round" (click)="evaluate(evaluateSf.value)" [disabled]="!evaluateSf.valid" [nzLoading]="http.loading" style="margin-left: 145px">保存评分与评价</button>
   </div>
 </sf>
 
-<nz-divider *ngIf="i" nzText="Confirm Information"></nz-divider>
-<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
-<!--  <div class="drawer-footer">-->
-<!--    <button nz-button type="button" (click)="close()">关闭</button>-->
-<!--    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">自动{{record.id > 0 ? '填充' : '创建' }}</button>-->
-<!--  </div>-->
-</sf>
+<nz-tabset>
+  <nz-tab nzTitle="漫画信息">
+    <sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
+    <!--  <div class="drawer-footer">-->
+    <!--    <button nz-button type="button" (click)="close()">关闭</button>-->
+    <!--    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">自动{{record.id > 0 ? '填充' : '创建' }}</button>-->
+    <!--  </div>-->
+    </sf>
+  </nz-tab>
+  <nz-tab nzTitle="漫画页信息">
+    <div class="mb-md">
+      <label
+        nz-checkbox
+        [(ngModel)]="allChecked"
+        (ngModelChange)="onCheckAllSwitch($event)"
+        [nzIndeterminate]="indeterminate"
+        class="ml-md"
+      >
+        全选
+      </label>
+      <button nz-button type="button" class="ml-md" (click)="batchDownload()">批量下载</button>
+    </div>
+    <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
+      <ng-template st-row="customCheck" let-item>
+        <label nz-checkbox [(ngModel)]="item.pageChecked" (ngModelChange)="onCheckSwitch($event, item)"></label>
+      </ng-template>
+
+      <ng-template st-row="customPageLink" let-item>
+        <a nz-typography href="javascript:void(0);" (click)="openNewTab(item.pageLink)">
+          {{item.pageLink}}
+        </a>
+      </ng-template>
+
+      <ng-template st-row="customPageDownload" let-item>
+        <button nz-button
+                type="button"
+                [nzType]="'default'"
+                nzShape="circle"
+                [nzLoading]="onDownloadingPage && pageIndexOnDownloading.includes(item.pageIndex)"
+                [disabled]="onDownloadingPage && !pageIndexOnDownloading.includes(item.pageIndex)"
+                (click)="downloadPages([item.pageIndex])">
+          <span nz-icon nzType="cloud-download" nzTheme="outline"></span>
+        </button>
+      </ng-template>
+    </st>
+  </nz-tab>
+</nz-tabset>

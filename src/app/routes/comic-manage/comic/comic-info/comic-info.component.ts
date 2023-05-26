@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
 import { _HttpClient } from '@delon/theme';
+import {STChange, STColumn, STColumnTag, STComponent, STData, STPage} from "@delon/abc/st";
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
-import { fromEvent } from "rxjs";
+import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image';
+import {finalize, fromEvent} from "rxjs";
 
 import { ComicService } from '../../../../service/comic/comic.service';
 import { CommonService } from '../../../../service/common/common.service';
@@ -11,6 +13,7 @@ import { CrawlService } from '../../../../service/crawl/crawl.service';
 
 import { dateStringFormatter } from "../../../../shared/utils/dateUtils";
 import { fallbackImageBase64 } from "../../../../../assets/image-base64";
+
 
 @Component({
   selector: 'app-comic-manage-comic-info',
@@ -184,22 +187,94 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     },
   };
 
+
+  comicPageList: STData[] = []
+  allChecked: boolean = false;
+  indeterminate: boolean = false;
+  TAG: STColumnTag = {
+    true: { text: '已下载', color: 'green' },
+    false: { text: '未下载', color: 'red' },
+  };
+  page: STPage = {
+    showSize: true,
+    pageSizes: [10, 20, 30, 40, 50],
+    showQuickJumper: true
+  };
+  @ViewChild('st') private readonly st!: STComponent;
+  columns: STColumn[] = [
+    {
+      title: '',
+      index: 'pageIndex',
+      width: 50,
+      render: 'customCheck'
+    },
+    {
+      title: '名字',
+      index: 'pageName',
+      width: 120,
+      className: 'text-center',
+    }, //即使是custom render也最好带上index,search和sort什么的用得上
+    {
+      title: '状态',
+      index: 'pageStatus',
+      width: 120,
+      type: 'tag',
+      tag: this.TAG,
+      sort: true,
+      className: 'text-center'
+    },
+    {
+      title: '链接',
+      index: 'pageLink',
+      render: 'customPageLink',
+    },
+    {
+      title: '下载',
+      width: 120,
+      render: 'customPageDownload',
+      className: 'text-center'
+    },
+    {
+      title: '操作',
+      width: 160,
+      buttons: [
+        {
+          text: '验证',
+          click: (item: any) => {
+
+          },
+        },
+        {
+          text: '预览',
+          click: (item: any) => {
+            this.previewComicImage(item)
+          },
+        }
+      ],
+      className: 'text-center'
+    }
+  ];
+
   protected readonly dateStringFormatter = dateStringFormatter;
   coverSrc: string = ''
   javUrl: string = ''
   btdigUrl: string = ''
   nyaaUrl: string = ''
   dataSourceUrl: string = ''
-  previewImageSrcList: string[] = [];
+  comicImageSrcList: string[] = [];
   enterKeyDownSubscription: any = null;
   spaceKeyDownSubscription: any = null;
   dKeyDownSubscription: any = null;
   score: number = 0;
   comment: string = '';
 
+  onDownloadingPage: boolean = false;
+  pageIndexOnDownloading: number[] = [];
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
+    private nzImageService: NzImageService,
     public http: _HttpClient,
     private comicService: ComicService,
     private commonService: CommonService,
@@ -207,6 +282,10 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    await this.getComicData();
+  }
+
+  async getComicData() {
     try {
       let res = (await this.comicService.getById(this.record.id)) || {}
       this.i = res
@@ -221,20 +300,9 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
+      this.comicImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
 
-
-      // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-      //   if (event.key == ' ') {
-      //     this.close();
-      //   }
-      // })
-      // this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-      //   if (event.key == 'd') {
-      //     this.commonService.openNewTab(this.i.btdigUrl);
-      //   }
-      // })
-
+      this.getComicPageList();
     } catch (error) {
       console.error(error)
       this.msgSrv.error('读取信息失败')
@@ -270,6 +338,133 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     if (this.dKeyDownSubscription) {
       this.dKeyDownSubscription.unsubscribe();
     }
+  }
+
+  getComicPageList() {
+    if (this.i.hasOwnProperty('comicPicLinkList') &&
+        Array.isArray(this.i.comicPicLinkList) &&
+        this.i.hasOwnProperty('comicFailOrderList') &&
+        Array.isArray(this.i.comicFailOrderList) &&
+        this.i.hasOwnProperty('comicPicLinkList') &&
+        Array.isArray(this.i.comicPicLinkList) &&
+        this.i.hasOwnProperty('localComicPicSrcList') &&
+        Array.isArray(this.i.localComicPicSrcList)
+    ) {
+      this.comicPageList = this.i.comicPicLinkList.map((value: any, index: number) => {
+        let item: any = {
+          pageIndex: index + 1,
+          pageName: `page ${index + 1}`,
+          pageStatus: this.i.comicFailOrderList[index] == '-',
+          pageLink: this.i.comicPicLinkList[index],
+          pageSrc: this.i.localComicPicSrcList[index],
+          pageChecked: false,
+        }
+        return item;
+      })
+    }
+  }
+
+  previewComicImage(item: any) {
+    const images: NzImage[] = [];
+    images.push({
+      src: this.i.comicServerPath + '/' + this.i.comicServerDirectoryName + '/' + item.pageSrc,
+      height: '700px',
+      alt: item.pageName
+    })
+    this.nzImageService.preview(images, { nzKeyboard: true, nzMaskClosable: true, nzCloseOnNavigation: true})
+  }
+
+  openNewTab(link: string) {
+    this.commonService.openNewTab(link);
+  }
+
+  downloadPages(pageList: number[]) {
+    if (this.onDownloadingPage) {
+      this.msgSrv.info('正在下载其他漫画');
+      return;
+    }
+    this.onDownloadingPage = true;
+    this.pageIndexOnDownloading = [...pageList];
+    let entity: any = {
+      comicPhysicalPath: this.i.comicPhysicalPath,
+      comicServerPath: this.i.comicServerPath,
+      comicPhysicalDirectoryName: this.i.comicPhysicalDirectoryName,
+      comicServerDirectoryName: this.i.comicServerDirectoryName,
+      comicPicLinkList: this.i.comicPicLinkList ? this.i.comicPicLinkList : [],
+      localComicPicSrcList: this.i.localComicPicSrcList ? this.i.localComicPicSrcList : [],
+      comicFailOrderList: this.i.comicFailOrderList ? this.i.comicFailOrderList : [],
+      downloadPageList: [...pageList]
+    }
+    let url = `crawl/comic/download_comic`
+    this.http.post(url, entity).pipe(finalize(() => {
+      this.onDownloadingPage = false;
+      this.pageIndexOnDownloading = [];
+    })).subscribe({
+      next: async (res: any) => {
+        this.msgSrv.success('Comic下载成功');
+        try {
+          await this.comicService.update({
+            id: this.record.id,
+            localComicPicSrcList: this.i.localComicPicSrcList,
+            comicFailOrderList: this.i.comicFailOrderList,
+            onStorage: true
+          });
+          await this.getComicData();
+          this.st.reload(null, {merge: true, toTop: false});
+          this.msgSrv.success('Comic数据更新成功');
+        } catch (e) {
+          this.msgSrv.error('Comic数据更新失败');
+        }
+      },
+      error:async () => {
+        this.msgSrv.error('Comic下载失败');
+        try {
+          await this.comicService.update({
+            id: this.i.id,
+            onStorage: false
+          });
+          await this.getComicData();
+          this.st.reload(null, {merge: true, toTop: false});
+          this.msgSrv.info('Comic入库状态更新');
+        } catch (e) {
+          this.msgSrv.error('Comic数据更新失败');
+        }
+      },
+      complete: () => {}
+    })
+  }
+
+  onCheckSwitch(event: any, item: any) {
+    this.comicPageList[item.pageIndex - 1]['pageChecked'] = event;
+    // this.comicPageList[item.pageIndex - 1]['checked'] = event;
+    if (this.comicPageList.every((item: any) => !item.pageChecked)) {
+      this.allChecked = false;
+      this.indeterminate = false;
+    } else if (this.comicPageList.every((item: any) => item.pageChecked)) {
+      this.allChecked = true;
+      this.indeterminate = false;
+    } else {
+      this.indeterminate = true;
+    }
+  }
+
+  onCheckAllSwitch(event: any) {
+    this.indeterminate = false;
+    this.comicPageList = this.comicPageList.map((i: any) => {
+      i.pageChecked = event;
+      return i;
+    })
+  }
+
+  batchDownload() {
+    let pageList: number[] = this.comicPageList.filter((i: any) => {
+      return i.pageChecked;
+    }).map((i: any) => {
+      return i.pageIndex;
+    })
+    this.allChecked = false;
+    this.indeterminate = false;
+    this.downloadPages(pageList);
   }
 
 
