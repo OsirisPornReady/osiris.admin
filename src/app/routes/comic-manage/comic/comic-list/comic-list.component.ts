@@ -299,6 +299,8 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   comicPhysicalDirectoryName: string = '';
   comicServerDirectoryName: string = '';
 
+  onlyCrawlInfo: boolean = false;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -509,7 +511,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         comicServerPath: this.comicServerPath,
         comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
         comicServerDirectoryName: this.comicServerDirectoryName,
-        firstTouch: true
+        onlyCrawlInfo: this.onlyCrawlInfo
       }
       this.crawlInfo(value)
     }
@@ -542,7 +544,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       comicServerDirectoryName: this.comicServerDirectoryName,
     }
     this.modal.createStatic(ComicManageComicCrawlConfigComponent, {record: {id}, autoCreateConfig}).subscribe(res => {
-      if (res == 'updateOk') {
+      if (res.state == 'updateOk') {
         this.st.reload(null, {merge: true, toTop: false});
       } else if (res.state == 'configOk') {
         this.crawlKey = res.data.crawlKey
@@ -551,6 +553,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         this.comicServerPath = res.data.comicServerPath
         this.comicPhysicalDirectoryName = res.data.comicPhysicalDirectoryName
         this.comicServerDirectoryName = res.data.comicServerDirectoryName
+        this.onlyCrawlInfo = res.onlyCrawlInfo
       }
     });
   }

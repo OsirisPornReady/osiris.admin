@@ -28,6 +28,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
   schema: SFSchema = {
     properties: {
       canCrawl: { type: 'boolean', title: '是否需要导入' },
+      onlyCrawlInfo: { type: 'boolean', title: '只导入信息' },
       crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
       comicPhysicalPath: { type: 'string', title: '物理地址' },
@@ -70,7 +71,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       dataSourceUrl: { type: 'string', title: '数据源' },
       comment: { type: 'string', title: '评论' },
     },
-    required: ['title']
+    required: ['title', 'pageSize']
   };
   ui: SFUISchema = {
     '*': {
@@ -109,7 +110,18 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
     $pageSize: {
       unit: '页',
       widgetWidth: 150,
-      precision: 0
+      precision: 0,
+      changeDebounceTime: 500,
+      change: (val: number) => { //getProperty setValue还是不能用在复杂类型上,最好还是setValue
+        if (this.record.id == 0 && !this.automated) {
+          try {
+            this.sf.setValue('/localComicPicSrcList', (new Array(val)).fill('-'));
+            this.sf.setValue('/comicFailOrderList', Array.from(new Array(val + 1).keys()).slice(1));
+          } catch (e) {
+            console.error(e)
+          }
+        }
+      },
     },
     $languageTags: {
       widget: 'select',

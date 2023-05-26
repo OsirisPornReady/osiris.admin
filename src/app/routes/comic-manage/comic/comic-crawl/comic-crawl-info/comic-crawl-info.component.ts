@@ -238,7 +238,7 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
         comicServerPath: this.record.comicServerPath,
         comicPhysicalDirectoryName: this.record.comicPhysicalDirectoryName,
         comicServerDirectoryName: this.record.comicServerDirectoryName,
-        firstTouch: this.record.hasOwnProperty('firstTouch') ? this.record.firstTouch : false
+        onlyCrawlInfo: this.record.hasOwnProperty('onlyCrawlInfo') ? this.record.onlyCrawlInfo : false
       })) || {};
       this.dataSourceUrl = this.i.dataSourceUrl
       this.coverSrc = this.i.coverSrc;

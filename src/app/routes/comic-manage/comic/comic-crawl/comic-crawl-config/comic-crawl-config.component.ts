@@ -21,6 +21,7 @@ export class ComicManageComicCrawlConfigComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       canCrawl: { type: 'boolean', title: '是否需要导入' },
+      onlyCrawlInfo: { type: 'boolean', title: '只导入信息' },
       crawlApiUrl: { type: 'string', title: '导入数据源' },
       crawlKey: { type: 'string', title: '导入关键字' },
       comicPhysicalPath: { type: 'string', title: '物理地址' },
@@ -76,6 +77,7 @@ export class ComicManageComicCrawlConfigComponent implements OnInit {
       this.i = {
         id: res?.id,
         canCrawl: res?.canCrawl,
+        onlyCrawlInfo: res?.onlyCrawlInfo,
         crawlApiUrl: res?.crawlApiUrl,
         crawlKey: res?.crawlKey,
         comicPhysicalPath: res?.comicPhysicalPath,
