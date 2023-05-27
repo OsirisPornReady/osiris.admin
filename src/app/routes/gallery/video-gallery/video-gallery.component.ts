@@ -149,7 +149,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   setConfig(event: any, id: number) {
     event.stopPropagation();
     this.modal.createStatic(VideoManageVideoCrawlConfigComponent, {record: {id}}).subscribe(res => {
-      if (res == 'ok') {
+      if (res.state == 'updateOk') {
         this.getByPage();
       }
     });
