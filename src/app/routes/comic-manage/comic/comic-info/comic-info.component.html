@@ -58,15 +58,19 @@
   </div>
 </div>
 
-<nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
-<sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none" class="mb-md">
-  <div>
-    <button nz-button type="submit" nzType="default" nzShape="round" (click)="evaluate(evaluateSf.value)" [disabled]="!evaluateSf.valid" [nzLoading]="http.loading" style="margin-left: 145px">保存评分与评价</button>
-  </div>
-</sf>
 
 <nz-tabset>
   <nz-tab nzTitle="漫画信息">
+
+    <nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
+    <sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none" class="mb-md">
+      <div>
+        <button nz-button type="submit" nzType="default" nzShape="round" (click)="evaluate(evaluateSf.value)" [disabled]="!evaluateSf.valid" [nzLoading]="http.loading" style="margin-left: 145px">保存评分与评价</button>
+      </div>
+    </sf>
+
+    <nz-divider *ngIf="i" nzText="Comic Info"></nz-divider>
+
     <sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
     <!--  <div class="drawer-footer">-->
     <!--    <button nz-button type="button" (click)="close()">关闭</button>-->
@@ -86,8 +90,23 @@
         全选
       </label>
       <button nz-button type="button" class="ml-md" (click)="autoSelectFailOrder()">自动选中未下载</button>
-      <button nz-button type="button" class="ml-md" (click)="downloadBatch()">批量下载</button>
-      <button nz-button type="button" class="ml-md" (click)="downloadAll()">全部下载</button>
+      <button nz-button
+              type="button"
+              class="ml-md"
+              nz-popconfirm
+              nzPopconfirmTitle="要批量下载吗?"
+              (nzOnConfirm)="downloadBatch()">批量下载</button>
+      <button nz-button
+              type="button"
+              class="ml-md"
+              nz-popconfirm
+              nzPopconfirmTitle="要全部下载吗?"
+              (nzOnConfirm)="downloadAll()">全部下载</button>
+      <button nz-button
+              type="button"
+              class="ml-md"
+              nzDanger
+              (click)="terminateDownload()">停止下载</button>
     </div>
     <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
       <ng-template st-row="customCheck" let-item>

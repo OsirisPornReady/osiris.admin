@@ -5,9 +5,10 @@ import {STChange, STColumn, STColumnTag, STComponent, STData, STPage} from "@del
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image';
-import {finalize, fromEvent} from "rxjs";
+import {catchError, finalize, fromEvent, Subscription} from "rxjs";
 
 import { ComicService } from '../../../../service/comic/comic.service';
+import { ComicDownloadService } from '../../../../service/comic/comic-download.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { CrawlService } from '../../../../service/crawl/crawl.service';
 
@@ -271,18 +272,42 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   onDownloadingPage: boolean = false;
   pageIndexOnDownloading: number[] = [];
 
+  downloadFinishSubscription: Subscription = new Subscription();
+  downloadSubscription: Subscription = new Subscription();
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
     private nzImageService: NzImageService,
     public http: _HttpClient,
     private comicService: ComicService,
+    private comicDownloadService: ComicDownloadService,
     private commonService: CommonService,
     private crawlService: CrawlService
   ) {}
 
   async ngOnInit() {
     await this.getComicData();
+    this.downloadFinishSubscription = this.comicDownloadService.downloadFinishSubject.subscribe(async (res: any) => {
+      if (res.id == this.record.id) {
+        this.onDownloadingPage = false;
+        if (this.comicDownloadService.downloadMissionMap.has(this.record.id)) {
+          this.comicDownloadService.downloadMissionMap.delete(this.record.id);
+        }
+        if (res.update) {
+          await this.getComicData();
+          this.st.reload(null, {merge: true, toTop: false});
+        }
+      }
+    })
+    if (this.comicDownloadService.downloadMissionMap.has(this.record.id)) {
+      let mission: any = this.comicDownloadService.downloadMissionMap.get(this.record.id);
+      if (mission) {
+        this.onDownloadingPage = true;
+        this.pageIndexOnDownloading = mission.pageList;
+        this.downloadSubscription = mission.subscription;
+      }
+    }
   }
 
   async getComicData() {
@@ -328,16 +353,17 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.coverSrc = ''
-    if (this.enterKeyDownSubscription) {
-      this.enterKeyDownSubscription.unsubscribe();
-    }
-    if (this.spaceKeyDownSubscription) {
-      this.spaceKeyDownSubscription.unsubscribe();
-    }
-    if (this.dKeyDownSubscription) {
-      this.dKeyDownSubscription.unsubscribe();
-    }
+    // this.coverSrc = ''
+    // if (this.enterKeyDownSubscription) {
+    //   this.enterKeyDownSubscription.unsubscribe();
+    // }
+    // if (this.spaceKeyDownSubscription) {
+    //   this.spaceKeyDownSubscription.unsubscribe();
+    // }
+    // if (this.dKeyDownSubscription) {
+    //   this.dKeyDownSubscription.unsubscribe();
+    // }
+    this.downloadFinishSubscription.unsubscribe();
   }
 
   getComicPageList() {
@@ -383,6 +409,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.msgSrv.info('正在下载其他漫画');
       return;
     }
+    let state = 'cancel';
     this.onDownloadingPage = true;
     this.pageIndexOnDownloading = [...pageList];
     let entity: any = {
@@ -396,9 +423,13 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       downloadPageList: [...pageList]
     }
     let url = `crawl/comic/download_comic`
-    this.http.post(url, entity).pipe(finalize(() => {
+    let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
       this.onDownloadingPage = false;
       this.pageIndexOnDownloading = [];
+      this.comicDownloadService.downloadFinishSubject.next({
+        id: this.record.id,
+        update: false
+      });
     })).subscribe({
       next: async (res: any) => {
         this.msgSrv.success('Comic下载成功');
@@ -411,6 +442,10 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
           });
           await this.getComicData();
           this.st.reload(null, {merge: true, toTop: false});
+          this.comicDownloadService.downloadFinishSubject.next({
+            id: this.record.id,
+            update: true
+          });
           this.msgSrv.success('Comic数据更新成功');
         } catch (e) {
           this.msgSrv.error('Comic数据更新失败');
@@ -425,6 +460,10 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
           });
           await this.getComicData();
           this.st.reload(null, {merge: true, toTop: false});
+          this.comicDownloadService.downloadFinishSubject.next({
+            id: this.record.id,
+            update: true
+          });
           this.msgSrv.info('Comic入库状态更新');
         } catch (e) {
           this.msgSrv.error('Comic数据更新失败');
@@ -432,6 +471,12 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       },
       complete: () => {}
     })
+    this.comicDownloadService.downloadMissionMap.set(this.record.id, {
+      id: this.record.id,
+      subscription: subscription,
+      pageList: pageList,
+    });
+    this.downloadSubscription = subscription;
   }
 
   onCheckSwitch(event: any, item: any) {
@@ -472,6 +517,10 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       return i.pageIndex;
     })
     this.downloadPages(pageList);
+  }
+
+  terminateDownload() {
+    this.downloadSubscription.unsubscribe();
   }
 
   autoSelectFailOrder() {
