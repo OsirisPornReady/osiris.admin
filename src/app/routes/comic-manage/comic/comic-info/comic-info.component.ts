@@ -275,6 +275,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   downloadFinishSubscription: Subscription = new Subscription();
   downloadSubscription: Subscription = new Subscription();
 
+  failPageSize: number = 0;
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
@@ -287,11 +289,12 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    await this.getComicData();
     this.downloadFinishSubscription = this.comicDownloadService.downloadFinishSubject.subscribe(async (res: any) => {
       if (res.id == this.record.id) {
         this.onDownloadingPage = false;
-        if (this.comicDownloadService.downloadMissionMap.has(this.record.id)) {
+        this.pageIndexOnDownloading = [];
+        // subscription就没必要手动取消,会走到这个函数本身就代表订阅流已经完成了,不管是以success、error还是手动unsubscribe的方式
+        if (this.comicDownloadService.downloadMissionMap.has(this.record.id)) {  //不管是什么原因结束,结束了就把暂存的下载标识删掉
           this.comicDownloadService.downloadMissionMap.delete(this.record.id);
         }
         if (res.update) {
@@ -308,6 +311,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         this.downloadSubscription = mission.subscription;
       }
     }
+    await this.getComicData();
   }
 
   async getComicData() {
@@ -326,6 +330,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
       this.comicImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
+
+      this.failPageSize = this.i.comicFailOrderList.filter((rr: any) => rr != '-').length;
 
       this.getComicPageList();
     } catch (error) {

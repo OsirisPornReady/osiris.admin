@@ -167,6 +167,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
       comicServerPath: item.comicServerPath,
       comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
       comicServerDirectoryName: item.comicServerDirectoryName,
+      onlyCrawlInfo: item.onlyCrawlInfo
     }
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
       this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {

@@ -61,7 +61,6 @@
 
 <nz-tabset>
   <nz-tab nzTitle="漫画信息">
-
     <nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
     <sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none" class="mb-md">
       <div>
@@ -79,57 +78,70 @@
     </sf>
   </nz-tab>
   <nz-tab nzTitle="漫画页信息">
-    <div class="mb-md">
-      <label
-        nz-checkbox
-        [(ngModel)]="allChecked"
-        (ngModelChange)="onCheckAllSwitch($event)"
-        [nzIndeterminate]="indeterminate"
-        class="ml-md"
-      >
-        全选
-      </label>
-      <button nz-button type="button" class="ml-md" (click)="autoSelectFailOrder()">自动选中未下载</button>
-      <button nz-button
-              type="button"
-              class="ml-md"
-              nz-popconfirm
-              nzPopconfirmTitle="要批量下载吗?"
-              (nzOnConfirm)="downloadBatch()">批量下载</button>
-      <button nz-button
-              type="button"
-              class="ml-md"
-              nz-popconfirm
-              nzPopconfirmTitle="要全部下载吗?"
-              (nzOnConfirm)="downloadAll()">全部下载</button>
-      <button nz-button
-              type="button"
-              class="ml-md"
-              nzDanger
-              (click)="terminateDownload()">停止下载</button>
-    </div>
-    <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
-      <ng-template st-row="customCheck" let-item>
-        <label nz-checkbox [(ngModel)]="item.pageChecked" (ngModelChange)="onCheckSwitch($event, item)"></label>
-      </ng-template>
+    <div *ngIf="i">
+      <div class="av-info mb-md">
+        <span class="font-weight-bold">漫画名: </span>
+        <span nz-typography [nzContent]="i.title" class="text-md font-weight-normal"></span>
+      </div>
+      <div class="av-info mb-md">
+        <span class="font-weight-bold">页数: </span>
+        <span nz-typography class="text-md font-weight-normal">
 
-      <ng-template st-row="customPageLink" let-item>
-        <a nz-typography href="javascript:void(0);" (click)="openNewTab(item.pageLink)">
-          {{item.pageLink}}
-        </a>
-      </ng-template>
-
-      <ng-template st-row="customPageDownload" let-item>
+          <mark>{{i.pageSize}}{{i.failPageSize == 0 ? '(缺失页数: ' + i.failPageSize + ')' : '' }}</mark>
+        </span>
+      </div>
+      <div class="mb-md">
+        <label
+          nz-checkbox
+          [(ngModel)]="allChecked"
+          (ngModelChange)="onCheckAllSwitch($event)"
+          [nzIndeterminate]="indeterminate"
+          class="ml-md"
+        >
+          全选
+        </label>
+        <button nz-button type="button" class="ml-md" (click)="autoSelectFailOrder()">自动选中未下载</button>
         <button nz-button
                 type="button"
-                [nzType]="'default'"
-                nzShape="circle"
-                [nzLoading]="onDownloadingPage && pageIndexOnDownloading.includes(item.pageIndex)"
-                [disabled]="onDownloadingPage && !pageIndexOnDownloading.includes(item.pageIndex)"
-                (click)="downloadPages([item.pageIndex])">
-          <span nz-icon nzType="cloud-download" nzTheme="outline"></span>
-        </button>
-      </ng-template>
-    </st>
+                class="ml-md"
+                nz-popconfirm
+                nzPopconfirmTitle="要批量下载吗?"
+                (nzOnConfirm)="downloadBatch()">批量下载</button>
+        <button nz-button
+                type="button"
+                class="ml-md"
+                nz-popconfirm
+                nzPopconfirmTitle="要全部下载吗?"
+                (nzOnConfirm)="downloadAll()">全部下载</button>
+        <button nz-button
+                type="button"
+                class="ml-md"
+                nzDanger
+                (click)="terminateDownload()">停止下载</button>
+      </div>
+      <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
+        <ng-template st-row="customCheck" let-item>
+          <label nz-checkbox [(ngModel)]="item.pageChecked" (ngModelChange)="onCheckSwitch($event, item)"></label>
+        </ng-template>
+
+        <ng-template st-row="customPageLink" let-item>
+          <a nz-typography href="javascript:void(0);" (click)="openNewTab(item.pageLink)">
+            {{item.pageLink}}
+          </a>
+        </ng-template>
+
+        <ng-template st-row="customPageDownload" let-item>
+          <button nz-button
+                  type="button"
+                  [nzType]="'default'"
+                  nzShape="circle"
+                  [nzLoading]="onDownloadingPage && pageIndexOnDownloading.includes(item.pageIndex)"
+                  [disabled]="onDownloadingPage && !pageIndexOnDownloading.includes(item.pageIndex)"
+                  (click)="downloadPages([item.pageIndex])">
+            <span nz-icon nzType="cloud-download" nzTheme="outline"></span>
+          </button>
+        </ng-template>
+      </st>
+    </div>
   </nz-tab>
 </nz-tabset>

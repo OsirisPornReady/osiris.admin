@@ -9,6 +9,7 @@ import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image'
 import {finalize, Subscription} from "rxjs";
 
 import {ComicService} from '../../../../service/comic/comic.service';
+import {ComicDownloadService} from '../../../../service/comic/comic-download.service';
 import {CommonService} from '../../../../service/common/common.service';
 import {CrawlTypeService} from '../../../../service/crawl/crawl-type.service';
 import {ComicManageComicEditComponent} from '../comic-edit/comic-edit.component';
@@ -292,7 +293,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   reloadSocketSpin: boolean = false;
   scoreTextTable: any = this.commonService.scoreTextTable;
   onDownloadingComic: boolean = false;
-  comicIdOnDownloading: number = -1;
+  comicIdOnDownloading: number[] = [];
 
   comicPhysicalPath: string = '';
   comicServerPath: string = '';
@@ -301,11 +302,14 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
 
   onlyCrawlInfo: boolean = false;
 
+  downloadFinishSubscription: Subscription = new Subscription();
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
     private comicService: ComicService,
+    private comicDownloadService: ComicDownloadService,
     private commonService: CommonService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
@@ -348,6 +352,20 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
       {label: '发行时间(desc)', value: 'postedTime.descend'},
       {label: '发行时间(asc)', value: 'postedTime.ascend'},
     ]
+
+    this.downloadFinishSubscription = this.comicDownloadService.downloadFinishSubject.subscribe(async (res: any) => {
+      this.comicIdOnDownloading = this.comicIdOnDownloading.filter((id: number) => {
+        return id != res.id;
+      })
+      this.onDownloadingComic = this.comicIdOnDownloading.length != 0;
+      if (res.update) {
+        this.st.reload(null, {merge: true, toTop: false});
+      }
+    })
+
+    this.comicIdOnDownloading = Array.from(this.comicDownloadService.downloadMissionMap.keys())
+    this.onDownloadingComic = this.comicIdOnDownloading.length != 0;
+
     try {
       this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
       this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
@@ -648,9 +666,16 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   }
 
   downloadComic(item: any) {
-    if (this.onDownloadingComic) {
-      this.msgSrv.info('正在下载其他漫画');
-      return;
+    // if (this.onDownloadingComic) {
+    //   this.msgSrv.info('正在下载其他漫画');
+    //   return;
+    // }
+    if (this.onDownloadingComic && this.comicIdOnDownloading.includes(item.id)) {
+      let mission: any = this.comicDownloadService.downloadMissionMap.get(item.id)
+      if (mission) {
+        mission.subscription.unsubscribe();
+        return;
+      }
     }
     if (!(item.hasOwnProperty('secureFileName') && item.secureFileName)) {
       this.msgSrv.info('还未爬取信息');
@@ -659,7 +684,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
     this.modal.createStatic(ComicManageComicDownloadConfigComponent, {record: { id: item.id }}, { size: 'xl' }).subscribe(res => {
       if (res.state == 'ok') {
         this.onDownloadingComic = true;
-        this.comicIdOnDownloading = item.id;
+        this.comicIdOnDownloading.push(item.id);
         let entity: any = {
           comicPhysicalPath: item.comicPhysicalPath,
           comicServerPath: item.comicServerPath,
@@ -671,9 +696,9 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
           downloadPageList: res.data.downloadPageList
         }
         let url = `crawl/comic/download_comic`
-        this.http.post(url, entity).pipe(finalize(() => {
+        let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
           this.onDownloadingComic = false;
-          this.comicIdOnDownloading = -1;
+          this.comicIdOnDownloading = [];
         })).subscribe({
           next: async (res: any) => {
             this.msgSrv.success('Comic下载成功');
@@ -685,6 +710,10 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
                 onStorage: true
               });
               this.st.reload(null, {merge: true, toTop: false});
+              this.comicDownloadService.downloadFinishSubject.next({
+                id: item.id,
+                update: true
+              });
               this.msgSrv.success('Comic数据更新成功');
             } catch (e) {
               this.msgSrv.error('Comic数据更新失败');
@@ -698,6 +727,10 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
                 onStorage: false
               });
               this.st.reload(null, {merge: true, toTop: false});
+              this.comicDownloadService.downloadFinishSubject.next({
+                id: item.id,
+                update: true
+              });
               this.msgSrv.info('Comic入库状态更新');
             } catch (e) {
               this.msgSrv.error('Comic数据更新失败');
@@ -705,6 +738,11 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
           },
           complete: () => {}
         })
+        this.comicDownloadService.downloadMissionMap.set(item.id, {
+          id: item.id,
+          subscription: subscription,
+          pageList: res.data.downloadPageList,
+        });
       }
     });
   }

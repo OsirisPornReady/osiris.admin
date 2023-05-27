@@ -103,13 +103,12 @@
     </ng-template>
 
     <ng-template st-row="customDownloadComic" let-item>
-
+<!--      [disabled]="onDownloadingComic && item.id != comicIdOnDownloading && !item.existSeed"-->
+<!--      [nzLoading]="onDownloadingComic && comicIdOnDownloading.includes(item.id)"-->
       <button nz-button
               type="button"
               [nzType]="'default'"
               nzShape="circle"
-              [nzLoading]="onDownloadingComic && item.id == comicIdOnDownloading"
-              [disabled]="onDownloadingComic && item.id != comicIdOnDownloading && !item.existSeed"
               nz-popconfirm
               [nzCondition]="!item.existSeed"
               nzPopconfirmTitle="已有种子,建议直接跳转至E站"
@@ -117,7 +116,7 @@
               nzCancelText="去下种子"
               (nzOnConfirm)="downloadComic(item)"
               (nzOnCancel)="gotoDataSourceUrl(item)">
-        <span nz-icon nzType="cloud-download" nzTheme="outline"></span>
+        <span nz-icon [nzType]="(onDownloadingComic && comicIdOnDownloading.includes(item.id)) ? 'loading' : 'cloud-download'" nzTheme="outline"></span>
       </button>
     </ng-template>
   </st>
