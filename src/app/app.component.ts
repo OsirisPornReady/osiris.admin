@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, NavigationError, RouteConfigLoadStart, Router } from '@angular/router';
-import { TitleService, VERSION as VERSION_ALAIN } from '@delon/theme';
+import {_HttpClient, TitleService, VERSION as VERSION_ALAIN} from '@delon/theme';
 import { environment } from '@env/environment';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { VERSION as VERSION_ZORRO } from 'ng-zorro-antd/version';
-import { Subscription } from 'rxjs';
+import {lastValueFrom, Subscription} from 'rxjs';
 import { ComicDownloadService } from './service/comic/comic-download.service';
 
 @Component({
@@ -21,7 +21,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private titleSrv: TitleService,
     private modalSrv: NzModalService,
-    private comicDownloadService: ComicDownloadService
+    private comicDownloadService: ComicDownloadService,
+    private http: _HttpClient
   ) {
     renderer.setAttribute(el.nativeElement, 'ng-alain-version', VERSION_ALAIN.full);
     renderer.setAttribute(el.nativeElement, 'ng-zorro-version', VERSION_ZORRO.full);
@@ -51,6 +52,11 @@ export class AppComponent implements OnInit {
     this.downloadFinishSubscription = this.comicDownloadService.downloadFinishSubject.subscribe(async (res: any) => {
       if (this.comicDownloadService.downloadMissionMap.has(res.id)) {  //不管是什么原因结束,结束了就把暂存的下载标识删掉
         this.comicDownloadService.downloadMissionMap.delete(res.id);
+      }
+      try {
+        await lastValueFrom(this.http.get(`crawl/comic/cancel_download/${res.id}`));  // 似乎只有这样才能成功发送请求,不知道为啥
+      } catch (e) {
+        console.error(e)
       }
     })
   }

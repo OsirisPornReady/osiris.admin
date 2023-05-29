@@ -36,7 +36,6 @@ export class ComicDownloadService {
         id: taskInfo.id,
         update: false
       });
-      this.http.get(`crawl/comic/cancel_download/${taskInfo.id}`);
     })).subscribe({
       next: async (res: any) => {
         this.msgSrv.success('Comic下载成功');
