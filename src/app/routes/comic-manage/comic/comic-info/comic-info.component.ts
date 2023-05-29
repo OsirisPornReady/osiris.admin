@@ -436,6 +436,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         id: this.record.id,
         update: false
       });
+      this.http.get(`crawl/comic/cancel_download/${this.record.id}`);
     })).subscribe({
       next: async (res: any) => {
         this.msgSrv.success('Comic下载成功');

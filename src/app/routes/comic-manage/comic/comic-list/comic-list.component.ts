@@ -699,6 +699,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
           this.onDownloadingComic = false;
           this.comicIdOnDownloading = [];
+          this.http.get(`crawl/comic/cancel_download/${item.id}`);
         })).subscribe({
           next: async (res: any) => {
             this.msgSrv.success('Comic下载成功');
