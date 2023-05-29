@@ -294,9 +294,11 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         this.onDownloadingPage = false;
         this.pageIndexOnDownloading = [];
         // subscription就没必要手动取消,会走到这个函数本身就代表订阅流已经完成了,不管是以success、error还是手动unsubscribe的方式
-        if (this.comicDownloadService.downloadMissionMap.has(this.record.id)) {  //不管是什么原因结束,结束了就把暂存的下载标识删掉
-          this.comicDownloadService.downloadMissionMap.delete(this.record.id);
-        }
+        // 2023-5-29: 不应该在这里删除map,应该直接在finalize里,下载完成的时候不一定正好在组件开启期间
+        // 2023-5-29: 也不应该在finalize里删除,finalize里是镜像源,应该在app全局挂载这个订阅
+        // if (this.comicDownloadService.downloadMissionMap.has(this.record.id)) {  //不管是什么原因结束,结束了就把暂存的下载标识删掉
+        //   this.comicDownloadService.downloadMissionMap.delete(this.record.id);
+        // }
         if (res.update) {
           await this.getComicData();
           this.st.reload(null, {merge: true, toTop: false});
@@ -415,10 +417,11 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.msgSrv.info('正在下载其他漫画');
       return;
     }
-    let state = 'cancel';
     this.onDownloadingPage = true;
     this.pageIndexOnDownloading = [...pageList];
-    let entity: any = {
+
+    let taskInfo: any = {
+      id: this.record.id,
       comicPhysicalPath: this.i.comicPhysicalPath,
       comicServerPath: this.i.comicServerPath,
       comicPhysicalDirectoryName: this.i.comicPhysicalDirectoryName,
@@ -426,64 +429,77 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       comicPicLinkList: this.i.comicPicLinkList ? this.i.comicPicLinkList : [],
       localComicPicSrcList: this.i.localComicPicSrcList ? this.i.localComicPicSrcList : [],
       comicFailOrderList: this.i.comicFailOrderList ? this.i.comicFailOrderList : [],
-      downloadPageList: [...pageList]
+      pageList: pageList
     }
-    let url = `crawl/comic/download_comic/${this.record.id}`
-    let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
-      this.onDownloadingPage = false;
-      this.pageIndexOnDownloading = [];
-      this.comicDownloadService.downloadFinishSubject.next({
-        id: this.record.id,
-        update: false
-      });
-      this.http.get(`crawl/comic/cancel_download/${this.record.id}`);
-    })).subscribe({
-      next: async (res: any) => {
-        this.msgSrv.success('Comic下载成功');
-        try {
-          await this.comicService.update({
-            id: this.record.id,
-            localComicPicSrcList: res?.localComicPicSrcList,
-            comicFailOrderList: res?.comicFailOrderList,
-            onStorage: true
-          });
-          await this.getComicData();
-          this.st.reload(null, {merge: true, toTop: false});
-          this.comicDownloadService.downloadFinishSubject.next({
-            id: this.record.id,
-            update: true
-          });
-          this.msgSrv.success('Comic数据更新成功');
-        } catch (e) {
-          this.msgSrv.error('Comic数据更新失败');
-        }
-      },
-      error:async () => {
-        this.msgSrv.error('Comic下载失败');
-        try {
-          await this.comicService.update({
-            id: this.i.id,
-            onStorage: false
-          });
-          await this.getComicData();
-          this.st.reload(null, {merge: true, toTop: false});
-          this.comicDownloadService.downloadFinishSubject.next({
-            id: this.record.id,
-            update: true
-          });
-          this.msgSrv.info('Comic入库状态更新');
-        } catch (e) {
-          this.msgSrv.error('Comic数据更新失败');
-        }
-      },
-      complete: () => {}
-    })
-    this.comicDownloadService.downloadMissionMap.set(this.record.id, {
-      id: this.record.id,
-      subscription: subscription,
-      pageList: pageList,
-    });
-    this.downloadSubscription = subscription;
+
+    // let entity: any = {
+    //   comicPhysicalPath: this.i.comicPhysicalPath,
+    //   comicServerPath: this.i.comicServerPath,
+    //   comicPhysicalDirectoryName: this.i.comicPhysicalDirectoryName,
+    //   comicServerDirectoryName: this.i.comicServerDirectoryName,
+    //   comicPicLinkList: this.i.comicPicLinkList ? this.i.comicPicLinkList : [],
+    //   localComicPicSrcList: this.i.localComicPicSrcList ? this.i.localComicPicSrcList : [],
+    //   comicFailOrderList: this.i.comicFailOrderList ? this.i.comicFailOrderList : [],
+    //   downloadPageList: [...pageList]
+    // }
+    // let url = `crawl/comic/download_comic/${this.record.id}`
+    // let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
+    //   this.onDownloadingPage = false;
+    //   this.pageIndexOnDownloading = [];
+    //   this.comicDownloadService.downloadFinishSubject.next({
+    //     id: this.record.id,
+    //     update: false
+    //   });
+    //   this.http.get(`crawl/comic/cancel_download/${this.record.id}`);
+    // })).subscribe({
+    //   next: async (res: any) => {
+    //     this.msgSrv.success('Comic下载成功');
+    //     try {
+    //       await this.comicService.update({
+    //         id: this.record.id,
+    //         localComicPicSrcList: res?.localComicPicSrcList,
+    //         comicFailOrderList: res?.comicFailOrderList,
+    //         onStorage: true
+    //       });
+    //       await this.getComicData();
+    //       this.st.reload(null, {merge: true, toTop: false});
+    //       this.comicDownloadService.downloadFinishSubject.next({
+    //         id: this.record.id,
+    //         update: true
+    //       });
+    //       this.msgSrv.success('Comic数据更新成功');
+    //     } catch (e) {
+    //       this.msgSrv.error('Comic数据更新失败');
+    //     }
+    //   },
+    //   error:async () => {
+    //     this.msgSrv.error('Comic下载失败');
+    //     try {
+    //       await this.comicService.update({
+    //         id: this.i.id,
+    //         onStorage: false
+    //       });
+    //       await this.getComicData();
+    //       this.st.reload(null, {merge: true, toTop: false});
+    //       this.comicDownloadService.downloadFinishSubject.next({
+    //         id: this.record.id,
+    //         update: true
+    //       });
+    //       this.msgSrv.info('Comic入库状态更新');
+    //     } catch (e) {
+    //       this.msgSrv.error('Comic数据更新失败');
+    //     }
+    //   },
+    //   complete: () => {}
+    // })
+    // this.comicDownloadService.downloadMissionMap.set(this.record.id, {
+    //   id: this.record.id,
+    //   subscription: subscription,
+    //   pageList: pageList,
+    // });
+    // this.downloadSubscription = subscription;
+
+    this.downloadSubscription = this.comicDownloadService.createDownloadTask(taskInfo);
   }
 
   onCheckSwitch(event: any, item: any) {
