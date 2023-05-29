@@ -428,7 +428,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       comicFailOrderList: this.i.comicFailOrderList ? this.i.comicFailOrderList : [],
       downloadPageList: [...pageList]
     }
-    let url = `crawl/comic/download_comic`
+    let url = `crawl/comic/download_comic/${this.record.id}`
     let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
       this.onDownloadingPage = false;
       this.pageIndexOnDownloading = [];
