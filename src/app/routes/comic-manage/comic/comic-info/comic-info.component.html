@@ -103,18 +103,21 @@
         <button nz-button
                 type="button"
                 class="ml-md"
+                [nzLoading]="onDownloadingPage"
                 nz-popconfirm
                 nzPopconfirmTitle="要批量下载吗?"
                 (nzOnConfirm)="downloadBatch()">批量下载</button>
         <button nz-button
                 type="button"
                 class="ml-md"
+                [nzLoading]="onDownloadingPage"
                 nz-popconfirm
                 nzPopconfirmTitle="要全部下载吗?"
                 (nzOnConfirm)="downloadAll()">全部下载</button>
         <button nz-button
                 type="button"
                 class="ml-md"
+                [disabled]="!onDownloadingPage"
                 nzDanger
                 (click)="terminateDownload()">停止下载</button>
       </div>
