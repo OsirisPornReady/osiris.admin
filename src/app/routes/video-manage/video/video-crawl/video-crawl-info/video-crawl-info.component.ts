@@ -180,6 +180,9 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   keyupSubscription: Subscription = new Subscription();
   ctrlPressed: boolean = true;
 
+  coverBase64: string = ''
+  previewImageBase64List: string[] = [];
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
@@ -251,11 +254,13 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       })) || {};
       // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
       this.dataSourceUrl = this.i.dataSourceUrl
-      this.coverSrc = this.i.coverSrc;
+      // this.coverSrc = this.i.coverSrc;
+      this.coverBase64 = this.i.coverBase64;
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
+      // this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
+      this.previewImageBase64List = Array.isArray(this.i.previewImageBase64List) ? this.i.previewImageBase64List : []
 
       // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
       //   if (event.key == 'Enter') {
@@ -314,21 +319,48 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
             nzTitle: '<i>此标题已存在</i>',
             nzContent: '<b>标题已存在,是否继续提交?</b>',
             nzCentered: true,
-            nzOnOk: () => {
+            nzOnOk: async () => {
+              let res = (await this.downloadVideoImage()) || {};
+              value.localCoverSrc = res?.localCoverSrc
+              value.localPreviewImageSrcList = res?.localPreviewImageSrcList
               this.drawer.close({ state: 'ok', data: value });
             }
           });
         } else {
+          let res = (await this.downloadVideoImage()) || {};
+          value.localCoverSrc = res?.localCoverSrc
+          value.localPreviewImageSrcList = res?.localPreviewImageSrcList
           this.drawer.close({ state: 'ok', data: value });
         }
       } catch (error) {}
     } else {
+      let res = (await this.downloadVideoImage()) || {};
+      value.localCoverSrc = res?.localCoverSrc
+      value.localPreviewImageSrcList = res?.localPreviewImageSrcList
       this.drawer.close({ state: 'ok', data: value });
     }
   }
 
   close(): void {
     this.drawer.close({ state: 'cancel', data: {} });
+  }
+
+  async downloadVideoImage() {
+    try {
+      let entity = {
+        imagePhysicalPath: this.i.imagePhysicalPath,
+        imageServerPath: this.i.imageServerPath,
+        imagePhysicalDirectoryName: this.i.imagePhysicalDirectoryName,
+        imageServerDirectoryName: this.i.imageServerDirectoryName,
+        coverSrc: this.i.coverSrc,
+        localCoverSrc: this.i.localCoverSrc,
+        previewImageSrcList: this.i.previewImageSrcList,
+        localPreviewImageSrcList: this.i.localPreviewImageSrcList,
+      }
+      return await this.crawlService.downloadVideoImage(entity);
+    } catch (e) {
+      this.msgSrv.error('下载预览图失败!')
+    }
   }
 
   ngOnDestroy() {

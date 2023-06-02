@@ -31,7 +31,7 @@ export class ComicDownloadService {
       downloadPageList: [...taskInfo.pageList]
     }
     let url = `crawl/comic/download_comic/${taskInfo.id}`
-    let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {
+    let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {  // 已经被取消的订阅再次取消不会触发finalize
       this.downloadFinishSubject.next({
         id: taskInfo.id,
         update: false
