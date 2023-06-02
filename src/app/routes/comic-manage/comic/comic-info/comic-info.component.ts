@@ -555,5 +555,28 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     })
   }
 
+  async checkLocalExhentaiComic(item: any) {
+    try {
+      let entity = {
+        comicPhysicalPath: item.comicPhysicalPath,
+        comicServerPath: item.comicServerPath,
+        comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
+        comicServerDirectoryName: item.comicServerDirectoryName,
+        comicFailOrderList: item.comicFailOrderList,
+        localComicPicSrcList: item.localComicPicSrcList
+      }
+      let res = (await this.crawlService.checkLocalExhentaiComic(entity)) || {}
+      await this.comicService.update({
+        id: item.id,
+        comicFailOrderList: res?.comicFailOrderList,
+      });
+      await this.getComicData();
+      this.st.reload(null, {merge: true, toTop: false});
+      this.msgSrv.success('Comic完整性验证成功');
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

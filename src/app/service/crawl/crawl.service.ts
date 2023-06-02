@@ -43,4 +43,9 @@ export class CrawlService {
     return lastValueFrom(this.http.post(url, entity));
   }
 
+  checkLocalExhentaiComic(entity: any) {
+    let url = `crawl/comic/check_local_exhentai_comic`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
 }

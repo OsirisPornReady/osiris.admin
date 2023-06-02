@@ -120,6 +120,10 @@
                 [disabled]="!onDownloadingPage"
                 nzDanger
                 (click)="terminateDownload()">停止下载</button>
+        <button nz-button
+                type="button"
+                class="ml-md"
+                (click)="checkLocalExhentaiComic(i)">验证完整性</button>
       </div>
       <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
         <ng-template st-row="customCheck" let-item>
