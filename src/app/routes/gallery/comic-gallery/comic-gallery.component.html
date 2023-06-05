@@ -49,6 +49,7 @@
         (click)="handlePreview($event)"
       />
       <span nz-typography class="d-block">{{item.title}}</span>
+      <span nz-typography class="d-block"><mark>页数: {{item.pageSize}}</mark></span>
       <span nz-typography class="d-block"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
       <nz-space nzSize="small" [nzSplit]="spaceSplit">
         <ng-template #spaceSplit>

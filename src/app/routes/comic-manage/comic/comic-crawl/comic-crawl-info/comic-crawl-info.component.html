@@ -69,16 +69,16 @@
     </div>
   </nz-card>
 
-  <nz-divider nzText="Comic Pages"></nz-divider>
+<!--  <nz-divider nzText="Comic Pages"></nz-divider>-->
 
-  <div>
-    <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
-      <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
-        <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
-      </nz-card>
-    </nz-image-group>
-    <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>
-  </div>
+<!--  <div>-->
+<!--    <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">-->
+<!--      <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">-->
+<!--        <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>-->
+<!--      </nz-card>-->
+<!--    </nz-image-group>-->
+<!--    <nz-empty *ngIf="previewImageSrcList.length == 0"></nz-empty>-->
+<!--  </div>-->
 </div>
 
 <nz-divider *ngIf="i" nzText="Confirm Information"></nz-divider>
