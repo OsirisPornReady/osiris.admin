@@ -40,10 +40,11 @@
 <div class="container">
   <div class="grid-container d-flex justify-content-around align-items-start">
     <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" [nzLoading]="loading" nzHoverable (click)="openInfo(item.id)">
+<!--      item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc-->
       <img
         nz-image
         width="378px"
-        [nzSrc]="item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc"
+        [nzSrc]="item.coverBase64"
         [nzFallback]="fallbackImageBase64"
         alt=""
         (click)="handlePreview($event)"

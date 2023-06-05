@@ -50,22 +50,21 @@
       </div>
     </div>
   </nz-card>
-
-  <nz-divider nzText="Comic Pages"></nz-divider>
-
-  <div>
-    <nz-image-group *ngIf="comicImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
-      <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of comicImageSrcList">
-        <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
-      </nz-card>
-    </nz-image-group>
-    <nz-empty *ngIf="comicImageSrcList.length == 0"></nz-empty>
-  </div>
 </div>
-
 
 <nz-tabset>
   <nz-tab nzTitle="漫画信息">
+    <nz-divider nzText="Comic Pages"></nz-divider>
+
+    <div>
+      <nz-image-group *ngIf="comicImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
+        <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of comicImageSrcList">
+          <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
+        </nz-card>
+      </nz-image-group>
+      <nz-empty *ngIf="comicImageSrcList.length == 0"></nz-empty>
+    </div>
+
     <nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
     <sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none" class="mb-md">
       <div>
