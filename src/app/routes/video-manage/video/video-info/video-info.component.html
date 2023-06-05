@@ -77,9 +77,10 @@
   <div>
     <nz-image-group *ngIf="previewImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
       <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of previewImageSrcList">
+<!--        i.imageServerPath + '/' + i.imageServerDirectoryName + '/' + item-->
         <img nz-image
              width="150"
-             [nzSrc]="i.imageServerPath + '/' + i.imageServerDirectoryName + '/' + item"
+             [nzSrc]="i.coverBase64"
              [nzFallback]="fallbackImageBase64"
              alt=""/>
       </nz-card>

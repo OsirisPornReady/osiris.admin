@@ -241,8 +241,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       buttons: [
         {
           text: '验证',
-          click: (item: any) => {
-
+          click: async (item: any) => {
+            await this.checkLocalExhentaiComicPages(this.i, [item.pageIndex])
           },
         },
         {
@@ -555,7 +555,12 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     })
   }
 
-  async checkLocalExhentaiComic(item: any) {
+  async checkLocalExhentaiComic() {
+    let pageList = Array.from(new Array(this.i.pageSize + 1).keys()).slice(1)
+    await this.checkLocalExhentaiComicPages(this.i, pageList)
+  }
+
+  async checkLocalExhentaiComicPages(item: any, pageList: number[]) {
     try {
       let entity = {
         comicPhysicalPath: item.comicPhysicalPath,
@@ -563,7 +568,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
         comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
         comicServerDirectoryName: item.comicServerDirectoryName,
         comicFailOrderList: item.comicFailOrderList,
-        localComicPicSrcList: item.localComicPicSrcList
+        localComicPicSrcList: item.localComicPicSrcList,
+        pageList
       }
       let res = (await this.crawlService.checkLocalExhentaiComic(entity)) || {}
       await this.comicService.update({

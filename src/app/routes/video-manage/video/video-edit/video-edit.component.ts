@@ -64,6 +64,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       tagsRaw: { type: 'string', title: '标签' },
       description: { type: 'string', title: '描述' },
       coverSrc: { type: 'string', title: '封面' },
+      coverBase64: { type: 'string', title: '封面Base64' },
       previewImageSrcList: { type: 'string', title: '预览图' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       localPreviewImageSrcList: { type: 'string', title: '本地预览图' },

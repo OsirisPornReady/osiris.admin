@@ -63,6 +63,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
       description: { type: 'string', title: '描述' },
       // coverSrc: { type: 'string', title: '封面' },
       // previewImageSrcList: { type: 'string', title: '预览图' },
+      coverBase64: { type: 'string', title: '封面Base64' },
       localCoverSrc: { type: 'string', title: '本地封面' },
       // localPreviewImageSrcList: { type: 'string', title: '本地预览图' },
       comicPicLinkList: { type: 'string', title: '漫画链接' },

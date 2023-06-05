@@ -26,7 +26,12 @@
   <nz-card nzHoverable class="mt-md mb-lg">
     <div class="d-flex justify-content-between align-items-start">
       <div>
-        <img nz-image height="600" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + i.localCoverSrc" [nzFallback]="fallbackImageBase64" alt=""/>
+<!--        i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + i.localCoverSrc-->
+        <img nz-image
+             height="600"
+             [nzSrc]="i.coverBase64"
+             [nzFallback]="fallbackImageBase64"
+             alt=""/>
       </div>
       <div style="width: 600px;">
         <div class="av-info mb-sm">
@@ -123,7 +128,7 @@
         <button nz-button
                 type="button"
                 class="ml-md"
-                (click)="checkLocalExhentaiComic(i)">验证完整性</button>
+                (click)="checkLocalExhentaiComic()">验证完整性</button>
       </div>
       <st #st [data]="comicPageList" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
         <ng-template st-row="customCheck" let-item>
