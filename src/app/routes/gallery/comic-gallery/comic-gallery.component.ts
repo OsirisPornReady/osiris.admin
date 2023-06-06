@@ -328,4 +328,13 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     }
   }
 
+  async checkComic(item: any, event: any) {
+    event.stopPropagation();
+    let pageList = Array.from(new Array(item.pageSize + 1).keys()).slice(1)
+    let checkRes: boolean = await this.comicDownloadService.checkLocalExhentaiComicPages(item, pageList)
+    if (checkRes) {
+      await this.getByPage();
+    }
+  }
+
 }

@@ -3,8 +3,10 @@ import { _HttpClient } from '@delon/theme';
 import {finalize, lastValueFrom, map, Observable, Subject, Subscription} from "rxjs";
 import {SFSchemaEnumType} from "@delon/form";
 import { ComicDownloadMission } from "../../model/ComicDownloadMission";
-import { ComicService} from "./comic.service";
 import { NzMessageService } from "ng-zorro-antd/message";
+
+import { ComicService} from "./comic.service";
+import { CrawlService } from "../crawl/crawl.service";
 
 @Injectable({ providedIn: 'root' })
 export class ComicDownloadService {
@@ -12,6 +14,7 @@ export class ComicDownloadService {
   constructor(
     private http: _HttpClient,
     private comicService: ComicService,
+    private crawlService: CrawlService,
     private msgSrv: NzMessageService
   ) { }
 
@@ -85,6 +88,36 @@ export class ComicDownloadService {
     });
 
     return subscription;
+  }
+
+  async checkLocalExhentaiComicPages(item: any, pageList: number[]) {
+    try {
+      let entity = {
+        comicPhysicalPath: item.comicPhysicalPath,
+        comicServerPath: item.comicServerPath,
+        comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
+        comicServerDirectoryName: item.comicServerDirectoryName,
+        comicFailOrderList: item.comicFailOrderList,
+        localComicPicSrcList: item.localComicPicSrcList,
+        pageList
+      }
+      let res = (await this.crawlService.checkLocalExhentaiComic(entity)) || {}
+      let integrity = false;
+      if (Array.isArray(res.comicFailOrderList) && res.comicFailOrderList.filter((i: any) => i != '-').length == 0) {
+        integrity = true;
+      }
+      await this.comicService.update({
+        id: item.id,
+        comicFailOrderList: res?.comicFailOrderList,
+        integrity
+      });
+      this.msgSrv.success('Comic完整性验证成功');
+      return true;
+    } catch (e) {
+      this.msgSrv.error('Comic完整性验证失败')
+      console.error(e)
+      return false;
+    }
   }
 
 }

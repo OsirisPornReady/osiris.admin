@@ -562,27 +562,33 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   }
 
   async checkLocalExhentaiComicPages(item: any, pageList: number[]) {
-    try {
-      let entity = {
-        comicPhysicalPath: item.comicPhysicalPath,
-        comicServerPath: item.comicServerPath,
-        comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
-        comicServerDirectoryName: item.comicServerDirectoryName,
-        comicFailOrderList: item.comicFailOrderList,
-        localComicPicSrcList: item.localComicPicSrcList,
-        pageList
-      }
-      let res = (await this.crawlService.checkLocalExhentaiComic(entity)) || {}
-      await this.comicService.update({
-        id: item.id,
-        comicFailOrderList: res?.comicFailOrderList,
-      });
+    // try {
+    //   let entity = {
+    //     comicPhysicalPath: item.comicPhysicalPath,
+    //     comicServerPath: item.comicServerPath,
+    //     comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
+    //     comicServerDirectoryName: item.comicServerDirectoryName,
+    //     comicFailOrderList: item.comicFailOrderList,
+    //     localComicPicSrcList: item.localComicPicSrcList,
+    //     pageList
+    //   }
+    //   let res = (await this.crawlService.checkLocalExhentaiComic(entity)) || {}
+    //   await this.comicService.update({
+    //     id: item.id,
+    //     comicFailOrderList: res?.comicFailOrderList,
+    //   });
+    //   await this.getComicData();
+    //   this.st.reload(null, {merge: true, toTop: false});
+    //   this.msgSrv.success('Comic完整性验证成功');
+    // } catch (e) {
+    //   this.msgSrv.error('Comic完整性验证失败')
+    //   console.error(e)
+    // }
+
+    let checkRes: boolean = await this.comicDownloadService.checkLocalExhentaiComicPages(item, pageList)
+    if (checkRes) {
       await this.getComicData();
       this.st.reload(null, {merge: true, toTop: false});
-      this.msgSrv.success('Comic完整性验证成功');
-    } catch (e) {
-      this.msgSrv.error('Comic完整性验证失败')
-      console.error(e)
     }
   }
 
