@@ -56,13 +56,13 @@ export class ComicDownloadService {
             state: 'success',
             update: true
           });
-          this.msgSrv.success('Comic下载成功');
+          this.msgSrv.success(`${comicInfo.title} Comic下载成功`);
         } catch (e) {
-          this.msgSrv.error('Comic数据更新失败');
+          this.msgSrv.error(`${comicInfo.title} Comic数据更新失败`);
         }
       },
       error:async () => {
-        this.msgSrv.error('Comic下载失败');
+        this.msgSrv.error(`${comicInfo.title} Comic下载失败`);
         this.downloadFinishSubject.next({
           id: taskInfo.id,
           state: 'fail',
@@ -111,10 +111,10 @@ export class ComicDownloadService {
         comicFailOrderList: res?.comicFailOrderList,
         integrity
       });
-      this.msgSrv.success('Comic完整性验证成功');
+      this.msgSrv.success(`${item.title} Comic完整性验证成功`);
       return true;
     } catch (e) {
-      this.msgSrv.error('Comic完整性验证失败')
+      this.msgSrv.error(`${item.title} Comic完整性验证失败`)
       console.error(e)
       return false;
     }
