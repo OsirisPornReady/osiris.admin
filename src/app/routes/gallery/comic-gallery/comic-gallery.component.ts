@@ -168,7 +168,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     });
   }
 
-  setConfig(event: any, id: number) {
+  setConfig(id: number, event: any) {
     event.stopPropagation();
     this.modal.createStatic(ComicManageComicCrawlConfigComponent, {record: {id}}).subscribe(res => {
       if (res.state == 'updateOk') {
@@ -177,7 +177,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCrawl(event: any, item: any) {
+  getCrawl(item: any, event: any) {
     if (event) {
       event.stopPropagation();
     }
@@ -330,6 +330,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
 
   async checkComic(item: any, event: any) {
     event.stopPropagation();
+    console.log('哈哈')
     let pageList = Array.from(new Array(item.pageSize + 1).keys()).slice(1)
     let checkRes: boolean = await this.comicDownloadService.checkLocalExhentaiComicPages(item, pageList)
     if (checkRes) {

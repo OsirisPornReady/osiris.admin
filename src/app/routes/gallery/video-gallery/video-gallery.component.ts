@@ -146,7 +146,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     });
   }
 
-  setConfig(event: any, id: number) {
+  setConfig(id: number, event: any) {
     event.stopPropagation();
     this.modal.createStatic(VideoManageVideoCrawlConfigComponent, {record: {id}}).subscribe(res => {
       if (res.state == 'updateOk') {
@@ -155,7 +155,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCrawl(event: any, item: any) {
+  getCrawl(item: any, event: any) {
     if (event) {
       event.stopPropagation();
     }
