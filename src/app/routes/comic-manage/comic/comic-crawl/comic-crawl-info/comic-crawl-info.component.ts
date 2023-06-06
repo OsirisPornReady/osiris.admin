@@ -247,7 +247,7 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
       this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
+      // this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
 
       // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
       //   if (event.key == 'Enter') {

@@ -34,11 +34,12 @@ export class ComicDownloadService {
     let subscription: Subscription = this.http.post(url, entity).pipe(finalize(() => {  // 已经被取消的订阅再次取消不会触发finalize
       this.downloadFinishSubject.next({
         id: taskInfo.id,
+        state: 'final',
         update: false
       });
     })).subscribe({
       next: async (res: any) => {
-        this.msgSrv.success('Comic下载成功');
+        // this.msgSrv.success('Comic下载成功');
         try {
           await this.comicService.update({
             id: taskInfo.id,
@@ -49,28 +50,30 @@ export class ComicDownloadService {
 
           this.downloadFinishSubject.next({
             id: taskInfo.id,
+            state: 'success',
             update: true
           });
-          this.msgSrv.success('Comic数据更新成功');
+          this.msgSrv.success('Comic下载成功');
         } catch (e) {
           this.msgSrv.error('Comic数据更新失败');
         }
       },
       error:async () => {
         this.msgSrv.error('Comic下载失败');
-        try {
-          await this.comicService.update({
-            id: taskInfo.id,
-            onStorage: false
-          });
-          this.downloadFinishSubject.next({
-            id: taskInfo.id,
-            update: true
-          });
-          this.msgSrv.info('Comic入库状态更新');
-        } catch (e) {
-          this.msgSrv.error('Comic数据更新失败');
-        }
+        this.downloadFinishSubject.next({
+          id: taskInfo.id,
+          state: 'fail',
+          update: false
+        });
+        // try {
+        //   await this.comicService.update({
+        //     id: taskInfo.id,
+        //     onStorage: false
+        //   });
+        //   this.msgSrv.info('Comic入库状态更新');
+        // } catch (e) {
+        //   this.msgSrv.error('Comic数据更新失败');
+        // }
       },
       complete: () => {}
     })

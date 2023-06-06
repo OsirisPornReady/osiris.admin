@@ -6,6 +6,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 
 import { ComicService } from '../../../service/comic/comic.service';
+import { ComicDownloadService } from '../../../service/comic/comic-download.service';
 import { CommonService} from '../../../service/common/common.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
@@ -50,6 +51,8 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     }
   ];
 
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
+
   pi: number = 1;
   ps: number = 8;
   total: number = 0;
@@ -73,10 +76,16 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   messageSocketSubscription: Subscription = new Subscription();
   reloadSocketSpin: boolean = false;
 
+  onDownloadingComic: boolean = false;
+  comicIdOnDownloading: number[] = [];
+
+  downloadFinishSubscription: Subscription = new Subscription();
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private comicService: ComicService,
+    private comicDownloadService: ComicDownloadService,
     private commonService: CommonService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
@@ -93,6 +102,19 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     this.comicServerPath = this.commonService.globalData.comicServerPath
     this.comicPhysicalDirectoryName = this.commonService.globalData.comicPhysicalDirectoryName
     this.comicServerDirectoryName = this.commonService.globalData.comicServerDirectoryName
+
+    this.downloadFinishSubscription = this.comicDownloadService.downloadFinishSubject.subscribe(async (res: any) => {
+      this.comicIdOnDownloading = this.comicIdOnDownloading.filter((id: number) => {
+        return id != res.id;
+      })
+      this.onDownloadingComic = this.comicIdOnDownloading.length != 0;
+      if (res.update) {
+        this.getByPage();
+      }
+    })
+    this.comicIdOnDownloading = Array.from(this.comicDownloadService.downloadMissionMap.keys())
+    this.onDownloadingComic = this.comicIdOnDownloading.length != 0;
+
     this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
     this.connectMessageSocket();
   }
@@ -270,6 +292,21 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
+  downloadComic(item: any, event: any) {
+    event.stopPropagation();
+    let pageList: number[] = Array.from(new Array(item.pageSize + 1).keys()).slice(1);
+    let taskInfo: any = {
+      id: item.id,
+      comicPhysicalPath: item.comicPhysicalPath,
+      comicServerPath: item.comicServerPath,
+      comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
+      comicServerDirectoryName: item.comicServerDirectoryName,
+      comicPicLinkList: item.comicPicLinkList ? item.comicPicLinkList : [],
+      localComicPicSrcList: item.localComicPicSrcList ? item.localComicPicSrcList : [],
+      comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
+      pageList: pageList
+    }
+    this.comicDownloadService.createDownloadTask(taskInfo);
+  }
 
-  protected readonly fallbackImageBase64 = fallbackImageBase64;
 }
