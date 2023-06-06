@@ -19,7 +19,7 @@ export class ComicDownloadService {
 
   downloadFinishSubject: Subject<any> = new Subject<any>();
 
-  createDownloadTask(taskInfo: any) {
+  createDownloadTask(taskInfo: any, comicInfo: any) {
     let entity: any = {
       comicPhysicalPath: taskInfo.comicPhysicalPath,
       comicServerPath: taskInfo.comicServerPath,
@@ -81,6 +81,7 @@ export class ComicDownloadService {
       id: taskInfo.id,
       subscription: subscription,
       pageList: taskInfo.pageList,
+      comicInfo: comicInfo
     });
 
     return subscription;

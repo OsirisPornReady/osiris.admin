@@ -500,7 +500,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     // });
     // this.downloadSubscription = subscription;
 
-    this.downloadSubscription = this.comicDownloadService.createDownloadTask(taskInfo);
+    this.downloadSubscription = this.comicDownloadService.createDownloadTask(taskInfo, this.i);
   }
 
   onCheckSwitch(event: any, item: any) {
@@ -581,6 +581,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.st.reload(null, {merge: true, toTop: false});
       this.msgSrv.success('Comic完整性验证成功');
     } catch (e) {
+      this.msgSrv.error('Comic完整性验证失败')
       console.error(e)
     }
   }

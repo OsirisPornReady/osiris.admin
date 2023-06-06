@@ -133,6 +133,11 @@ export class StartupService {
                     text: 'comic',
                     link: '/comic-manage/comic-list',
                     icon: null
+                  },
+                  {
+                    text: 'comic-download',
+                    link: '/comic-manage/comic-download-task-list',
+                    icon: null
                   }
                 ]
               },

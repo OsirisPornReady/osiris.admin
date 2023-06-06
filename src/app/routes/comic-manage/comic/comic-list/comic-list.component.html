@@ -110,7 +110,7 @@
               [nzType]="'default'"
               nzShape="circle"
               nz-popconfirm
-              [nzCondition]="!item.existSeed"
+              [nzCondition]="(onDownloadingComic && comicIdOnDownloading.includes(item.id)) ? true : !item.existSeed"
               nzPopconfirmTitle="已有种子,建议直接跳转至E站"
               nzOkText="继续爬取"
               nzCancelText="去下种子"

@@ -294,6 +294,15 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
 
   downloadComic(item: any, event: any) {
     event.stopPropagation();
+    if (this.onDownloadingComic && this.comicIdOnDownloading.includes(item.id)) {
+      let mission: any = this.comicDownloadService.downloadMissionMap.get(item.id)
+      if (mission) {
+        mission.subscription.unsubscribe();
+        return;
+      }
+    }
+    this.onDownloadingComic = true;
+    this.comicIdOnDownloading.push(item.id);
     let pageList: number[] = Array.from(new Array(item.pageSize + 1).keys()).slice(1);
     let taskInfo: any = {
       id: item.id,
@@ -306,7 +315,17 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
       comicFailOrderList: item.comicFailOrderList ? item.comicFailOrderList : [],
       pageList: pageList
     }
-    this.comicDownloadService.createDownloadTask(taskInfo);
+    this.comicDownloadService.createDownloadTask(taskInfo, item);
+  }
+
+  stopDownloadComic(item: any, event: any) {
+    event.stopPropagation();
+    if (this.onDownloadingComic && this.comicIdOnDownloading.includes(item.id)) {
+      let mission: any = this.comicDownloadService.downloadMissionMap.get(item.id)
+      if (mission) {
+        mission.subscription.unsubscribe();
+      }
+    }
   }
 
 }

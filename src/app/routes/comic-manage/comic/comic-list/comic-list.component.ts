@@ -758,7 +758,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
         //   pageList: res.data.downloadPageList,
         // });
 
-        this.comicDownloadService.createDownloadTask(taskInfo);
+        this.comicDownloadService.createDownloadTask(taskInfo, item);
       }
     });
   }
