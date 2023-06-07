@@ -205,7 +205,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         imagePhysicalDirectoryName: this.imagePhysicalDirectoryName,
         imageServerDirectoryName: this.imageServerDirectoryName,
       }
-      this.getCrawl(null, value);
+      this.getCrawl(value, null);
     }
   }
 
