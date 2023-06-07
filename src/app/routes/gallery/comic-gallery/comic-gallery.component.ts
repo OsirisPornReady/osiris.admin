@@ -228,7 +228,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
         comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
         comicServerDirectoryName: this.comicServerDirectoryName,
       }
-      this.getCrawl(null, value);
+      this.getCrawl(value, null);
     }
   }
 
