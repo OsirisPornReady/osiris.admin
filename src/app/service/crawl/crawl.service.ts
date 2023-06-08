@@ -40,7 +40,8 @@ export class CrawlService {
 
   downloadVideoImage(entity: any) {
     let url = `crawl/video/download_video_image`;
-    return lastValueFrom(this.http.post(url, entity));
+    // return lastValueFrom(this.http.post(url, entity));
+    return this.http.post(url, entity);
   }
 
   checkLocalExhentaiComic(entity: any) {

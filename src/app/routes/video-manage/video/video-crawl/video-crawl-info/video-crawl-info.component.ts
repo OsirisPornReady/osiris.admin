@@ -321,23 +321,26 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
             nzContent: '<b>标题已存在,是否继续提交?</b>',
             nzCentered: true,
             nzOnOk: async () => {
-              let res = (await this.downloadVideoImage()) || {};
-              value.localCoverSrc = res?.localCoverSrc
-              value.localPreviewImageSrcList = res?.localPreviewImageSrcList
+              // let res = (await this.downloadVideoImage()) || {};
+              // value.localCoverSrc = res?.localCoverSrc
+              // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
+              this.downloadVideoImage()
               this.drawer.close({ state: 'ok', data: value });
             }
           });
         } else {
-          let res = (await this.downloadVideoImage()) || {};
-          value.localCoverSrc = res?.localCoverSrc
-          value.localPreviewImageSrcList = res?.localPreviewImageSrcList
+          // let res = (await this.downloadVideoImage()) || {};
+          // value.localCoverSrc = res?.localCoverSrc
+          // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
+          this.downloadVideoImage()
           this.drawer.close({ state: 'ok', data: value });
         }
       } catch (error) {}
     } else {
-      let res = (await this.downloadVideoImage()) || {};
-      value.localCoverSrc = res?.localCoverSrc
-      value.localPreviewImageSrcList = res?.localPreviewImageSrcList
+      // let res = (await this.downloadVideoImage()) || {};
+      // value.localCoverSrc = res?.localCoverSrc
+      // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
+      this.downloadVideoImage();
       this.drawer.close({ state: 'ok', data: value });
     }
   }
@@ -346,22 +349,41 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     this.drawer.close({ state: 'cancel', data: {} });
   }
 
-  async downloadVideoImage() {
-    try {
-      let entity = {
-        imagePhysicalPath: this.i.imagePhysicalPath,
-        imageServerPath: this.i.imageServerPath,
-        imagePhysicalDirectoryName: this.i.imagePhysicalDirectoryName,
-        imageServerDirectoryName: this.i.imageServerDirectoryName,
-        coverSrc: this.i.coverSrc,
-        localCoverSrc: this.i.localCoverSrc,
-        previewImageSrcList: this.i.previewImageSrcList,
-        localPreviewImageSrcList: this.i.localPreviewImageSrcList,
-      }
-      return await this.crawlService.downloadVideoImage(entity);
-    } catch (e) {
-      this.msgSrv.error('下载预览图失败!')
+  downloadVideoImage() {  // await
+    // try {
+    //   let entity = {
+    //     imagePhysicalPath: this.i.imagePhysicalPath,
+    //     imageServerPath: this.i.imageServerPath,
+    //     imagePhysicalDirectoryName: this.i.imagePhysicalDirectoryName,
+    //     imageServerDirectoryName: this.i.imageServerDirectoryName,
+    //     coverSrc: this.i.coverSrc,
+    //     localCoverSrc: this.i.localCoverSrc,
+    //     previewImageSrcList: this.i.previewImageSrcList,
+    //     localPreviewImageSrcList: this.i.localPreviewImageSrcList,
+    //   }
+    //   return await this.crawlService.downloadVideoImage(entity);
+    // } catch (e) {
+    //   this.msgSrv.error('下载预览图失败!')
+    // }
+
+    let entity = {
+      imagePhysicalPath: this.i.imagePhysicalPath,
+      imageServerPath: this.i.imageServerPath,
+      imagePhysicalDirectoryName: this.i.imagePhysicalDirectoryName,
+      imageServerDirectoryName: this.i.imageServerDirectoryName,
+      coverSrc: this.i.coverSrc,
+      localCoverSrc: this.i.localCoverSrc,
+      previewImageSrcList: this.i.previewImageSrcList,
+      localPreviewImageSrcList: this.i.localPreviewImageSrcList,
     }
+    return this.crawlService.downloadVideoImage(entity).subscribe({
+      next: (res: any) => {
+        this.msgSrv.error('预览图已下载完成!')
+      },
+      error: () => {
+        this.msgSrv.error('下载预览图失败!')
+      }
+    });
   }
 
   ngOnDestroy() {
