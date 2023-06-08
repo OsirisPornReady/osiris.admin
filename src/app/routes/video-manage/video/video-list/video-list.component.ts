@@ -10,6 +10,7 @@ import {Subscription} from "rxjs";
 
 import {VideoQualityService} from '../../../../service/video/video-quality.service';
 import {VideoService} from '../../../../service/video/video.service';
+import {VideoImageDownloadService} from '../../../../service/video/video-image-download.service';
 import {CommonService} from '../../../../service/common/common.service';
 import {CrawlTypeService} from '../../../../service/crawl/crawl-type.service';
 import {VideoManageVideoEditComponent} from '../video-edit/video-edit.component';
@@ -251,18 +252,21 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   imagePhysicalDirectoryName: string = '';
   imageServerDirectoryName: string = '';
 
+  imageDownloadFinishSubscription: Subscription = new Subscription();
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private msgSrv: NzMessageService,
     private videoService: VideoService,
+    private videoImageDownloadService: VideoImageDownloadService,
     private commonService: CommonService,
     private crawlTypeService: CrawlTypeService,
     private videoQualityService: VideoQualityService,
     private drawer: DrawerHelper,
     private nzModal: NzModalService,
     private ntfService: NzNotificationService,
-    private nzImageService: NzImageService
+    private nzImageService: NzImageService,
   ) {
   }
 
@@ -299,6 +303,14 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       {label: '发行时间(desc)', value: 'publishTime.descend'},
       {label: '发行时间(asc)', value: 'publishTime.ascend'},
     ]
+
+    this.imageDownloadFinishSubscription = this.videoImageDownloadService.imageDownloadFinishSubject.subscribe(async (res: any) => {
+
+      if (res.state == 'success') {
+        this.st.reload(null, {merge: true, toTop: false});
+      }
+    })
+
     try {
       let res = (await this.videoQualityService.getDict()) || {};
       if (res) {
@@ -316,6 +328,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
     // if (this.messageSocketSubscription) {
     //   this.messageSocketSubscription.unsubscribe();
     // }
+    this.imageDownloadFinishSubscription.unsubscribe();
     this.messageSocketSubscription.unsubscribe();
   }
 

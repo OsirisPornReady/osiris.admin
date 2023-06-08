@@ -12,6 +12,7 @@ import { VideoQualityService } from '../../../../service/video/video-quality.ser
 import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../service/video/video-type.service';
 import { VideoService } from '../../../../service/video/video.service';
+import { VideoImageDownloadService } from '../../../../service/video/video-image-download.service';
 
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 
@@ -283,6 +284,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     private videoTypeService: VideoTypeService,
     private videoAreaService: AreaService,
     private videoQualityService: VideoQualityService,
+    private videoImageDownloadService: VideoImageDownloadService,
     private drawer: DrawerHelper,
   ) {}
 
@@ -346,12 +348,18 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     // const params = { ...value };
     // params.id = this.record.id;
     // sf的机制让它不会收集为null的数据,不符合后端VideoDTO,提交params会出错
+    let id: number = -1;
     try {
       if (this.record.id > 0) {
-        await this.videoService.update(value);
+        id = await this.videoService.update(value);
       } else {
-        await this.videoService.add(value);
+        id = await this.videoService.add(value);
       }
+      let item: any = {
+        id,
+        ...value
+      }
+      this.videoImageDownloadService.downloadVideoImage(item);
       this.msgSrv.success('保存成功');
       this.modal.close('ok');
     } catch (error) {}

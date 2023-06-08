@@ -9,6 +9,7 @@ import {fromEvent, Subscription} from "rxjs";
 import { VideoTagService } from '../../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../../service/video/video-type.service';
 import { VideoService } from '../../../../../service/video/video.service';
+import {VideoImageDownloadService} from '../../../../../service/video/video-image-download.service';
 import { CommonService } from '../../../../../service/common/common.service';
 import { CrawlService } from '../../../../../service/crawl/crawl.service';
 
@@ -191,6 +192,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     private videoTagService: VideoTagService,
     private videoTypeService: VideoTypeService,
     private videoService: VideoService,
+    private videoImageDownloadService: VideoImageDownloadService,
     private commonService: CommonService,
     private crawlService: CrawlService,
     private nzModal: NzModalService
@@ -324,7 +326,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
               // let res = (await this.downloadVideoImage()) || {};
               // value.localCoverSrc = res?.localCoverSrc
               // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
-              this.downloadVideoImage()
+              // this.downloadVideoImage()
               this.drawer.close({ state: 'ok', data: value });
             }
           });
@@ -332,7 +334,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
           // let res = (await this.downloadVideoImage()) || {};
           // value.localCoverSrc = res?.localCoverSrc
           // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
-          this.downloadVideoImage()
+          // this.downloadVideoImage()
           this.drawer.close({ state: 'ok', data: value });
         }
       } catch (error) {}
@@ -340,7 +342,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       // let res = (await this.downloadVideoImage()) || {};
       // value.localCoverSrc = res?.localCoverSrc
       // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
-      this.downloadVideoImage();
+      // this.downloadVideoImage();
       this.drawer.close({ state: 'ok', data: value });
     }
   }
@@ -366,7 +368,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     //   this.msgSrv.error('下载预览图失败!')
     // }
 
-    let entity = {
+    let entity: any = {
       imagePhysicalPath: this.i.imagePhysicalPath,
       imageServerPath: this.i.imageServerPath,
       imagePhysicalDirectoryName: this.i.imagePhysicalDirectoryName,
@@ -377,8 +379,17 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       localPreviewImageSrcList: this.i.localPreviewImageSrcList,
     }
     return this.crawlService.downloadVideoImage(entity).subscribe({
-      next: (res: any) => {
-        this.msgSrv.error('预览图已下载完成!')
+      next: async (res: any) => {
+        try {
+          await this.videoService.update({
+            id: this.i.id,
+            localCoverSrc: res?.localCoverSrc,
+            localPreviewImageSrcList: res?.localPreviewImageSrcList
+          });
+          this.videoImageDownloadService.imageDownloadFinishSubject.next({ state: 'success' });
+        } catch (e) {
+          console.error(e)
+        }
       },
       error: () => {
         this.msgSrv.error('下载预览图失败!')

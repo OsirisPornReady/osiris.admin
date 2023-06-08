@@ -6,6 +6,7 @@ import {NzMessageService} from "ng-zorro-antd/message";
 import {NzNotificationService} from 'ng-zorro-antd/notification';
 
 import { VideoService } from '../../../service/video/video.service';
+import {VideoImageDownloadService} from '../../../service/video/video-image-download.service';
 import {CommonService} from '../../../service/common/common.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
@@ -73,10 +74,13 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   messageSocketSubscription: Subscription = new Subscription();
   reloadSocketSpin: boolean = false;
 
+  imageDownloadFinishSubscription: Subscription = new Subscription();
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private videoService: VideoService,
+    private videoImageDownloadService: VideoImageDownloadService,
     private commonService: CommonService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
@@ -93,11 +97,17 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     this.imageServerPath = this.commonService.globalData.imageServerPath
     this.imagePhysicalDirectoryName = this.commonService.globalData.imagePhysicalDirectoryName
     this.imageServerDirectoryName = this.commonService.globalData.imageServerDirectoryName
+    this.imageDownloadFinishSubscription = this.videoImageDownloadService.imageDownloadFinishSubject.subscribe(async (res: any) => {
+      if (res.state == 'success') {
+        this.getByPage();
+      }
+    })
     this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
     this.connectMessageSocket();
   }
 
   ngOnDestroy() {
+    this.imageDownloadFinishSubscription.unsubscribe();
     this.messageSocketSubscription.unsubscribe();
   }
 
