@@ -192,7 +192,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
       onlyCrawlInfo: item.onlyCrawlInfo
     }
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
-      this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {
+      this.drawer.static('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {
         size: 1600,
         drawerOptions: {nzClosable: false}
       }).subscribe(res => {

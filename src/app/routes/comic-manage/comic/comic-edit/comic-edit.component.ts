@@ -354,7 +354,7 @@ export class ComicManageComicEditComponent implements OnInit, AfterViewInit {
 
   crawlInfo(value: any) {
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
-      this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
+      this.drawer.static('爬取信息', ComicManageComicCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
         if (res.state == 'ok') {
           this.automatedData = res.data;
           this.automated = true;

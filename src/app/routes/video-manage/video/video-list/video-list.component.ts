@@ -446,7 +446,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
           return;
         }
       }
-      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
+      this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
         size: 1600,
         drawerOptions: {nzClosable: false}
       }).subscribe(res => {

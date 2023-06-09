@@ -377,7 +377,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
           return;
         }
       }
-      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
+      this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, { record: value }, { size: 1600, drawerOptions: { nzClosable: false } }).subscribe(async res => {
         if (res.state == 'ok') {
           this.automatedData = res.data;
           this.automated = true;

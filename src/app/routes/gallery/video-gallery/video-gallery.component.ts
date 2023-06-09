@@ -179,7 +179,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       imageServerDirectoryName: item.imageServerDirectoryName,
     }
     if (value.hasOwnProperty('crawlApiUrl') && value.hasOwnProperty('crawlKey')) {
-      this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
+      this.drawer.static('爬取信息', VideoManageVideoCrawlInfoComponent, {record: value}, {
         size: 1600,
         drawerOptions: {nzClosable: false}
       }).subscribe(res => {

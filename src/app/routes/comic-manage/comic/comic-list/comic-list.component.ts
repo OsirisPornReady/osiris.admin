@@ -494,7 +494,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
           return;
         }
       }
-      this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {
+      this.drawer.static('爬取信息', ComicManageComicCrawlInfoComponent, {record: value}, {
         size: 1600,
         drawerOptions: {nzClosable: false}
       }).subscribe(res => {
