@@ -48,6 +48,7 @@ export class ComicManageLocalComicEditComponent implements OnInit {
   comicFileList: NzUploadFile[] = [];
   comicUploadSuccess: boolean = true;
   uploadDir: boolean = true;
+  loading: boolean = false;
 
   constructor(
     private modal: NzModalRef,
@@ -78,6 +79,7 @@ export class ComicManageLocalComicEditComponent implements OnInit {
   }
 
   async save(value: any) {
+    this.loading = true;
     try {
       let localComicPicSrcList: any[] = this.comicFileList.map((i: any) => i.name).sort();
       let entity: any = {
@@ -96,6 +98,7 @@ export class ComicManageLocalComicEditComponent implements OnInit {
       console.error(e)
       this.msgSrv.error('本地Comic导入失败');
     }
+    this.loading = true;
   }
 
   reset() {
