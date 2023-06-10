@@ -21,7 +21,7 @@ export const environment = {
     crawlMessageSocketUrl: 'ws://localhost:9003/crawl/crawl_message_socket',
     imageDownloadSocketUrl: 'ws://localhost:9003/crawl/image_download_socket'
   },
-  comicUploadUrl: 'http://localhost:9003/crawl/comic/import_local_comic'
+  comicUploadUrl: 'http://localhost:8002/api/comic/upload_local_comic'
 } as Environment;
 
 /*
