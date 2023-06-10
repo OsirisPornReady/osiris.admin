@@ -145,11 +145,12 @@ export class ComicManageComicDownloadConfigComponent implements OnInit {
       // } else {
       //   await this.comicService.add(value);
       // }
-      if (value.hasOwnProperty('startPage') && value.hasOwnProperty('startPage')) {
+      if (value.hasOwnProperty('startPage') && value.hasOwnProperty('endPage')) {
         if ((value.startPage >= 1 && value.startPage <= this.pageSize) && (value.endPage >= 1 && value.endPage <= this.pageSize) && (value.startPage <= value.endPage)) {
           value.downloadPageList = Array.from(new Array(value.endPage + 1).keys()).slice(value.startPage);
         }
       } else {
+        this.downloadPageList = this.downloadPageList || [];
         if (this.downloadPageList.length > 0) {
           value.downloadPageList = this.downloadPageList.map((i:any) => {
             return i.key

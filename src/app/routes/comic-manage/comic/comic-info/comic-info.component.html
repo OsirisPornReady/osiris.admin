@@ -52,14 +52,23 @@
   </nz-card>
 </div>
 
-<nz-tabset>
-  <nz-tab nzTitle="漫画信息">
+<nz-tabset *ngIf="i">
+  <nz-tab nzTitle="漫画预览与信息">
+    <nz-select [(ngModel)]="currentPreview"
+               nzPlaceHolder="选择预览数据源"
+               nzShowSearch nzAllowClear
+               [nzDropdownMatchSelectWidth]="false"
+               (ngModelChange)="changePreviewList($event)"
+    >
+      <nz-option *ngFor="let option of previewOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+    </nz-select>
+
     <nz-divider nzText="Comic Pages"></nz-divider>
 
     <div>
       <nz-image-group *ngIf="comicImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
         <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of comicImageSrcList">
-          <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
+          <img nz-image width="150" [nzSrc]="currentComicData.comicServerPath + '/' + currentComicData.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
         </nz-card>
       </nz-image-group>
       <nz-empty *ngIf="comicImageSrcList.length == 0"></nz-empty>
@@ -81,7 +90,7 @@
     <!--  </div>-->
     </sf>
   </nz-tab>
-  <nz-tab nzTitle="漫画页信息">
+  <nz-tab nzTitle="漫画下载">
     <div *ngIf="i">
       <div class="av-info mb-md">
         <span class="font-weight-bold">漫画名: </span>
@@ -161,62 +170,75 @@
     </div>
   </nz-tab>
   <nz-tab nzTitle="本地漫画导入">
-    <div>
-      <sf #uploadComicPathSF mode="edit" [schema]="uploadSchema" [ui]="ui" [formData]="comicFilePathInfo" button="none">
-        <ng-template sf-template="uploadDir" let-i let-ui="ui" let-schema="schema">
-          <nz-switch [(ngModel)]="uploadDir"
-                     [nzCheckedChildren]="'是'"
-                     [nzUnCheckedChildren]="'否'"
-                     class="mr-md"></nz-switch>
-        </ng-template>
-      </sf>
+<!--    <div>-->
+<!--      <sf #uploadComicPathSF mode="edit" [schema]="uploadSchema" [ui]="ui" [formData]="comicFilePathInfo" button="none">-->
+<!--        <ng-template sf-template="uploadDir" let-i let-ui="ui" let-schema="schema">-->
+<!--          <nz-switch [(ngModel)]="uploadDir"-->
+<!--                     [nzCheckedChildren]="'文件夹'"-->
+<!--                     [nzUnCheckedChildren]="'批量'"-->
+<!--                     class="mr-md"></nz-switch>-->
+<!--        </ng-template>-->
+<!--      </sf>-->
 
-      <div class="mb-md">
-        <nz-upload
-          class="custom-upload upload-list-inline"
-          [nzAction]="comicUploadUrl"
-          [nzHeaders]="{ authorization: 'authorization-text' }"
-          [(nzFileList)]="comicFileList"
-          nzMultiple
-          [nzLimit]="0"
-          nzListType="picture"
-          [nzDirectory]="uploadDir"
-          [nzPreview]="previewUploadComicFile"
-          (nzChange)="handleUploadLocalComicChange($event)"
-        >
-          <button nz-button type="button">
-            <span nz-icon nzType="upload"></span>
-            选择本地漫画
-          </button>
-        </nz-upload>
-      </div>
+<!--      <div class="mb-md">-->
+<!--        <nz-upload-->
+<!--          class="custom-upload upload-list-inline"-->
+<!--          [nzAction]="comicUploadUrl"-->
+<!--          [nzHeaders]="{ authorization: 'authorization-text' }"-->
+<!--          [(nzFileList)]="comicFileList"-->
+<!--          nzMultiple-->
+<!--          [nzLimit]="0"-->
+<!--          nzListType="picture"-->
+<!--          [nzDirectory]="uploadDir"-->
+<!--          [nzPreview]="previewUploadComicFile"-->
+<!--          (nzChange)="handleUploadLocalComicChange($event)"-->
+<!--        >-->
+<!--          <button nz-button type="button">-->
+<!--            <span nz-icon nzType="upload"></span>-->
+<!--            选择本地漫画-->
+<!--          </button>-->
+<!--        </nz-upload>-->
+<!--      </div>-->
 
-      <button nz-button nzDanger type="button" (click)="resetLocalComic()" class="mr-sm">重置</button>
-      <button nz-button nzType="primary" type="button" [disabled]="!comicUploadSuccess" (click)="submitLocalComic()" class="mr-sm">导入</button>
-    </div>
+<!--      <button nz-button nzDanger type="button" (click)="resetLocalComic()" class="mr-sm">重置</button>-->
+<!--      <button nz-button nzType="primary" type="button" [disabled]="!comicUploadSuccess" [nzLoading]="submitLocalComicLoading" (click)="submitLocalComic()" class="mr-sm">导入</button>-->
+<!--    </div>-->
+
+    <button nz-button nzType="primary" type="button" (click)="addEditLocalComic(0)">导入</button>
 
     <nz-divider nzText="Local Comic"></nz-divider>
 
-    <nz-collapse nzGhost>
+    <nz-collapse nzGhost *ngIf="localComicList.length > 0">
       <nz-collapse-panel
-        *ngFor="let panel of [1,2,3]"
-        [nzHeader]="'标题'"
+        *ngFor="let panel of localComicList;let idx = index"
+        [nzHeader]="panel.title + '---------------------资源-' + (idx + 1)"
         [nzExtra]="extraTpl"
       >
         <div>
-          <nz-image-group *ngIf="comicImageSrcList.length > 0" class="d-flex justify-content-start align-items-center preview-image-box">
-            <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of comicImageSrcList">
-              <img nz-image width="150" [nzSrc]="i.comicServerPath + '/' + i.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
+          <nz-image-group class="d-flex justify-content-start align-items-center preview-image-box">
+            <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of panel.localComicPicSrcList">
+              <img nz-image width="150" [nzSrc]="panel.comicServerPath + '/' + panel.comicServerDirectoryName + '/' + item" [nzFallback]="fallbackImageBase64" alt=""/>
             </nz-card>
           </nz-image-group>
-          <nz-empty *ngIf="comicImageSrcList.length == 0"></nz-empty>
         </div>
-
+        <ng-template #extraTpl>
+          <nz-space nzSize="small" [nzSplit]="spaceSplit">
+            <ng-template #spaceSplit>
+              <nz-divider nzType="vertical"></nz-divider>
+            </ng-template>
+            <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();addEditLocalComic(panel.id)">编辑</a>
+            <a *nzSpaceItem
+               nz-typography
+               nzType="danger"
+               nz-popconfirm
+               nzPopconfirmTitle="是否删除?"
+               (click)="$event.stopPropagation()"
+               (nzOnConfirm)="deleteLocalComic(panel.id)">删除</a>
+          </nz-space>
+        </ng-template>
       </nz-collapse-panel>
     </nz-collapse>
-    <ng-template #extraTpl>
-      <span nz-icon nzType="setting" (click)="$event.stopPropagation();"></span>
-    </ng-template>
 
+    <nz-empty *ngIf="localComicList.length == 0"></nz-empty>
   </nz-tab>
 </nz-tabset>

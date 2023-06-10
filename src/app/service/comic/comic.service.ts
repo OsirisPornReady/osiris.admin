@@ -57,4 +57,29 @@ export class ComicService {
     );
   }
 
+  addLocalComic(entity: any) {
+    let url = `api/comic/add_local_comic`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
+  updateLocalComic(entity: any) {
+    let url = `api/comic/update_local_comic/${entity.id}`;
+    return lastValueFrom(this.http.put(url, entity));
+  }
+
+  deleteLocalComic(id: number) {
+    let url = `api/comic/delete_local_comic/${id}`;
+    return lastValueFrom(this.http.delete(url));
+  }
+
+  getLocalComicById(id: number) {
+    let url = `api/comic/get_local_comic_by_id/${id}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
+  getLocalComicListByComicId(comicId: number) {
+    let url = `api/comic/get_local_comic_list_by_comic_id/${comicId}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
 }

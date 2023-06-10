@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
-import { _HttpClient } from '@delon/theme';
+import {_HttpClient, ModalHelper} from '@delon/theme';
 import {STChange, STColumn, STColumnTag, STComponent, STData, STPage} from "@delon/abc/st";
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
@@ -12,6 +12,8 @@ import { ComicService } from '../../../../service/comic/comic.service';
 import { ComicDownloadService } from '../../../../service/comic/comic-download.service';
 import { CommonService } from '../../../../service/common/common.service';
 import { CrawlService } from '../../../../service/crawl/crawl.service';
+
+import {ComicManageLocalComicEditComponent} from "../local-comic-edit/local-comic-edit.component";
 
 import { dateStringFormatter } from "../../../../shared/utils/dateUtils";
 import { fallbackImageBase64 } from "../../../../../assets/image-base64";
@@ -77,17 +79,19 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   uploadSchema: SFSchema = {
     properties: {
       uploadDir: {
-        type: 'string', title: '上传文件夹',
+        type: 'string', title: '导入方式',
         ui: {
           widget: 'custom'
         }
       },
+      title: { type: 'string', title: '标题' },
       comicPhysicalPath: { type: 'string', title: '物理地址' },
       comicServerPath: { type: 'string', title: '服务器地址' },
       comicPhysicalDirectoryName: { type: 'string', title: '物理文件夹名' },
-      comicServerDirectoryName: { type: 'string', title: '服务器文件夹名' }
+      comicServerDirectoryName: { type: 'string', title: '服务器文件夹名' },
+      remark: { type: 'string', title: '备注' }
     },
-    required: ['comicPhysicalPath','comicServerPath','comicPhysicalDirectoryName','comicServerDirectoryName',],
+    required: ['title', 'comicPhysicalPath','comicServerPath','comicPhysicalDirectoryName','comicServerDirectoryName'],
   };
   ui: SFUISchema = {
     '*': {
@@ -304,9 +308,16 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   comicFilePathInfo: any = { uploadDir: true }
   comicUploadSuccess: boolean = false;
   uploadDir: boolean = true;
+  localComicList: any[] = [];
+  submitLocalComicLoading: boolean = false;
+
+  previewOptions: any[] = [];
+  currentPreview: number = 0;
+  currentComicData: any = null;
 
   constructor(
     private drawer: NzDrawerRef,
+    private modal: ModalHelper,
     private msgSrv: NzMessageService,
     private nzImageService: NzImageService,
     public http: _HttpClient,
@@ -342,6 +353,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       }
     }
     await this.getComicData();
+    await this.getLocalComicListByComicId();
   }
 
   async getComicData() {
@@ -360,6 +372,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
       this.comicImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
+      this.currentComicData = this.i
 
       this.failPageSize = this.i.comicFailOrderList.filter((rr: any) => rr != '-').length;
 
@@ -445,6 +458,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       this.msgSrv.info('正在下载其他漫画');
       return;
     }
+    pageList = pageList || [];
     this.onDownloadingPage = true;
     this.pageIndexOnDownloading = [...pageList];
 
@@ -622,8 +636,9 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   handleUploadLocalComicChange(event: any) { // upload实际上可以起到校验本地文件的作用,比使用脚本检验操作更简便直观
     if (event.type == 'success') {
       this.comicUploadSuccess = true;
+      this.uploadComicPathSF.getProperty('/title')?.setValue(this.i.title, false);
       this.uploadComicPathSF.getProperty('/comicPhysicalPath')?.setValue('E:/CrawlDist/comic', false);
-      this.uploadComicPathSF.getProperty('/comicServerPath')?.setValue('http://localhost:9004/image', false);
+      this.uploadComicPathSF.getProperty('/comicServerPath')?.setValue('http://localhost:9004/comic', false);
       if (this.uploadDir) {
         let directoryName = event.file.originFileObj.webkitRelativePath.replace(`/${event.file.name}`, ``);
         this.uploadComicPathSF.getProperty('/comicPhysicalDirectoryName')?.setValue(directoryName, false);
@@ -653,17 +668,62 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   }
 
   async submitLocalComic() {
+    this.submitLocalComicLoading = true;
     try {
-      console.log(this.comicFileList)
-      let localComicPicSrcList: any[] = this.comicFileList.map((i: any) => {
-        return i.name;
-      }).sort();
       if (this.uploadComicPathSF.valid) {
-        console.log(this.uploadComicPathSF.value)
+        let localComicPicSrcList: any[] = this.comicFileList.map((i: any) => i.name).sort();
+        let entity: any = {
+          comicId: this.record.id,
+          ...this.uploadComicPathSF.value,
+          localComicPicSrcList,
+        };
+        await this.comicService.addLocalComic(entity);
+        this.resetLocalComic();
+        await this.getLocalComicListByComicId();
+        this.msgSrv.success('本地Comic导入成功');
       }
-      this.resetLocalComic();
     } catch (e) {
       console.error(e)
+      this.msgSrv.error('本地Comic导入失败');
+    }
+    this.submitLocalComicLoading = false;
+  }
+
+  async getLocalComicListByComicId() {
+    try {
+      this.localComicList = (await this.comicService.getLocalComicListByComicId(this.record.id)) || [];
+      this.previewOptions = this.localComicList.map((i: any) => {
+        return { label: i.title, value: i.id, data: i }
+      });
+      this.previewOptions.splice(0, 0, { label: '默认预览源(Exhentai)', value: 0, data: this.i });
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  addEditLocalComic(id: number) {
+    this.modal.createStatic(ComicManageLocalComicEditComponent, {record: {id, comicInfo: this.i }}, { size: 1595 }).subscribe(async res => {
+      if (res == 'ok') {
+        await this.getLocalComicListByComicId();
+      }
+    });
+  }
+
+  async deleteLocalComic(id: number) {
+    try {
+      await this.comicService.deleteLocalComic(id);
+      await this.getLocalComicListByComicId();
+      this.msgSrv.info('本地Comic删除成功');
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  changePreviewList(event: any) {
+    let option = this.previewOptions.find(el => el.value == event)
+    if (option) {
+      this.comicImageSrcList = Array.isArray(option.data.localComicPicSrcList) ? option.data.localComicPicSrcList : [];
+      this.currentComicData = option.data;
     }
   }
 
