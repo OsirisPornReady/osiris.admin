@@ -4,6 +4,7 @@ import { _HttpClient } from '@delon/theme';
 import {STChange, STColumn, STColumnTag, STComponent, STData, STPage} from "@delon/abc/st";
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import {NzUploadFile} from "ng-zorro-antd/upload";
 import { NzImage, NzImageService, NzImagePreviewRef } from 'ng-zorro-antd/image';
 import {catchError, finalize, fromEvent, Subscription} from "rxjs";
 
@@ -14,6 +15,7 @@ import { CrawlService } from '../../../../service/crawl/crawl.service';
 
 import { dateStringFormatter } from "../../../../shared/utils/dateUtils";
 import { fallbackImageBase64 } from "../../../../../assets/image-base64";
+import { environment } from "@env/environment";
 
 
 @Component({
@@ -22,6 +24,9 @@ import { fallbackImageBase64 } from "../../../../../assets/image-base64";
   styleUrls: ['/comic-info.component.less']
 })
 export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
+  comicUploadUrl: string = environment['comicUploadUrl'];
+
   scoreTextList: string[] = this.commonService.scoreTextList;
 
   title = '';
@@ -29,7 +34,8 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   i: any;
   ei: any;
   @ViewChild('sf') sf!: SFComponent;
-  @ViewChild('sf') evaluateSf!: SFComponent;
+  @ViewChild('evaluateSf') evaluateSf!: SFComponent;
+  @ViewChild('uploadComicPathSF') uploadComicPathSF!: SFComponent;
   schema: SFSchema = {
     properties: {
       title: { type: 'string', title: '标题' },
@@ -67,6 +73,21 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
       comment: { type: 'string', title: '评价' },
     },
     required: [],
+  };
+  uploadSchema: SFSchema = {
+    properties: {
+      uploadDir: {
+        type: 'string', title: '上传文件夹',
+        ui: {
+          widget: 'custom'
+        }
+      },
+      comicPhysicalPath: { type: 'string', title: '物理地址' },
+      comicServerPath: { type: 'string', title: '服务器地址' },
+      comicPhysicalDirectoryName: { type: 'string', title: '物理文件夹名' },
+      comicServerDirectoryName: { type: 'string', title: '服务器文件夹名' }
+    },
+    required: ['comicPhysicalPath','comicServerPath','comicPhysicalDirectoryName','comicServerDirectoryName',],
   };
   ui: SFUISchema = {
     '*': {
@@ -277,6 +298,12 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
   downloadSubscription: Subscription = new Subscription();
 
   failPageSize: number = 0;
+
+  //本地上传相关
+  comicFileList: NzUploadFile[] = [];
+  comicFilePathInfo: any = { uploadDir: true }
+  comicUploadSuccess: boolean = false;
+  uploadDir: boolean = true;
 
   constructor(
     private drawer: NzDrawerRef,
@@ -592,5 +619,52 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  protected readonly fallbackImageBase64 = fallbackImageBase64;
+  handleUploadLocalComicChange(event: any) { // upload实际上可以起到校验本地文件的作用,比使用脚本检验操作更简便直观
+    if (event.type == 'success') {
+      this.comicUploadSuccess = true;
+      this.uploadComicPathSF.getProperty('/comicPhysicalPath')?.setValue('E:/CrawlDist/comic', false);
+      this.uploadComicPathSF.getProperty('/comicServerPath')?.setValue('http://localhost:9004/image', false);
+      if (this.uploadDir) {
+        let directoryName = event.file.originFileObj.webkitRelativePath.replace(`/${event.file.name}`, ``);
+        this.uploadComicPathSF.getProperty('/comicPhysicalDirectoryName')?.setValue(directoryName, false);
+        this.uploadComicPathSF.getProperty('/comicServerDirectoryName')?.setValue(directoryName, false);
+      } else {
+        this.uploadComicPathSF.getProperty('/comicPhysicalDirectoryName')?.setValue('', false);
+        this.uploadComicPathSF.getProperty('/comicServerDirectoryName')?.setValue('', false);
+      }
+    }
+  }
+
+  previewUploadComicFile(file: NzUploadFile) {
+    console.log(file)
+    // const images: NzImage[] = [];
+    // images.push({
+    //   src: item.localCoverSrc ? item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc : '',
+    //   width: '1000px',
+    //   alt: item.title ? item.title : ''
+    // })
+    // this.nzImageService.preview(images, { nzKeyboard: true, nzMaskClosable: true, nzCloseOnNavigation: true})
+  }
+
+  resetLocalComic() {
+    this.comicFileList = []
+    this.comicUploadSuccess = false;
+    this.uploadComicPathSF.reset();
+  }
+
+  async submitLocalComic() {
+    try {
+      console.log(this.comicFileList)
+      let localComicPicSrcList: any[] = this.comicFileList.map((i: any) => {
+        return i.name;
+      }).sort();
+      if (this.uploadComicPathSF.valid) {
+        console.log(this.uploadComicPathSF.value)
+      }
+      this.resetLocalComic();
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 }

@@ -33,6 +33,8 @@ import { NzRateModule } from 'ng-zorro-antd/rate';
 import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { NzTransferModule } from 'ng-zorro-antd/transfer';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
+import { NzUploadModule } from 'ng-zorro-antd/upload';
+import { NzCollapseModule } from 'ng-zorro-antd/collapse';
 
 export const SHARED_ZORRO_MODULES = [
   NzFormModule,
@@ -69,5 +71,7 @@ export const SHARED_ZORRO_MODULES = [
   NzRateModule,
   NzPaginationModule,
   NzTransferModule,
-  NzSegmentedModule
+  NzSegmentedModule,
+  NzUploadModule,
+  NzCollapseModule
 ];
