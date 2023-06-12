@@ -32,6 +32,8 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   @Input() torrentList: any[] = [];
 
+  emptyMessage: string = '暂无数据'
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -62,10 +64,14 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
       this.crawlService.crawlBtdig({
         url: item.btdigUrl
       }).pipe(finalize(() => {
-
-      })).subscribe(res => {
-        this.torrentList = res || [];
         this.loading = false;
+      })).subscribe({
+        next: res => {
+          this.torrentList = res || [];
+        },
+        error: () => {
+          this.emptyMessage = '爬虫请求失败';
+        }
       })
     }
   }
