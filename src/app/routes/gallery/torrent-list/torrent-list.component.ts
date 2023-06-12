@@ -72,7 +72,7 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
 
   openTorrentMagnetLink(item: any) {
     if (item.hasOwnProperty('torrent_magnet') && item.torrent_magnet) {
-      window.open(item.torrent_magnet)
+      window.open(item.torrent_magnet, '_self')
     }
   }
 
