@@ -30,6 +30,6 @@
         </ul>
       </nz-list-item>
     </nz-list>
-    <nz-empty *ngIf="torrentList.length == 0" [nzNotFoundContent]="emptyMessage"></nz-empty>
   </nz-spin>
+  <nz-empty *ngIf="(!loading) && torrentList.length == 0" [nzNotFoundContent]="emptyMessage"></nz-empty>
 </div>

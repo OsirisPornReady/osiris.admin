@@ -310,7 +310,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
 
   openTorrentList(item: any) {
     this.drawer.create(item.title, GalleryTorrentListComponent, {videoInfo: item}, {
-      size: 700,
+      size: 850,
       footer: false,
       drawerOptions: {nzPlacement: 'left', nzClosable: false}
     }).subscribe(res => {
