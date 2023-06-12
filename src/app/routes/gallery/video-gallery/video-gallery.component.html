@@ -42,14 +42,14 @@
     <div class="grid-container d-flex justify-content-around align-items-start">
       <nz-card *ngFor="let item of gridList;let idx = index" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" nzHoverable (click)="openInfo(item.id)">
   <!--      item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc-->
-  <!--      <img-->
-  <!--        nz-image-->
-  <!--        width="378px"-->
-  <!--        [nzSrc]="item.coverBase64"-->
-  <!--        [nzFallback]="fallbackImageBase64"-->
-  <!--        alt=""-->
-  <!--        (click)="handlePreview($event)"-->
-  <!--      />-->
+        <img
+          nz-image
+          width="378px"
+          [nzSrc]="item.coverBase64"
+          [nzFallback]="fallbackImageBase64"
+          alt=""
+          (click)="handlePreview($event)"
+        />
         <span nz-typography class="d-block">{{item.title}}</span>
         <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
         <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
