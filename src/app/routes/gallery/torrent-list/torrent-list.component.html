@@ -1,0 +1,34 @@
+<div class="container">
+  <nz-spin [nzSimple]="false" [nzSpinning]="loading">
+    <nz-list *ngIf="torrentList.length > 0" nzSize="small">
+      <nz-list-item *ngFor="let item of torrentList">
+        <div>
+          <div>
+            <span nz-icon nzType="folder-open" nzTheme="outline"></span>
+            {{item.torrent_name}}
+          </div>
+          <div>
+            <span nz-typography style="margin-left: 15px"><mark>
+              <span nz-icon nzType="youtube" nzTheme="outline"></span>
+              {{item.torrent_excerpt}}
+            </mark></span>
+            <span nz-typography style="margin-left: 20px">{{item.torrent_excerpt_size}}</span>
+          </div>
+          <div>
+            <nz-space nzSize="large">
+              <span *nzSpaceItem nz-typography><a [href]="item.detailLink" target="_blank">详情</a></span>
+              <span *nzSpaceItem nz-typography>{{item.torrent_files}} files</span>
+              <span *nzSpaceItem nz-typography nzType="secondary">{{item.torrent_size}}</span>
+              <span *nzSpaceItem nz-typography nzType="success">{{item.torrent_age}}</span>
+            </nz-space>
+          </div>
+        </div>
+        <ul nz-list-item-actions>
+          <nz-list-item-action>
+            <button nz-button nzType="primary" nzShape="circle"><span nz-icon nzType="download"></span></button>
+          </nz-list-item-action>
+        </ul>
+      </nz-list-item>
+    </nz-list>
+  </nz-spin>
+</div>

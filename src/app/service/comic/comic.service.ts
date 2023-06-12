@@ -82,4 +82,9 @@ export class ComicService {
     return lastValueFrom(this.http.get(url));
   }
 
+  getComicIdListOwnLocal() {
+    let url = `api/comic/get_comic_id_list_own_local`;
+    return lastValueFrom(this.http.get(url));
+  }
+
 }

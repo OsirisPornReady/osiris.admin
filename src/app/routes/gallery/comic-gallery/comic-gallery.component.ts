@@ -15,7 +15,7 @@ import { ComicManageComicEditComponent} from "../../comic-manage/comic/comic-edi
 import { ComicManageComicCrawlInfoComponent} from "../../comic-manage/comic/comic-crawl/comic-crawl-info/comic-crawl-info.component";
 import { ComicManageComicInfoComponent } from "../../comic-manage/comic/comic-info/comic-info.component";
 import { ComicManageComicCrawlConfigComponent } from "../../comic-manage/comic/comic-crawl/comic-crawl-config/comic-crawl-config.component";
-import {lastValueFrom, Subscription} from "rxjs";
+import {finalize, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
 import { fallbackImageBase64 } from "../../../../assets/image-base64";
@@ -81,6 +81,8 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
 
   downloadFinishSubscription: Subscription = new Subscription();
 
+  comicIdListOwnLocal: number[] = [];
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -96,8 +98,15 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   protected readonly dateStringFormatter = dateStringFormatter;
 
   async ngOnInit() {
+    try {
+      this.comicIdListOwnLocal = (await this.comicService.getComicIdListOwnLocal()) || [];
+      console.log(this.comicIdListOwnLocal)
+    } catch (e) {
+      console.error(e);
+    }
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
+    this.crawlApiUrl = this.crawlTypeOptions.length > 0 ? this.crawlTypeOptions[5].value : null;
     this.comicPhysicalPath = this.commonService.globalData.comicPhysicalPath
     this.comicServerPath = this.commonService.globalData.comicServerPath
     this.comicPhysicalDirectoryName = this.commonService.globalData.comicPhysicalDirectoryName
@@ -134,7 +143,10 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     if (this.keyword) {
       url = `${url}&keyword=${this.keyword}`;
     }
-    this.http.get(url).subscribe((res: any) => {
+    this.loading = true;
+    this.http.get(url).pipe(finalize(() => {
+      this.loading = false;
+    })).subscribe((res: any) => {
       this.total = res.total;
       this.gridList = res.list;
     })

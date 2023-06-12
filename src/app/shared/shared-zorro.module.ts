@@ -35,6 +35,7 @@ import { NzTransferModule } from 'ng-zorro-antd/transfer';
 import { NzSegmentedModule } from 'ng-zorro-antd/segmented';
 import { NzUploadModule } from 'ng-zorro-antd/upload';
 import { NzCollapseModule } from 'ng-zorro-antd/collapse';
+import { NzListModule } from 'ng-zorro-antd/list';
 
 export const SHARED_ZORRO_MODULES = [
   NzFormModule,
@@ -73,5 +74,6 @@ export const SHARED_ZORRO_MODULES = [
   NzTransferModule,
   NzSegmentedModule,
   NzUploadModule,
-  NzCollapseModule
+  NzCollapseModule,
+  NzListModule
 ];

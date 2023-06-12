@@ -62,7 +62,10 @@ import {
   PictureOutline,
   VideoCameraOutline,
   ReloadOutline,
-  CloudDownloadOutline
+  CloudDownloadOutline,
+  FolderOpenOutline,
+  YoutubeOutline,
+  YoutubeFill
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -124,5 +127,8 @@ export const ICONS_AUTO = [
   PictureOutline,
   VideoCameraOutline,
   ReloadOutline,
-  CloudDownloadOutline
+  CloudDownloadOutline,
+  FolderOpenOutline,
+  YoutubeOutline,
+  YoutubeFill
 ];

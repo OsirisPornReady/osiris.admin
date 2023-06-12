@@ -38,47 +38,67 @@
 <!--  <st #st [data]="url" [columns]="columns"></st>-->
 <!--</nz-card>-->
 <div class="container">
-  <div class="grid-container d-flex justify-content-around align-items-start">
-    <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" [nzLoading]="loading" nzHoverable (click)="openInfo(item.id)">
-<!--      item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc-->
-      <img
-        nz-image
-        width="378px"
-        [nzSrc]="item.coverBase64"
-        [nzFallback]="fallbackImageBase64"
-        alt=""
-        (click)="handlePreview($event)"
-      />
-      <span nz-typography class="d-block">{{item.title}}</span>
-      <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
-      <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
-      <nz-space nzSize="small" [nzSplit]="spaceSplit">
-        <ng-template #spaceSplit>
-          <nz-divider nzType="vertical"></nz-divider>
-        </ng-template>
-        <ng-template [ngIf]="showDelete">
-          <a *nzSpaceItem
-             nz-typography
-             nzType="danger"
-             (click)="handleLink($event)"
-             nz-popconfirm
-             nzPopconfirmTitle="是否删除?"
-             (nzOnConfirm)="delete(item.id)">删除</a>
-        </ng-template>
-        <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
-        <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
-        <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
-          数据源
-          <span nz-icon nzType="share-alt" nzTheme="outline"></span>
-        </a>
-        <a *nzSpaceItem [href]="item.btdigUrl" target="_blank" (click)="handleLink($event)">
-          btDigg
-          <span nz-icon nzType="share-alt" nzTheme="outline"></span>
-        </a>
-      </nz-space>
-    </nz-card>
-    <nz-empty *ngIf="gridList.length == 0"></nz-empty>
-  </div>
+  <nz-spin nzSize="large" [nzSimple]="false" [nzSpinning]="loading">
+    <div class="grid-container d-flex justify-content-around align-items-start">
+      <nz-card *ngFor="let item of gridList;let idx = index" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" nzHoverable (click)="openInfo(item.id)">
+  <!--      item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc-->
+  <!--      <img-->
+  <!--        nz-image-->
+  <!--        width="378px"-->
+  <!--        [nzSrc]="item.coverBase64"-->
+  <!--        [nzFallback]="fallbackImageBase64"-->
+  <!--        alt=""-->
+  <!--        (click)="handlePreview($event)"-->
+  <!--      />-->
+        <span nz-typography class="d-block">{{item.title}}</span>
+        <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
+        <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
+        <nz-space nzSize="small" [nzSplit]="spaceSplit">
+          <ng-template #spaceSplit>
+            <nz-divider nzType="vertical"></nz-divider>
+          </ng-template>
+          <ng-template [ngIf]="showDelete">
+            <a *nzSpaceItem
+               nz-typography
+               nzType="danger"
+               (click)="handleLink($event)"
+               nz-popconfirm
+               nzPopconfirmTitle="是否删除?"
+               (nzOnConfirm)="delete(item.id)">删除</a>
+          </ng-template>
+          <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
+          <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
+          <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
+            数据源
+            <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+          </a>
+          <a *nzSpaceItem [href]="item.btdigUrl" target="_blank" (click)="handleLink($event)">
+            btDigg
+            <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+          </a>
+          <a *nzSpaceItem (click)="$event.stopPropagation();openTorrentList(item)">
+            Torrent
+            <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+          </a>
+<!--          <a *nzSpaceItem-->
+<!--             nz-popover-->
+<!--             nzPopoverTrigger="click"-->
+<!--             [nzPopoverArrowPointAtCenter]="true"-->
+<!--             [nzPopoverTitle]="item.serialNumber ? item.serialNumber : item.brand"-->
+<!--             [(nzPopoverVisible)]="popoverVisibleList[idx]"-->
+<!--             [nzPopoverContent]="contentTemplate"-->
+<!--             (click)="$event.stopPropagation();crawlBtdig(item, idx)">-->
+<!--            Torrent-->
+<!--            <span nz-icon nzType="share-alt" nzTheme="outline"></span>-->
+<!--          </a>-->
+<!--          <ng-template #contentTemplate>-->
+<!--            <app-gallery-torrent-card [videoInfo]="item" [torrentList]="torrentList"></app-gallery-torrent-card>-->
+<!--          </ng-template>-->
+        </nz-space>
+      </nz-card>
+      <nz-empty *ngIf="gridList.length == 0"></nz-empty>
+    </div>
+  </nz-spin>
   <div class="gallery-pagination d-flex justify-content-end align-items-center mt-md">
     <nz-pagination nzShowQuickJumper
                    nzShowSizeChanger
@@ -89,4 +109,9 @@
                    (nzPageIndexChange)="handlePageIndexChange()"
                    (nzPageSizeChange)="handlePageSizeChange()"></nz-pagination>
   </div>
+<!--  <div>-->
+<!--    <iframe [src]="ifUrl" width="500" height="500" frameborder="0">-->
+
+<!--    </iframe>-->
+<!--  </div>-->
 </div>

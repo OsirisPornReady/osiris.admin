@@ -49,4 +49,10 @@ export class CrawlService {
     return lastValueFrom(this.http.post(url, entity));
   }
 
+  crawlBtdig(entity: any) {
+    let url = `crawl/video/btdig`;
+    // return lastValueFrom(this.http.post(url, entity));
+    return this.http.post(url, entity);
+  }
+
 }

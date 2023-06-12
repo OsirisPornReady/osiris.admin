@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import { STColumn, STComponent } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import {ModalHelper, _HttpClient, DrawerHelper} from '@delon/theme';
@@ -8,13 +9,16 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
 import { VideoService } from '../../../service/video/video.service';
 import {VideoImageDownloadService} from '../../../service/video/video-image-download.service';
 import {CommonService} from '../../../service/common/common.service';
+import {CrawlService} from '../../../service/crawl/crawl.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
 import { VideoManageVideoEditComponent } from '../../video-manage/video/video-edit/video-edit.component';
 import { VideoManageVideoCrawlInfoComponent } from '../../video-manage/video/video-crawl/video-crawl-info/video-crawl-info.component';
 import { VideoManageVideoInfoComponent } from '../../video-manage/video/video-info/video-info.component';
 import { VideoManageVideoCrawlConfigComponent } from '../../video-manage/video/video-crawl/video-crawl-config/video-crawl-config.component';
-import {lastValueFrom, Subscription} from "rxjs";
+import {GalleryTorrentListComponent} from '../torrent-list/torrent-list.component';
+
+import {finalize, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
 import {fallbackImageBase64} from "../../../../assets/image-base64";
@@ -27,6 +31,8 @@ import {fallbackImageBase64} from "../../../../assets/image-base64";
   styleUrls: ['./video-gallery.component.less']
 })
 export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
+
   url = `/user`;
   searchSchema: SFSchema = {
     properties: {
@@ -76,16 +82,21 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
 
   imageDownloadFinishSubscription: Subscription = new Subscription();
 
+  torrentList: any[] = []
+  popoverVisibleList: boolean[] = []
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
     private videoService: VideoService,
     private videoImageDownloadService: VideoImageDownloadService,
     private commonService: CommonService,
+    private crawlService: CrawlService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
     private msgSrv: NzMessageService,
     private ntfService: NzNotificationService,
+    private domSanitizer: DomSanitizer
   ) { }
 
   protected readonly dateStringFormatter = dateStringFormatter;
@@ -93,6 +104,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
+    this.crawlApiUrl = this.crawlTypeOptions.length > 0 ? this.crawlTypeOptions[1].value : null;
     this.imagePhysicalPath = this.commonService.globalData.imagePhysicalPath
     this.imageServerPath = this.commonService.globalData.imageServerPath
     this.imagePhysicalDirectoryName = this.commonService.globalData.imagePhysicalDirectoryName
@@ -122,9 +134,13 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     if (this.keyword) {
       url = `${url}&keyword=${this.keyword}`;
     }
-    this.http.get(url).subscribe((res: any) => {
+    this.loading = true;
+    this.http.get(url).pipe(finalize(() => {
+      this.loading = false;
+    })).subscribe((res: any) => {
       this.total = res.total;
       this.gridList = res.list;
+      this.popoverVisibleList = new Array(this.gridList.length).fill(false);
     })
   }
 
@@ -279,6 +295,29 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
+  // ifUrl: SafeResourceUrl = this.domSanitizer.bypassSecurityTrustResourceUrl('');
+  crawlBtdig(item: any, index: number) {
+    // this.ifUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(item.btdigUrl);
+    // console.log(this.ifUrl)
+    this.crawlService.crawlBtdig({
+      url: item.btdigUrl
+    }).subscribe(res => {
+      this.torrentList = res || [];
+      this.popoverVisibleList.fill(false)
+      this.popoverVisibleList[index] = true;
+    })
+  }
 
-    protected readonly fallbackImageBase64 = fallbackImageBase64;
+  openTorrentList(item: any) {
+    this.drawer.create(item.title, GalleryTorrentListComponent, {videoInfo: item}, {
+      size: 700,
+      footer: false,
+      drawerOptions: {nzPlacement: 'left', nzClosable: false}
+    }).subscribe(res => {
+      if (res.state == 'ok') {
+
+      }
+    });
+  }
+
 }

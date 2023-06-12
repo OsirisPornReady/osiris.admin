@@ -38,58 +38,64 @@
 <!--  <st #st [data]="url" [columns]="columns"></st>-->
 <!--</nz-card>-->
 <div class="container">
-  <div class="grid-container d-flex justify-content-around align-items-start">
-    <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" [nzLoading]="loading" nzHoverable (click)="openInfo(item.id)">
-<!--      item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc-->
-      <img
-        nz-image
-        width="378px"
-        [nzSrc]="item.coverBase64"
-        [nzFallback]="fallbackImageBase64"
-        alt=""
-        (click)="handlePreview($event)"
-      />
-      <span nz-typography class="d-block">{{item.title}}</span>
-      <span nz-typography class="d-block"><mark>页数: {{item.pageSize}}</mark></span>
-      <span nz-typography class="d-block">
-        完整性:
-        <span nz-icon *ngIf="item.integrity" [nzType]="'check-circle'" [nzTheme]="'twotone'" [nzTwotoneColor]="'#52c41a'"></span>
-        <span nz-icon *ngIf="!item.integrity" [nzType]="'close-circle'" [nzTheme]="'twotone'" [nzTwotoneColor]="'#ff4d4f'"></span>
-      </span>
-      <span nz-typography class="d-block"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
-      <nz-space nzSize="small" [nzSplit]="spaceSplit">
-        <ng-template #spaceSplit>
-          <nz-divider nzType="vertical"></nz-divider>
-        </ng-template>
-        <ng-template [ngIf]="showDelete">
-          <a *nzSpaceItem
-             nz-typography
-             nzType="danger"
-             (click)="handleLink($event)"
-             nz-popconfirm
-             nzPopconfirmTitle="是否删除?"
-             (nzOnConfirm)="delete(item.id)">删除</a>
-        </ng-template>
-        <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
-        <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
-        <a *nzSpaceItem nz-typography (click)="checkComic(item, $event)">验证</a>
-        <ng-template [ngIf]="!(onDownloadingComic && comicIdOnDownloading.includes(item.id))">
-          <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="downloadComic(item, $event)">下载</button>
-        </ng-template>
-        <ng-template [ngIf]="onDownloadingComic && comicIdOnDownloading.includes(item.id)">
-          <button *nzSpaceItem nz-button nzType="default" nzDanger nzSize="small" (click)="stopDownloadComic(item, $event)">
-            <span nz-icon [nzType]="(onDownloadingComic && comicIdOnDownloading.includes(item.id)) ? 'loading' : 'cloud-download'" nzTheme="outline"></span>
-            <span>停止</span>
-          </button>
-        </ng-template>
-        <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
-          数据源
-          <span nz-icon nzType="share-alt" nzTheme="outline"></span>
-        </a>
-      </nz-space>
-    </nz-card>
-    <nz-empty *ngIf="gridList.length == 0"></nz-empty>
-  </div>
+  <nz-spin nzSize="large" [nzSimple]="false" [nzSpinning]="loading">
+    <div class="grid-container d-flex justify-content-around align-items-start">
+      <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" nzHoverable (click)="openInfo(item.id)">
+  <!--      item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc-->
+  <!--      <img-->
+  <!--        nz-image-->
+  <!--        width="378px"-->
+  <!--        [nzSrc]="item.coverBase64"-->
+  <!--        [nzFallback]="fallbackImageBase64"-->
+  <!--        alt=""-->
+  <!--        (click)="handlePreview($event)"-->
+  <!--      />-->
+        <span nz-typography class="d-block">{{item.title}}</span>
+        <span nz-typography class="d-block"><mark>页数: {{item.pageSize}}</mark></span>
+        <span nz-typography class="d-block">
+          完整性:
+          <ng-container *ngIf="item.integrity || comicIdListOwnLocal.includes(item.id); else integrityFalse">
+            <span nz-icon [nzType]="'check-circle'" [nzTheme]="'twotone'" [nzTwotoneColor]="'#52c41a'"></span>
+          </ng-container>
+          <ng-template #integrityFalse>
+            <span nz-icon [nzType]="'close-circle'" [nzTheme]="'twotone'" [nzTwotoneColor]="'#ff4d4f'"></span>
+          </ng-template>
+        </span>
+        <span nz-typography class="d-block"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
+        <nz-space nzSize="small" [nzSplit]="spaceSplit">
+          <ng-template #spaceSplit>
+            <nz-divider nzType="vertical"></nz-divider>
+          </ng-template>
+          <ng-template [ngIf]="showDelete">
+            <a *nzSpaceItem
+               nz-typography
+               nzType="danger"
+               (click)="handleLink($event)"
+               nz-popconfirm
+               nzPopconfirmTitle="是否删除?"
+               (nzOnConfirm)="delete(item.id)">删除</a>
+          </ng-template>
+          <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
+          <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
+          <a *nzSpaceItem nz-typography (click)="checkComic(item, $event)">验证</a>
+          <ng-container *ngIf="!(onDownloadingComic && comicIdOnDownloading.includes(item.id));else stopDownloadButton">
+            <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="downloadComic(item, $event)">下载</button>
+          </ng-container>
+          <ng-template #stopDownloadButton>
+            <button *nzSpaceItem nz-button nzType="default" nzDanger nzSize="small" (click)="stopDownloadComic(item, $event)">
+              <span nz-icon [nzType]="(onDownloadingComic && comicIdOnDownloading.includes(item.id)) ? 'loading' : 'cloud-download'" nzTheme="outline"></span>
+              <span>停止</span>
+            </button>
+          </ng-template>
+          <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
+            数据源
+            <span nz-icon nzType="share-alt" nzTheme="outline"></span>
+          </a>
+        </nz-space>
+      </nz-card>
+      <nz-empty *ngIf="gridList.length == 0"></nz-empty>
+    </div>
+  </nz-spin>
   <div class="gallery-pagination d-flex justify-content-end align-items-center mt-md">
     <nz-pagination nzShowQuickJumper
                    nzShowSizeChanger
