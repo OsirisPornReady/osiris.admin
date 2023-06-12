@@ -111,7 +111,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     this.imageServerDirectoryName = this.commonService.globalData.imageServerDirectoryName
     this.imageDownloadFinishSubscription = this.videoImageDownloadService.imageDownloadFinishSubject.subscribe(async (res: any) => {
       if (res.state == 'success') {
-        this.getByPage();
+        // this.getByPage();
       }
     })
     this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
