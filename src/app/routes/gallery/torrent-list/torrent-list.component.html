@@ -25,7 +25,12 @@
         </div>
         <ul nz-list-item-actions>
           <nz-list-item-action>
-            <button nz-button nzType="primary" nzShape="round" (click)="addVideoDownloadTask(item, idx)">
+            <button nz-button nzType="dashed" nzShape="round" (click)="openTorrentMagnetLink(item.torrent_magnet)">
+              <span nz-icon nzType="download" nzTheme="outline"></span>
+            </button>
+          </nz-list-item-action>
+          <nz-list-item-action>
+            <button nz-button nzType="primary" nzShape="round" [disabled]="videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet)" (click)="addVideoDownloadTask(item, idx)">
               <span nz-icon nzType="export" nzTheme="outline"></span>
             </button>
           </nz-list-item-action>

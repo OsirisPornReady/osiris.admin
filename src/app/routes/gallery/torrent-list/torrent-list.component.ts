@@ -40,7 +40,7 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
     private modal: ModalHelper,
     private videoService: VideoService,
     private videoImageDownloadService: VideoImageDownloadService,
-    private videoDownloadTaskService: VideoDownloadTaskService,
+    public videoDownloadTaskService: VideoDownloadTaskService,
     private commonService: CommonService,
     private crawlService: CrawlService,
     private crawlTypeService: CrawlTypeService,
@@ -78,10 +78,11 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
     }
   }
 
-  openTorrentMagnetLink(item: any) {
-    if (item.hasOwnProperty('torrent_magnet') && item.torrent_magnet) {
-      window.open(item.torrent_magnet, '_self')
-    }
+  openTorrentMagnetLink(link: string) {
+    // if (item.hasOwnProperty('torrent_magnet') && item.torrent_magnet) {
+    //   window.open(item.torrent_magnet, '_self')
+    // }
+    window.open(link, '_self')
   }
 
   addVideoDownloadTask(item: any, index: number) {
