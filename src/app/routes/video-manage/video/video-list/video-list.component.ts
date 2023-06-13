@@ -409,8 +409,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         this.msgSrv.error('至少勾选一项');
         return;
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   }
 
   rowClassName(record: STData, index: number) {

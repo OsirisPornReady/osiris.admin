@@ -93,7 +93,7 @@
           </a>
         </nz-space>
       </nz-card>
-      <nz-empty *ngIf="gridList.length == 0"></nz-empty>
+      <nz-empty *ngIf="(!loading) && gridList.length == 0"></nz-empty>
     </div>
   </nz-spin>
   <div class="gallery-pagination d-flex justify-content-end align-items-center mt-md">

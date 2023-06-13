@@ -8,6 +8,7 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
 
 import { VideoService } from '../../../service/video/video.service';
 import {VideoImageDownloadService} from '../../../service/video/video-image-download.service';
+import {VideoDownloadTaskService} from '../../../service/video/video-download-task.service';
 import {CommonService} from '../../../service/common/common.service';
 import {CrawlService} from '../../../service/crawl/crawl.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
@@ -39,6 +40,7 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
     private modal: ModalHelper,
     private videoService: VideoService,
     private videoImageDownloadService: VideoImageDownloadService,
+    private videoDownloadTaskService: VideoDownloadTaskService,
     private commonService: CommonService,
     private crawlService: CrawlService,
     private crawlTypeService: CrawlTypeService,
@@ -79,6 +81,21 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
   openTorrentMagnetLink(item: any) {
     if (item.hasOwnProperty('torrent_magnet') && item.torrent_magnet) {
       window.open(item.torrent_magnet, '_self')
+    }
+  }
+
+  addVideoDownloadTask(item: any, index: number) {
+    let task: any = {
+      torrentMagnet: item.torrent_magnet,
+      torrentInfo: item,
+      videoInfo: this.videoInfo,
+    }
+    if (this.videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet)) {
+      this.msgSrv.warning('该磁链任务已添加');
+    } else {
+      this.videoDownloadTaskService.downloadMissionMap.set(item.torrent_magnet, true);
+      this.videoDownloadTaskService.videoDownloadTaskList.push(task);
+      this.msgSrv.success('磁链任务添加成功');
     }
   }
 

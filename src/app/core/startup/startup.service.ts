@@ -93,6 +93,11 @@ export class StartupService {
                 icon: { type: 'icon', value: 'picture' }
               },
               {
+                text: 'Download Task',
+                link: '/gallery/video-download-task',
+                icon: { type: 'icon', value: 'youtube' }
+              },
+              {
                 text: 'Manage',
                 link: '',
                 icon: { type: 'icon', value: 'apartment' },
