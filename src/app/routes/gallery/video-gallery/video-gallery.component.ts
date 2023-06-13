@@ -18,7 +18,7 @@ import { VideoManageVideoInfoComponent } from '../../video-manage/video/video-in
 import { VideoManageVideoCrawlConfigComponent } from '../../video-manage/video/video-crawl/video-crawl-config/video-crawl-config.component';
 import {GalleryTorrentListComponent} from '../torrent-list/torrent-list.component';
 
-import {finalize, lastValueFrom, Subscription} from "rxjs";
+import {finalize, fromEvent, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
 import {fallbackImageBase64} from "../../../../assets/image-base64";
@@ -85,6 +85,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   torrentList: any[] = []
   popoverVisibleList: boolean[] = []
 
+  keydownSubscription: Subscription = new Subscription();
+  keyupSubscription: Subscription = new Subscription();
+  ctrlPressed: boolean = true;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -114,11 +118,31 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         // this.getByPage();
       }
     })
+    this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = true;
+      }
+      if (this.ctrlPressed && event.key == ' ') {
+        navigator.clipboard.readText().then(clipText => {
+          if (clipText) {
+            this.crawlKey = clipText;
+            this.autoCreate();
+          }
+        });
+      }
+    })
+    this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = false;
+      }
+    })
     this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
     this.connectMessageSocket();
   }
 
   ngOnDestroy() {
+    this.keydownSubscription.unsubscribe();
+    this.keyupSubscription.unsubscribe();
     this.imageDownloadFinishSubscription.unsubscribe();
     this.messageSocketSubscription.unsubscribe();
   }

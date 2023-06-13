@@ -65,7 +65,8 @@ import {
   CloudDownloadOutline,
   FolderOpenOutline,
   YoutubeOutline,
-  YoutubeFill
+  YoutubeFill,
+  SelectOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -130,5 +131,6 @@ export const ICONS_AUTO = [
   CloudDownloadOutline,
   FolderOpenOutline,
   YoutubeOutline,
-  YoutubeFill
+  YoutubeFill,
+  SelectOutline
 ];

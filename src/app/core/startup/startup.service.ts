@@ -83,98 +83,105 @@ export class StartupService {
                 icon: { type: 'icon', value: 'appstore' }
               },
               {
-                text: 'VideoGallery',
+                text: 'Video Gallery',
                 link: '/gallery/video-gallery',
-                icon: { type: 'icon', value: 'rocket' }
+                icon: { type: 'icon', value: 'youtube' }
               },
               {
-                text: 'ComicGallery',
+                text: 'Comic Gallery',
                 link: '/gallery/comic-gallery',
-                icon: { type: 'icon', value: 'rocket' }
+                icon: { type: 'icon', value: 'picture' }
               },
               {
-                text: 'Video Manage',
+                text: 'Manage',
                 link: '',
-                icon: { type: 'icon', value: 'video-camera' },
+                icon: { type: 'icon', value: 'apartment' },
                 children: [
                   {
-                    text: 'video',
-                    link: '/video-manage/video-list',
-                    icon: null
+                    text: 'Video Manage',
+                    link: '',
+                    icon: { type: 'icon', value: 'youtube' },
+                    children: [
+                      {
+                        text: 'video',
+                        link: '/video-manage/video-list',
+                        icon: null
+                      },
+                      {
+                        text: 'tag',
+                        link: '/video-manage/video-tag-list',
+                        icon: null
+                      },
+                      {
+                        text: 'type',
+                        link: '/video-manage/video-type-list',
+                        icon: null
+                      },
+                      {
+                        text: 'quality',
+                        link: '/video-manage/video-quality-list',
+                        icon: null
+                      },
+                      {
+                        text: 'album',
+                        link: '/video-manage/video-album-list',
+                        icon: null
+                      }
+                    ]
                   },
                   {
-                    text: 'tag',
-                    link: '/video-manage/video-tag-list',
-                    icon: null
+                    text: 'Comic Manage',
+                    link: '',
+                    icon: { type: 'icon', value: 'picture' },
+                    children: [
+                      {
+                        text: 'comic',
+                        link: '/comic-manage/comic-list',
+                        icon: null
+                      },
+                      {
+                        text: 'comic-download',
+                        link: '/comic-manage/comic-download-task-list',
+                        icon: null
+                      }
+                    ]
                   },
                   {
-                    text: 'type',
-                    link: '/video-manage/video-type-list',
-                    icon: null
+                    text: 'Cast Manage',
+                    link: '',
+                    icon: { type: 'icon', value: 'woman' },
+                    children: [
+                      {
+                        text: 'cast',
+                        link: '/cast-manage/cast-list',
+                        icon: null
+                      }
+                    ]
                   },
                   {
-                    text: 'quality',
-                    link: '/video-manage/video-quality-list',
-                    icon: null
-                  },
-                  {
-                    text: 'album',
-                    link: '/video-manage/video-album-list',
-                    icon: null
+                    text: 'System Manage',
+                    link: '',
+                    icon: { type: 'icon', value: 'setting' },
+                    children: [
+                      {
+                        text: 'setting',
+                        link: '/system-manage/system-setting',
+                        icon: null
+                      },
+                      {
+                        text: 'crawl',
+                        link: '/system-manage/crawl-list',
+                        icon: null
+                      },
+                      {
+                        text: 'area',
+                        link: '/system-manage/area-list',
+                        icon: null
+                      }
+                    ]
                   }
                 ]
               },
-              {
-                text: 'Comic Manage',
-                link: '',
-                icon: { type: 'icon', value: 'picture' },
-                children: [
-                  {
-                    text: 'comic',
-                    link: '/comic-manage/comic-list',
-                    icon: null
-                  },
-                  {
-                    text: 'comic-download',
-                    link: '/comic-manage/comic-download-task-list',
-                    icon: null
-                  }
-                ]
-              },
-              {
-                text: 'Cast Manage',
-                link: '',
-                icon: { type: 'icon', value: 'woman' },
-                children: [
-                  {
-                    text: 'cast',
-                    link: '/cast-manage/cast-list',
-                    icon: null
-                  }
-                ]
-              },
-              {
-                text: 'System Manage',
-                link: '',
-                icon: { type: 'icon', value: 'setting' },
-                children: [
-                  {
-                    text: 'setting',
-                    link: '/system-manage/system-setting',
-                    icon: null
-                  },
-                  {
-                    text: 'crawl',
-                    link: '/system-manage/crawl-list',
-                    icon: null
-                  },
-                  {
-                    text: 'area',
-                    link: '/system-manage/area-list',
-                    icon: null
-                  }
-                ]
-              }
             ]
           }
         ]

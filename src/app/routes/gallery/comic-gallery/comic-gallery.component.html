@@ -2,7 +2,7 @@
 <div class="page-header d-flex justify-content-start align-items-center">
   <div class="header-content">
     <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
-    <input  nz-input placeholder="serial number" [(ngModel)]="crawlKey" class="width-lg ml-md" auto-focus (keydown.enter)="autoCreate()"/>
+    <input  nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-xl ml-md" auto-focus (keydown.enter)="autoCreate()"/>
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
@@ -26,7 +26,7 @@
       <span nz-icon nzType="reload" nzTheme="outline"></span>
     </button>
     <nz-input-group [nzSuffix]="suffixIconSearch">
-      <input type="text" nz-input [(ngModel)]="keyword" placeholder="关键字搜索" class="width-md" (keydown.enter)="search()"/>
+      <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-md" (keydown.enter)="search()"/>
     </nz-input-group>
     <ng-template #suffixIconSearch>
       <span nz-icon nzType="search"></span>

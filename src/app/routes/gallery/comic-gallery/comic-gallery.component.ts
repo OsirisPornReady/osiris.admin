@@ -15,7 +15,7 @@ import { ComicManageComicEditComponent} from "../../comic-manage/comic/comic-edi
 import { ComicManageComicCrawlInfoComponent} from "../../comic-manage/comic/comic-crawl/comic-crawl-info/comic-crawl-info.component";
 import { ComicManageComicInfoComponent } from "../../comic-manage/comic/comic-info/comic-info.component";
 import { ComicManageComicCrawlConfigComponent } from "../../comic-manage/comic/comic-crawl/comic-crawl-config/comic-crawl-config.component";
-import {finalize, lastValueFrom, Subscription} from "rxjs";
+import {finalize, fromEvent, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
 import { fallbackImageBase64 } from "../../../../assets/image-base64";
@@ -83,6 +83,10 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
 
   comicIdListOwnLocal: number[] = [];
 
+  keydownSubscription: Subscription = new Subscription();
+  keyupSubscription: Subscription = new Subscription();
+  ctrlPressed: boolean = true;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -123,12 +127,31 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     })
     this.comicIdOnDownloading = Array.from(this.comicDownloadService.downloadMissionMap.keys())
     this.onDownloadingComic = this.comicIdOnDownloading.length != 0;
-
+    this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = true;
+      }
+      if (this.ctrlPressed && event.key == ' ') {
+        navigator.clipboard.readText().then(clipText => {
+          if (clipText) {
+            this.crawlKey = clipText;
+            this.autoCreate();
+          }
+        });
+      }
+    })
+    this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = false;
+      }
+    })
     this.commonService.createWebSocketSubject('crawlMessageSocketUrl');
     this.connectMessageSocket();
   }
 
   ngOnDestroy() {
+    this.keydownSubscription.unsubscribe();
+    this.keyupSubscription.unsubscribe();
     this.messageSocketSubscription.unsubscribe();
   }
 
