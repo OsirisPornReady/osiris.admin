@@ -24,6 +24,7 @@ import {fallbackImageBase64} from "../../../../../../assets/image-base64";
 export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   scoreTextList: string[] = this.commonService.scoreTextList;
 
+  onSubmit: boolean = false;
   title = '';
   record: any = {};
   i: any;
@@ -327,6 +328,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
               // value.localCoverSrc = res?.localCoverSrc
               // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
               // this.downloadVideoImage()
+              this.onSubmit = true;
               this.drawer.close({ state: 'ok', data: value });
             }
           });
@@ -335,6 +337,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
           // value.localCoverSrc = res?.localCoverSrc
           // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
           // this.downloadVideoImage()
+          this.onSubmit = true;
           this.drawer.close({ state: 'ok', data: value });
         }
       } catch (error) {}
@@ -343,6 +346,7 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
       // value.localCoverSrc = res?.localCoverSrc
       // value.localPreviewImageSrcList = res?.localPreviewImageSrcList
       // this.downloadVideoImage();
+      this.onSubmit = true;
       this.drawer.close({ state: 'ok', data: value });
     }
   }

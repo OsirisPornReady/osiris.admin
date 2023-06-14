@@ -21,6 +21,7 @@ import { fallbackImageBase64 } from "../../../../../../assets/image-base64";
 export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
   scoreTextList: string[] = this.commonService.scoreTextList;
 
+  onSubmit: boolean = false;
   title = '';
   record: any = {};
   i: any;
@@ -307,14 +308,17 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
             nzContent: '<b>标题已存在,是否继续提交?</b>',
             nzCentered: true,
             nzOnOk: () => {
+              this.onSubmit = true;
               this.drawer.close({ state: 'ok', data: value });
             }
           });
         } else {
+          this.onSubmit = true;
           this.drawer.close({ state: 'ok', data: value });
         }
       } catch (error) {}
     } else {
+      this.onSubmit = true;
       this.drawer.close({ state: 'ok', data: value });
     }
   }

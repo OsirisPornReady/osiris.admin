@@ -98,6 +98,7 @@
                (ngModelChange)="switchOnStorage()"
                class="mr-xl"></nz-switch>
     <button nz-button type="button" (click)="close()">关闭</button>
-    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">自动{{record.id > 0 ? '填充' : '创建' }}</button>
+    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" >自动{{record.id > 0 ? '填充' : '创建' }}</button>
   </div>
 </sf>
+<!--[nzLoading]="http.loading"-->
