@@ -37,7 +37,7 @@ export function dateCompare(date1: Date, date2: Date): number {
 export function dateStringFormatter(dateStr: string): string {
   try {
     let theDate = new Date(dateStr)
-    return `${theDate.getFullYear()}-${theDate.getMonth() + 1}-${theDate.getDate() < 10 ? '0' : ''}${theDate.getDate()}`
+    return `${theDate.getFullYear()}-${(theDate.getMonth() + 1) < 10 ? '0' : ''}${theDate.getMonth() + 1}-${theDate.getDate() < 10 ? '0' : ''}${theDate.getDate()}`
   } catch (e) {
     return ''
   }
