@@ -189,7 +189,7 @@ export class GalleryVideoDownloadTaskListComponent implements OnInit {
   previewVideoImage(videoItem: any) {
     const images: NzImage[] = [];
     images.push({
-      src: videoItem.localCoverSrc ? videoItem.imageServerPath + '/' + videoItem.imageServerDirectoryName + '/' + videoItem.localCoverSrc : '',
+      src: videoItem.coverBase64,
       width: '1000px',
       alt: videoItem.title ? videoItem.title : ''
     })
