@@ -10,9 +10,12 @@ import { ComicManageComicEvaluateComponent } from './comic/comic-evaluate/comic-
 import { ComicManageComicDownloadConfigComponent } from './comic/comic-download-config/comic-download-config.component';
 import { ComicManageComicDownloadTaskListComponent } from './comic-download-task/comic-download-task-list/comic-download-task-list.component';
 import { ComicManageLocalComicEditComponent } from './comic/local-comic-edit/local-comic-edit.component';
+import { ComicManageComicAlbumListComponent } from './comic-album/comic-album-list/comic-album-list.component';
+import { ComicManageComicAlbumEditComponent } from './comic-album/comic-album-edit/comic-album-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   ComicManageComicListComponent,
+  ComicManageComicAlbumListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [
@@ -23,7 +26,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   ComicManageComicEvaluateComponent,
   ComicManageComicDownloadConfigComponent,
   ComicManageComicDownloadTaskListComponent,
-  ComicManageLocalComicEditComponent
+  ComicManageLocalComicEditComponent,
+  ComicManageComicAlbumEditComponent
 ]
 
 @NgModule({

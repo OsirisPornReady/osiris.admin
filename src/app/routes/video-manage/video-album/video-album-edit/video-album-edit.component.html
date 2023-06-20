@@ -16,10 +16,11 @@
     <nz-spin [nzSpinning]="http.loading" [nzIndicator]="indicatorTemplate">
       <ng-template #indicatorTemplate><span nz-icon nzType="loading" style="font-size: 36px"></span></ng-template>
       <nz-card *ngFor="let item of videoDetailList" class="ant-card-body-custom-padding album-detail">
+<!--        item.orgData.localCoverSrc-->
         <img
           nz-image
           width="100px"
-          [nzSrc]="item.orgData.localCoverSrc"
+          [nzSrc]="item.orgData.coverBase64"
           [nzFallback]="fallbackImageBase64"
           alt=""
         />

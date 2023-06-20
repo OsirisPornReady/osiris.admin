@@ -49,7 +49,8 @@ export class ComicService {
         res.forEach((i: any) => {
           result.push({
             label: i[field],
-            value: i.id
+            value: i.id,
+            orgData: i
           });
         });
         return result;

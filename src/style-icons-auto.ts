@@ -67,7 +67,8 @@ import {
   YoutubeOutline,
   YoutubeFill,
   SelectOutline,
-  ExportOutline
+  ExportOutline,
+  ArrowUpOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -134,5 +135,6 @@ export const ICONS_AUTO = [
   YoutubeOutline,
   YoutubeFill,
   SelectOutline,
-  ExportOutline
+  ExportOutline,
+  ArrowUpOutline
 ];

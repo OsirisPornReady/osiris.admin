@@ -15,6 +15,8 @@ import {fallbackImageBase64} from "../../../../../assets/image-base64";
   styleUrls: ['./video-album-edit.component.less']
 })
 export class VideoManageVideoAlbumEditComponent implements OnInit {
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
+
   title = '';
   record: any = {};
   i: any;
@@ -22,7 +24,7 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
   schema: SFSchema = {
     properties: {
       albumName: { type: 'string', title: '专辑名' },
-      albumVideoList: { type: 'string', title: '专辑视频', enum: [] },
+      albumVideoIdList: { type: 'string', title: '专辑视频', enum: [] },
       selectedVideo: { type: 'string', title: '视频列表', enum: [] },
       addButton: { type: 'string', title: '' },
       videoDetailList: { type: 'string', title: '专辑细则' },
@@ -34,7 +36,7 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
       spanLabelFixed: 100,
       grid: { span: 22 },
     },
-    $albumVideoList: {
+    $albumVideoIdList: {
       widget: 'select',
       allowClear: true,
       autoClearSearchValue: false,
@@ -47,7 +49,7 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
     $selectedVideo: {
       widget: 'select',
       allowClear: true,
-      placeholder: '请选择要添加视频',
+      placeholder: '请选择要添加的视频',
       // asyncData: () => this.videoService.getSelectAll('title'),
       change: (value: any, orgData: any) => this.selectedVideoDetail = orgData
     },
@@ -81,8 +83,8 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
       // // ...
       // }
       // 可能是lint的问题,某些选项去了就能用点取属性了
-      this.schema.properties!['albumVideoList']!.enum = this.enum;
-      this.schema.properties!['selectedVideo']!.enum = this.enum;
+      this.schema.properties!.albumVideoIdList.enum = this.enum;
+      this.schema.properties!.selectedVideo.enum = this.enum;
       this.sf?.refreshSchema();  // 不加问号也可以,只是console会报错误信息,推测可能是onPush更新策略引起的
     } catch (e) {
       console.error(e)
@@ -100,9 +102,9 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
       this.title = '修改';
       try {
         this.i = (await this.videoAlbumService.getById(this.record.id)) || {};
-        let albumVideoList: any[] = this.i?.albumVideoList || [];
+        let albumVideoIdList: any[] = this.i?.albumVideoIdList || [];
         this.videoDetailList = this.enum.filter((item: any) => {
-          return albumVideoList.includes(item.value)
+          return albumVideoIdList.includes(item.value)
         })
       } catch (e) {
         console.error(e)
@@ -139,24 +141,23 @@ export class VideoManageVideoAlbumEditComponent implements OnInit {
       this.msgSrv.info('未选择要添加的视频');
       return;
     }
-    let albumVideoList: any[] = this.sf.getValue('/albumVideoList')! || []
-    if (albumVideoList.includes(this.selectedVideoDetail.value)) {
+    let albumVideoIdList: any[] = this.sf.getValue('/albumVideoIdList')! || []
+    if (albumVideoIdList.includes(this.selectedVideoDetail.value)) {
       this.msgSrv.info('专辑里已有此视频');
       return;
     }
-    albumVideoList.push(this.selectedVideoDetail.value);
-    this.sf.getProperty('/albumVideoList')!.setValue(albumVideoList, false);
-    this.sf.getProperty('/albumVideoList')!.widget.reset(albumVideoList);
+    albumVideoIdList.push(this.selectedVideoDetail.value);
+    this.sf.getProperty('/albumVideoIdList')!.setValue(albumVideoIdList, false);
+    this.sf.getProperty('/albumVideoIdList')!.widget.reset(albumVideoIdList);
     this.videoDetailList.push(this.selectedVideoDetail)
   }
 
   deleteFromAlbumVideoList(item: any) {
-    let albumVideoList: any[] = this.sf.getValue('/albumVideoList')! || []
-    albumVideoList = albumVideoList.filter((i: any) => i != item.value);
-    this.sf.getProperty('/albumVideoList')!.setValue(albumVideoList, false);
-    this.sf.getProperty('/albumVideoList')!.widget.reset(albumVideoList);
+    let albumVideoIdList: any[] = this.sf.getValue('/albumVideoIdList')! || []
+    albumVideoIdList = albumVideoIdList.filter((i: any) => i != item.value);
+    this.sf.getProperty('/albumVideoIdList')!.setValue(albumVideoIdList, false);
+    this.sf.getProperty('/albumVideoIdList')!.widget.reset(albumVideoIdList);
     this.videoDetailList = this.videoDetailList.filter((i: any) => i.value != item.value);
   }
 
-    protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

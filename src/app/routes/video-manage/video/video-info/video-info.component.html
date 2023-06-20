@@ -33,9 +33,10 @@
   <nz-card nzHoverable class="mt-md mb-lg">
     <div class="d-flex justify-content-between align-items-start">
       <div>
+<!--        i.imageServerPath + '/' + i.imageServerDirectoryName + '/' + i.localCoverSrc-->
         <img nz-image
              width="824"
-             [nzSrc]="i.imageServerPath + '/' + i.imageServerDirectoryName + '/' + i.localCoverSrc"
+             [nzSrc]="i.coverBase64"
              [nzFallback]="fallbackImageBase64"
              alt=""/>
       </div>

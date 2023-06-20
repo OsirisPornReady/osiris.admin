@@ -88,14 +88,19 @@ export class StartupService {
                 icon: { type: 'icon', value: 'youtube' }
               },
               {
+                text: 'Video Download',
+                link: '/gallery/video-download-task-list',
+                icon: { type: 'icon', value: 'youtube' }
+              },
+              {
                 text: 'Comic Gallery',
                 link: '/gallery/comic-gallery',
                 icon: { type: 'icon', value: 'picture' }
               },
               {
-                text: 'Download Task',
-                link: '/gallery/video-download-task',
-                icon: { type: 'icon', value: 'youtube' }
+                text: 'Comic Download',
+                link: '/comic-manage/comic-download-task-list',
+                icon: { type: 'icon', value: 'picture' }
               },
               {
                 text: 'Manage',
@@ -128,7 +133,7 @@ export class StartupService {
                         icon: null
                       },
                       {
-                        text: 'album',
+                        text: 'video album',
                         link: '/video-manage/video-album-list',
                         icon: null
                       }
@@ -145,8 +150,8 @@ export class StartupService {
                         icon: null
                       },
                       {
-                        text: 'comic-download',
-                        link: '/comic-manage/comic-download-task-list',
+                        text: 'comic album',
+                        link: '/comic-manage/comic-album-list',
                         icon: null
                       }
                     ]

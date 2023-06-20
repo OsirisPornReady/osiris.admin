@@ -1,0 +1,57 @@
+<div class="modal-header">
+  <div class="modal-title">{{ title }}</div>
+</div>
+<nz-spin *ngIf="!i" class="modal-spin"></nz-spin>
+<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">保存</button>
+  </div>
+
+  <ng-template sf-template="addButton" let-i let-ui="ui" let-schema="schema">
+    <button nz-button nzType="default" (click)="addToAlbumComicList()">添加到专辑</button>
+  </ng-template>
+
+  <ng-template sf-template="adjustOrder" let-i let-ui="ui" let-schema="schema">
+    <nz-switch
+      [(ngModel)]="editDetail"
+      [nzCheckedChildren]="'调整'"
+      [nzUnCheckedChildren]="''"
+    ></nz-switch>
+  </ng-template>
+
+  <ng-template sf-template="comicDetailList" let-i let-ui="ui" let-schema="schema">
+    <nz-spin [nzSpinning]="http.loading" [nzIndicator]="indicatorTemplate">
+      <ng-template #indicatorTemplate><span nz-icon nzType="loading" style="font-size: 36px"></span></ng-template>
+      <nz-card *ngFor="let item of comicDetailList;let idx = index" nzHoverable class="ant-card-body-custom-padding album-detail-card">
+        <div class="album-detail-card-content">
+          <img
+            nz-image
+            width="100px"
+            [nzSrc]="item.orgData.coverBase64"
+            [nzFallback]="fallbackImageBase64"
+            alt=""
+          />
+          <div *ngIf="editDetail" class="album-detail-button-group">
+            <button
+              nz-button
+              nzType="primary"
+              nzDanger
+              nzShape="circle"
+              nz-popconfirm
+              nzPopconfirmTitle="是否删除?"
+              (nzOnConfirm)="deleteFromAlbumComicList(item)">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+            <button *ngIf="idx > 0" nz-button nzType="default" nzShape="circle" (click)="swapComicOrder(idx, idx - 1)"><span nz-icon nzType="arrow-up" nzTheme="outline"></span></button>
+            <button *ngIf="idx + 1 < comicDetailList.length" nz-button nzType="default" nzShape="circle" (click)="swapComicOrder(idx, idx + 1)"><span nz-icon nzType="arrow-down" nzTheme="outline"></span></button>
+          </div>
+        </div>
+<!--        <button *ngIf="editDetail" nz-button nzType="primary" nzSize="small" nzDanger nzShape="round" class="album-delete-button" (click)="deleteFromAlbumComicList(item)">-->
+<!--          <span nz-icon nzType="minus" nzTheme="outline"></span>-->
+<!--        </button>-->
+      </nz-card>
+      <nz-empty *ngIf="comicDetailList.length == 0"></nz-empty>
+    </nz-spin>
+  </ng-template>
+</sf>

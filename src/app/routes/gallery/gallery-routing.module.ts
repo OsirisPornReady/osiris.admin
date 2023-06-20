@@ -7,7 +7,7 @@ import { GalleryVideoDownloadTaskListComponent } from "./video-download-task/vid
 const routes: Routes = [
   { path: 'video-gallery', component: GalleryVideoGalleryComponent },
   { path: 'comic-gallery', component: GalleryComicGalleryComponent },
-  { path: 'video-download-task', component: GalleryVideoDownloadTaskListComponent }
+  { path: 'video-download-task-list', component: GalleryVideoDownloadTaskListComponent }
 ];
 
 @NgModule({
