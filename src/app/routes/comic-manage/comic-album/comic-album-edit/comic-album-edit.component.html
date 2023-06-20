@@ -23,28 +23,38 @@
   <ng-template sf-template="comicDetailList" let-i let-ui="ui" let-schema="schema">
     <nz-spin [nzSpinning]="http.loading" [nzIndicator]="indicatorTemplate">
       <ng-template #indicatorTemplate><span nz-icon nzType="loading" style="font-size: 36px"></span></ng-template>
-      <nz-card *ngFor="let item of comicDetailList;let idx = index" nzHoverable class="ant-card-body-custom-padding album-detail-card">
+      <nz-card *ngFor="let item of comicDetailList;let idx = index"
+               nzHoverable
+               class="ant-card-body-custom-padding album-detail-card"
+               @slideInOut
+               [@slide-up]="idx == upAnimationIdx ? 'up' : 'origin'"
+               [@slide-down]="idx == downAnimationIdx ? 'down' : 'origin'"
+               (@slide-up.done)="onAnimateEnd()"
+               (@slide-down.done)="onAnimateEnd()">
         <div class="album-detail-card-content">
-          <img
-            nz-image
-            width="100px"
-            [nzSrc]="item.orgData.coverBase64"
-            [nzFallback]="fallbackImageBase64"
-            alt=""
-          />
+          <div [ngStyle]="{ visibility: (onSwap && hideImgIdx.includes(idx)) ? 'hidden' : 'visible' }">
+            <img
+              nz-image
+              height="150px"
+              [nzSrc]="item.orgData.coverBase64"
+              [nzFallback]="fallbackImageBase64"
+              alt=""
+            />
+          </div>
           <div *ngIf="editDetail" class="album-detail-button-group">
             <button
               nz-button
               nzType="primary"
               nzDanger
               nzShape="circle"
+              [disabled]="onSwap"
               nz-popconfirm
               nzPopconfirmTitle="是否删除?"
               (nzOnConfirm)="deleteFromAlbumComicList(item)">
               <span nz-icon nzType="delete" nzTheme="outline"></span>
             </button>
-            <button *ngIf="idx > 0" nz-button nzType="default" nzShape="circle" (click)="swapComicOrder(idx, idx - 1)"><span nz-icon nzType="arrow-up" nzTheme="outline"></span></button>
-            <button *ngIf="idx + 1 < comicDetailList.length" nz-button nzType="default" nzShape="circle" (click)="swapComicOrder(idx, idx + 1)"><span nz-icon nzType="arrow-down" nzTheme="outline"></span></button>
+            <button nz-button nzType="default" nzShape="circle" [disabled]="onSwap || !(idx > 0)" (click)="triggerAnimate('up', idx);swapComicOrder(idx, idx - 1)"><span nz-icon nzType="arrow-up" nzTheme="outline"></span></button>
+            <button nz-button nzType="default" nzShape="circle" [disabled]="onSwap || !(idx + 1 < comicDetailList.length)" (click)="triggerAnimate('down', idx);swapComicOrder(idx, idx + 1)"><span nz-icon nzType="arrow-down" nzTheme="outline"></span></button>
           </div>
         </div>
 <!--        <button *ngIf="editDetail" nz-button nzType="primary" nzSize="small" nzDanger nzShape="round" class="album-delete-button" (click)="deleteFromAlbumComicList(item)">-->

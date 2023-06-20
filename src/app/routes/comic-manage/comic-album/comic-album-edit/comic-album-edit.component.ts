@@ -9,10 +9,13 @@ import {ComicService} from '../../../../service/comic/comic.service';
 import {lastValueFrom} from "rxjs";
 import {fallbackImageBase64} from "../../../../../assets/image-base64";
 
+import { slideDown, slideUp, fadeInOut, slideInOut } from '../../../../shared/animations/common.animations';
+
 @Component({
   selector: 'app-comic-manage-comic-album-edit',
   templateUrl: './comic-album-edit.component.html',
-  styleUrls: ['./comic-album-edit.component.less']
+  styleUrls: ['./comic-album-edit.component.less'],
+  animations: [slideDown, slideUp, fadeInOut, slideInOut]
 })
 export class ComicManageComicAlbumEditComponent implements OnInit {
   protected readonly fallbackImageBase64 = fallbackImageBase64;
@@ -69,6 +72,11 @@ export class ComicManageComicAlbumEditComponent implements OnInit {
   selectedComicDetail: any = null;
   comicDetailList: any[] = []
   editDetail: boolean = false;
+  animateTriggerList: boolean[] = [];
+  upAnimationIdx: number = -1;
+  downAnimationIdx: number = -1;
+  onSwap: boolean = false;
+  hideImgIdx: number[] = [];
 
   constructor(
     private modal: NzModalRef,
@@ -151,10 +159,34 @@ export class ComicManageComicAlbumEditComponent implements OnInit {
     this.sf.getProperty('/albumComicIdList')!.setValue(albumComicIdList, false);
     this.sf.getProperty('/albumComicIdList')!.widget.reset(albumComicIdList);
     this.comicDetailList = this.comicDetailList.filter((i: any) => i.value != item.value);
+    this.animateTriggerList.pop();
   }
 
   swapComicOrder(posA: number, posB: number) {
-    [this.comicDetailList[posA], this.comicDetailList[posB]] = [this.comicDetailList[posB], this.comicDetailList[posA]];
+    this.hideImgIdx.push(posA);
+    this.hideImgIdx.push(posB);
+    setTimeout(() => {
+      [this.comicDetailList[posA], this.comicDetailList[posB]] = [this.comicDetailList[posB], this.comicDetailList[posA]];
+      this.onSwap = false;
+      this.hideImgIdx = [];
+    }, 500)
+  }
+
+  triggerAnimate(type: string, index: number) {
+    this.onSwap = true;
+    if (type == 'up') {
+      this.upAnimationIdx = index;
+      this.downAnimationIdx = index - 1;
+    }
+    if (type == 'down') {
+      this.upAnimationIdx = index + 1;
+      this.downAnimationIdx = index;
+    }
+  }
+
+  onAnimateEnd() {
+    this.upAnimationIdx = -1;
+    this.downAnimationIdx = -1;
   }
 
 }
