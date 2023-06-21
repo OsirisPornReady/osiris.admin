@@ -104,7 +104,6 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       this.comicIdListOwnLocal = (await this.comicService.getComicIdListOwnLocal()) || [];
-      console.log(this.comicIdListOwnLocal)
     } catch (e) {
       console.error(e);
     }
