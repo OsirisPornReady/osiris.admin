@@ -89,7 +89,7 @@ export class StartupService {
               },
               {
                 text: 'Video Download',
-                link: '/gallery/video-download-task-list',
+                link: '/video-manage/video-download-task-list',
                 icon: { type: 'icon', value: 'youtube' }
               },
               {

@@ -19,13 +19,15 @@ import { VideoManageVideoEvaluateComponent } from './video/video-evaluate/video-
 import { VideoManageVideoAlbumListComponent } from './video-album/video-album-list/video-album-list.component';
 import { VideoManageVideoAlbumEditComponent } from './video-album/video-album-edit/video-album-edit.component';
 import { VideoManageVideoCollectComponent } from './video/video-select-album/video-collect.component';
+import { VideoManageVideoDownloadTaskListComponent } from './video-download-task/video-download-task-list/video-download-task-list.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
   VideoManageVideoTagListComponent,
   VideoManageVideoTypeListComponent,
   VideoManageVideoQualityListComponent,
-  VideoManageVideoAlbumListComponent
+  VideoManageVideoAlbumListComponent,
+  VideoManageVideoDownloadTaskListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [

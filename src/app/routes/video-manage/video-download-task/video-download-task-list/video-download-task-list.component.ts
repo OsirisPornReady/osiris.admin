@@ -11,10 +11,10 @@ import {VideoDownloadTaskService} from "../../../../service/video/video-download
 import {NzModalService} from "ng-zorro-antd/modal";
 
 @Component({
-  selector: 'app-gallery-video-download-task-list',
+  selector: 'app-video-manage-video-download-task-list',
   templateUrl: './video-download-task-list.component.html',
 })
-export class GalleryVideoDownloadTaskListComponent implements OnInit {
+export class VideoManageVideoDownloadTaskListComponent implements OnInit {
   // url = `/api/video_quality/get_by_page`;
 
   data: any;
