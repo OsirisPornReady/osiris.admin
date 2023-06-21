@@ -1,18 +1,57 @@
 <div class="container">
   <nz-spin [nzSimple]="false" [nzSpinning]="loading">
-    <nz-list *ngIf="torrentList.length > 0" nzSize="small">
+    <nz-list *ngIf="torrentList.length > 0" nzSize="small" nzBordered>
       <nz-list-item *ngFor="let item of torrentList;let idx = index">
         <div>
           <div>
-            <span nz-icon nzType="folder-open" nzTheme="outline"></span>
-            {{item.torrent_name}}
-          </div>
-          <div>
-            <span nz-typography style="margin-left: 15px"><mark>
-              <span nz-icon nzType="youtube" nzTheme="outline"></span>
-              {{item.torrent_excerpt}}
-            </mark></span>
-            <span nz-typography style="margin-left: 20px">{{item.torrent_excerpt_size}}</span>
+            <nz-tree [nzData]="item.torrent_excerpt"
+                     nzShowIcon nzBlockNode nzExpandAll nzShowLine
+                     [nzExpandedIcon]="multiExpandedIconTpl"
+                     [nzTreeTemplate]="nzTreeTemplate">
+              <ng-template #multiExpandedIconTpl let-node let-origin="origin">
+                <span
+                  *ngIf="origin.type == 'fa-folder-open'"
+                  nz-icon
+                  [nzType]="node.isExpanded ? 'folder-open' : 'folder'"
+                  class="ant-tree-switcher-line-icon"
+                ></span>
+
+                <span
+                  *ngIf="origin.type == 'fa-file-video-o'"
+                  nz-icon
+                  nzType="youtube" nzTheme="outline"
+                  class="ant-tree-switcher-line-icon"
+                ></span>
+
+                <span
+                  *ngIf="(origin.type != 'fa-folder-open') && (origin.type != 'fa-file-video-o')"
+                  nz-icon
+                  nzType="file" nzTheme="outline"
+                  class="ant-tree-switcher-line-icon"
+                ></span>
+              </ng-template>
+              <ng-template #nzTreeTemplate let-node let-origin="origin">
+                <span class="custom-node">
+                  <span *ngIf="origin.type == 'fa-file-video-o'">
+                    <span class="file-name" nz-typography><mark>
+<!--                      <span nz-icon nzType="youtube" nzTheme="outline"></span>-->
+                      {{ node.title }}
+                    </mark></span>
+                    <span nz-typography style="margin-left: 20px">{{ origin.size }}</span>
+                  </span>
+
+                  <span *ngIf="origin.type == 'fa-folder-open'">
+                    <span class="folder-name">{{ node.title }}</span>
+                  </span>
+
+                  <span *ngIf="(origin.type != 'fa-folder-open') && (origin.type != 'fa-file-video-o')">
+<!--                    <span nz-icon nzType="file" nzTheme="outline"></span>-->
+                    <span class="file-name">{{ node.title }}</span>
+                    <span nz-typography style="margin-left: 20px">{{ origin.size }}</span>
+                  </span>
+                </span>
+              </ng-template>
+            </nz-tree>
           </div>
           <div>
             <nz-space nzSize="large">
