@@ -50,9 +50,10 @@
           alt=""
           (click)="handlePreview($event)"
         />
-        <span nz-typography class="d-block">{{item.title}}</span>
+        <span nz-typography class="d-block" [nzCopyable]="true" [nzCopyText]="item.title" (click)="$event.stopPropagation()">{{item.title}}</span>
         <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
         <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
+        <span nz-typography class="d-block" [nzCopyable]="true" [nzCopyText]="item.series ? item.series[0] : ''" (click)="$event.stopPropagation()"><mark>{{'系列: ' + item.series}}</mark></span>
         <nz-space nzSize="small" [nzSplit]="spaceSplit">
           <ng-template #spaceSplit>
             <nz-divider nzType="vertical"></nz-divider>
@@ -64,7 +65,7 @@
                (click)="handleLink($event)"
                nz-popconfirm
                nzPopconfirmTitle="是否删除?"
-               (nzOnConfirm)="delete(item.id)">删除</a>
+               (nzOnConfirm)="delete(item.id);deleteVideoLocalImage(item)">删除</a>
           </ng-template>
           <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
           <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>

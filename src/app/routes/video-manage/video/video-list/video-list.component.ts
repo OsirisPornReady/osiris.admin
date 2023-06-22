@@ -216,6 +216,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
           pop: true,
           click: async (item: any) => {
             await this.delete(item.id);
+            await this.deleteVideoLocalImage(item);
           },
           iif: () => this.isEditMode
         },
@@ -345,6 +346,15 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       await this.videoService.delete(id);
       this.msgSrv.success('删除成功');
       this.st.reload();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async deleteVideoLocalImage(item: any) {
+    try {
+      await this.videoService.deleteVideoLocalImage(item);
+      this.msgSrv.success('本地图片删除成功');
     } catch (e) {
       console.error(e);
     }

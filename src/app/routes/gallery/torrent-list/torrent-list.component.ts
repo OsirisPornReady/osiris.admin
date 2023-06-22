@@ -35,6 +35,8 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
 
   emptyMessage: string = '暂无数据'
 
+  btdigKeyword: string = ''
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -53,11 +55,16 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
   protected readonly dateStringFormatter = dateStringFormatter;
 
   ngOnInit() {
-    this.crawlBtdig(this.videoInfo);
+    this.getData();
   }
 
   ngOnDestroy() {
 
+  }
+
+  getData() {
+    this.getBtdigKeyword();
+    this.crawlBtdig(this.videoInfo);
   }
 
   crawlBtdig(item: any) {
@@ -75,6 +82,29 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
           this.emptyMessage = '爬虫请求失败';
         }
       })
+    }
+  }
+
+  getBtdigKeyword() {
+    const btdigUrl = this.videoInfo.btdigUrl;
+    if (btdigUrl) {
+      let restReg = /https:\/\/btdig.com\/search\?q=/i
+      this.btdigKeyword = btdigUrl.replace(restReg, '');
+    }
+  }
+
+  async setBtdigKeyword() {
+    const btdigUrl = `https://btdig.com/search?q=${this.btdigKeyword}`;
+    try {
+      await this.videoService.update({
+        id: this.videoInfo.id,
+        btdigUrl
+      })
+      this.videoInfo.btdigUrl = btdigUrl;
+      this.msgSrv.success('保存成功')
+    } catch (e) {
+      console.error(e)
+      this.msgSrv.error('保存失败')
     }
   }
 

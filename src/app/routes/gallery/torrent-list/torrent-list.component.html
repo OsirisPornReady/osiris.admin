@@ -1,4 +1,9 @@
 <div class="container">
+  <div class="btdig-search-config mb-md">
+    <input type="text" nz-input nzSize="large" placeholder="input search text" class="btdig-search-keyword-input mr-sm" [(ngModel)]="btdigKeyword" />
+    <button nz-button nzSize="large" nzType="primary" [nzLoading]="loading" (click)="setBtdigKeyword()">保存</button>
+    <button nz-button nzSize="large" nzType="default" [nzLoading]="loading" (click)="getData()">刷新</button>
+  </div>
   <nz-spin [nzSimple]="false" [nzSpinning]="loading">
     <nz-list *ngIf="torrentList.length > 0" nzSize="small" nzBordered>
       <nz-list-item *ngFor="let item of torrentList;let idx = index">

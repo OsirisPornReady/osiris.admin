@@ -86,4 +86,9 @@ export class VideoService {
     );
   }
 
+  deleteVideoLocalImage(entity: any) {
+    let url = `crawl/delete_video_local_image`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
 }

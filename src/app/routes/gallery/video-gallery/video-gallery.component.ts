@@ -269,6 +269,15 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     }
   }
 
+  async deleteVideoLocalImage(item: any) {
+    try {
+      await this.videoService.deleteVideoLocalImage(item);
+      this.msgSrv.success('本地图片删除成功');
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   resetCrawlKey() {
     this.crawlKey = '';
   }
