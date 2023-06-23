@@ -87,7 +87,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
 
   keydownSubscription: Subscription = new Subscription();
   keyupSubscription: Subscription = new Subscription();
-  ctrlPressed: boolean = true;
+  ctrlPressed: boolean = false;
 
   constructor(
     private http: _HttpClient,
