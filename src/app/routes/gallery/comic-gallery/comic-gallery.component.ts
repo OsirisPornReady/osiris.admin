@@ -8,6 +8,7 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
 import { ComicService } from '../../../service/comic/comic.service';
 import { ComicDownloadService } from '../../../service/comic/comic-download.service';
 import { CommonService} from '../../../service/common/common.service';
+import { DataUrlDetectService } from '../../../service/common/dataUrl.detect.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
 
@@ -93,6 +94,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     private comicService: ComicService,
     private comicDownloadService: ComicDownloadService,
     private commonService: CommonService,
+    private dataUrlDetectService: DataUrlDetectService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
     private msgSrv: NzMessageService,
@@ -134,6 +136,10 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
         navigator.clipboard.readText().then(clipText => {
           if (clipText) {
             this.crawlKey = clipText;
+            let dataUrlType = this.dataUrlDetectService.detectUrlType(clipText);
+            if (dataUrlType) {
+              this.crawlApiUrl = dataUrlType;
+            }
             this.autoCreate();
           }
         });

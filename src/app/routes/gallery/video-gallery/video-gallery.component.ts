@@ -9,6 +9,7 @@ import {NzNotificationService} from 'ng-zorro-antd/notification';
 import { VideoService } from '../../../service/video/video.service';
 import {VideoImageDownloadService} from '../../../service/video/video-image-download.service';
 import {CommonService} from '../../../service/common/common.service';
+import { DataUrlDetectService } from '../../../service/common/dataUrl.detect.service';
 import {CrawlService} from '../../../service/crawl/crawl.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
 
@@ -95,6 +96,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     private videoService: VideoService,
     private videoImageDownloadService: VideoImageDownloadService,
     private commonService: CommonService,
+    private dataUrlDetectService: DataUrlDetectService,
     private crawlService: CrawlService,
     private crawlTypeService: CrawlTypeService,
     private drawer: DrawerHelper,
@@ -126,6 +128,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         navigator.clipboard.readText().then(clipText => {
           if (clipText) {
             this.crawlKey = clipText;
+            let dataUrlType = this.dataUrlDetectService.detectUrlType(clipText);
+            if (dataUrlType) {
+              this.crawlApiUrl = dataUrlType;
+            }
             this.autoCreate();
           }
         });
