@@ -40,6 +40,13 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   searchParam: any = {
     // searchField: null
   }
+  compoundKeywordList: any[] = [
+    {
+      value: ''
+    }
+  ];
+  aa = 'qq'
+  onDeleteCompoundKeyword: boolean = false;
   keywordSearchSchema: SFSchema = {
     properties: {
       keyword: {
@@ -238,6 +245,7 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   isAutoFill: boolean = false;
   isAutoSubmit: boolean = false;
   isKeywordSearch: boolean = true;
+  isCompoundKeywordSearch: boolean = false;
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
   crawlApiUrl: any = null;
@@ -628,6 +636,18 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
         this.st.reload(null, {merge: true, toTop: false});
       }
     });
+  }
+
+  searchCompoundKeyword() {
+    let params = this.compoundKeywordList.filter((item: any) => item.value).map((item: any) => item.value);
+    console.log(params)
+    this.st.reset({ compoundKeyword: params });
+  }
+
+  deleteCompoundKeyword(index: number) {
+    if (this.compoundKeywordList.length > 1) {
+      this.compoundKeywordList.splice(index, 1);
+    }
   }
 
 }

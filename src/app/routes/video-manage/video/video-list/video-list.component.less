@@ -1,3 +1,20 @@
 :host ::ng-deep .sign-tr {
   //background-color: rgb(32, 70, 56, 0.3) !important;
 }
+
+.compound-keyword-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+
+  .compound-keyword {
+    position: relative;
+
+    .delete-button {
+      position: absolute;
+      top: -12px; //calc(50% - 16px)
+      right: -12px;
+    }
+  }
+}

@@ -6,16 +6,16 @@
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
+    <button nz-button nzType="default" nzShape="round" class="ml-md" (click)="resetCrawlKey()">
+      <span nz-icon nzType="reload" nzTheme="outline"></span>
+    </button>
     <nz-switch [(ngModel)]="showDelete"
                nzCheckedChildren="删除"
                nzUnCheckedChildren="查看"
                class="ml-md">
     </nz-switch>
-    <button nz-button nzType="default" nzShape="circle" class="ml-md" (click)="resetCrawlKey()">
-      <span nz-icon nzType="reload" nzTheme="outline"></span>
-    </button>
   </div>
-  <div class="header-content" style="margin-left: 200px">
+  <div class="header-content ml-xl">
     <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
     <button nz-button type="button" nzType="default" nzShape="round" (click)="connectMessageSocket()">
       <span nz-icon [nzType]="'sync'" [nzSpin]="reloadSocketSpin"></span>
@@ -25,7 +25,7 @@
     <button nz-button nzType="default" nzShape="round" class="mr-md" (click)="resetSearch()">
       <span nz-icon nzType="reload" nzTheme="outline"></span>
     </button>
-    <nz-input-group [nzSuffix]="suffixIconSearch">
+    <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
       <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-md" (keydown.enter)="search()"/>
     </nz-input-group>
     <ng-template #suffixIconSearch>
@@ -42,14 +42,14 @@
     <div class="grid-container d-flex justify-content-around align-items-start">
       <nz-card *ngFor="let item of gridList;let idx = index" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" nzHoverable (click)="openInfo(item.id)">
   <!--      item.imageServerPath + '/' + item.imageServerDirectoryName + '/' + item.localCoverSrc-->
-        <img
-          nz-image
-          width="378px"
-          [nzSrc]="item.coverBase64"
-          [nzFallback]="fallbackImageBase64"
-          alt=""
-          (click)="handlePreview($event)"
-        />
+<!--        <img-->
+<!--          nz-image-->
+<!--          width="378px"-->
+<!--          [nzSrc]="item.coverBase64"-->
+<!--          [nzFallback]="fallbackImageBase64"-->
+<!--          alt=""-->
+<!--          (click)="handlePreview($event)"-->
+<!--        />-->
         <span nz-typography class="d-block" [nzCopyable]="true" [nzCopyText]="item.title" (click)="$event.stopPropagation()">{{item.title}}</span>
         <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
         <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
