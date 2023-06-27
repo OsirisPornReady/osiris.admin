@@ -109,6 +109,7 @@
                      (click)="$event.stopPropagation();switchOnStorage(item)"
           ></nz-switch>
           <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();addEditLocalVideo(item)">
+            <span nz-icon nzType="folder-add" nzTheme="outline"></span>
             导入
           </button>
           <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();openPlayVideoList(item)">
