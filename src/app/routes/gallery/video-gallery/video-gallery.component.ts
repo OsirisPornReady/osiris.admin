@@ -24,6 +24,7 @@ import {finalize, fromEvent, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
 import {fallbackImageBase64} from "../../../../assets/image-base64";
+import {VideoManageLocalVideoEditComponent} from "../../video-manage/video/local-video-edit/local-video-edit.component";
 
 
 
@@ -373,6 +374,14 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       item.onStorage = !item.onStorage;
     } catch (e) {}
     this.switchLoading = false;
+  }
+
+  async addEditLocalVideo(item: any) {
+    this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: { id: item.id, videoInfo: item }}, { size: 1595 }).subscribe(async res => {
+      if (res == 'ok') {
+        await this.getByPage();
+      }
+    });
   }
 
   openPlayVideoList(item: any) {

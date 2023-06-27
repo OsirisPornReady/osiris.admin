@@ -100,10 +100,6 @@
           </ng-template>
           <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();">评价</a>
           <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();">收藏</a>
-          <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();openPlayVideoList(item)">
-            <span nz-icon nzType="video-camera" nzTheme="outline"></span>
-            播放
-          </button>
           <nz-switch *nzSpaceItem
                      [(ngModel)]="item.onStorage"
                      [nzControl]="true"
@@ -112,6 +108,14 @@
                      nzUnCheckedChildren="未入库"
                      (click)="$event.stopPropagation();switchOnStorage(item)"
                      class="mr-xl"></nz-switch>
+          <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();addEditLocalVideo(item)">
+            <span nz-icon nzType="video-camera" nzTheme="outline"></span>
+            入库
+          </button>
+          <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();openPlayVideoList(item)">
+            <span nz-icon nzType="video-camera" nzTheme="outline"></span>
+            播放
+          </button>
         </nz-space>
       </nz-card>
       <nz-empty *ngIf="(!loading) && gridList.length == 0"></nz-empty>
