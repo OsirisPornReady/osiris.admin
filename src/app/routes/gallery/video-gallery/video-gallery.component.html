@@ -94,6 +94,20 @@
 <!--            <app-gallery-torrent-card [videoInfo]="item" [torrentList]="torrentList"></app-gallery-torrent-card>-->
 <!--          </ng-template>-->
         </nz-space>
+        <nz-space nzSize="small" [nzSplit]="spaceSplit">
+          <ng-template #spaceSplit>
+            <nz-divider nzType="vertical"></nz-divider>
+          </ng-template>
+          <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();">评价</a>
+          <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();">收藏</a>
+          <nz-switch
+            *nzSpaceItem
+            [(ngModel)]="item.onStorage"
+            nzCheckedChildren="已入库"
+            nzUnCheckedChildren="未入库"
+            (click)="$event.stopPropagation();"
+          ></nz-switch>
+        </nz-space>
       </nz-card>
       <nz-empty *ngIf="(!loading) && gridList.length == 0"></nz-empty>
     </div>

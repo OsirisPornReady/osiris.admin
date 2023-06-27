@@ -20,6 +20,7 @@ import { VideoManageVideoAlbumListComponent } from './video-album/video-album-li
 import { VideoManageVideoAlbumEditComponent } from './video-album/video-album-edit/video-album-edit.component';
 import { VideoManageVideoCollectComponent } from './video/video-select-album/video-collect.component';
 import { VideoManageVideoDownloadTaskListComponent } from './video-download-task/video-download-task-list/video-download-task-list.component';
+import { VideoManageLocalVideoEditComponent } from './video/local-video-edit/local-video-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
@@ -40,7 +41,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoInfoComponent,
   VideoManageVideoEvaluateComponent,
   VideoManageVideoAlbumEditComponent,
-  VideoManageVideoCollectComponent
+  VideoManageVideoCollectComponent,
+  VideoManageLocalVideoEditComponent
 ];
 
 @NgModule({

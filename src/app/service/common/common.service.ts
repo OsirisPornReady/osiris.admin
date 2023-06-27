@@ -1,9 +1,8 @@
-import { Injectable } from '@angular/core';
-import { _HttpClient } from '@delon/theme';
-import { lastValueFrom, map, Observable, Subject } from 'rxjs';
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
-import { environment } from "@env/environment";
-import { GlobalData } from "../../model/GlobalData";
+import {Injectable} from '@angular/core';
+import {_HttpClient} from '@delon/theme';
+import {Subject} from 'rxjs';
+import {webSocket, WebSocketSubject} from "rxjs/webSocket";
+import {environment} from "@env/environment";
 
 @Injectable({ providedIn: 'root' })
 export class CommonService {
@@ -17,7 +16,7 @@ export class CommonService {
   isAutoSubmit: boolean = true;
   crawlType: number = 0;
   isDownloadImage: boolean = true;
-  
+
   globalData: any = {
     isEditMode: false,
     isOpenMultiSelect: false,
@@ -134,6 +133,22 @@ export class CommonService {
   setGlobalSetting(key: string, value: any) {
     if (this.globalData.hasOwnProperty(key)) {
       this.globalData[key as keyof typeof this.globalData] = value;
+    }
+  }
+
+  extractInfoFromFilePath(pathStr: string) {
+    let lastSlashIndex: number = pathStr.lastIndexOf('/');
+    let lastBackSlashIndex: number = pathStr.lastIndexOf('\\');
+    let lastSpiltIndex: number = -1;
+    if (lastSlashIndex > lastBackSlashIndex) {
+      lastSpiltIndex = lastSlashIndex;
+    } else if (lastSlashIndex < lastBackSlashIndex) {
+      lastSpiltIndex = lastBackSlashIndex;
+    }
+    if (lastSpiltIndex == -1) {
+      return null;
+    } else {
+      return pathStr.slice(lastSpiltIndex + 1);
     }
   }
 

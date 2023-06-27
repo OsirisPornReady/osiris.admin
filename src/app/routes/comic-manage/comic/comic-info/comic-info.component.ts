@@ -701,7 +701,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     }
   }
 
-  addEditLocalComic(id: number) {
+  addEditLocalComic(id: number = 0) {
     this.modal.createStatic(ComicManageLocalComicEditComponent, {record: {id, comicInfo: this.i }}, { size: 1595 }).subscribe(async res => {
       if (res == 'ok') {
         await this.getLocalComicListByComicId();
@@ -713,7 +713,7 @@ export class ComicManageComicInfoComponent implements OnInit, OnDestroy {
     try {
       await this.comicService.deleteLocalComic(id);
       await this.getLocalComicListByComicId();
-      this.msgSrv.info('本地Comic删除成功');
+      this.msgSrv.success('本地Comic删除成功');
     } catch (e) {
       console.error(e)
     }

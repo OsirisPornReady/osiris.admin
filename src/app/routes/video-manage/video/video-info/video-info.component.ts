@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { SFComponent, SFSchema, SFUISchema } from '@delon/form';
-import { _HttpClient } from '@delon/theme';
+import {_HttpClient, ModalHelper} from '@delon/theme';
 import { NzDrawerRef } from 'ng-zorro-antd/drawer';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { fromEvent } from "rxjs";
+
+import { VideoManageLocalVideoEditComponent } from '../local-video-edit/local-video-edit.component';
 
 import { VideoTagService } from '../../../../service/video/video-tag.service';
 import { VideoTypeService } from '../../../../service/video/video-type.service';
@@ -20,6 +22,7 @@ import {fallbackImageBase64} from "../../../../../assets/image-base64";
   styleUrls: ['/video-info.component.less']
 })
 export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
   scoreTextList: string[] = this.commonService.scoreTextList;
 
   title = '';
@@ -182,8 +185,11 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
   onStorage: boolean = false;
   switchLoading: boolean = false;
 
+  localVideoList: any[] = []
+
   constructor(
     private drawer: NzDrawerRef,
+    private modal: ModalHelper,
     private msgSrv: NzMessageService,
     public http: _HttpClient,
     private videoTagService: VideoTagService,
@@ -212,6 +218,7 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
       this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
       this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
 
+      await this.getLocalVideoListByVideoId();
 
       // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
       //   if (event.key == ' ') {
@@ -274,5 +281,30 @@ export class VideoManageVideoInfoComponent implements OnInit, OnDestroy {
     this.switchLoading = false;
   }
 
-    protected readonly fallbackImageBase64 = fallbackImageBase64;
+  async getLocalVideoListByVideoId() {
+    try {
+      this.localVideoList = (await this.videoService.getLocalVideoListByVideoId(this.record.id)) || [];
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  async addEditLocalVideo(id: number = 0) {
+    this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: {id, videoInfo: this.i }}, { size: 1595 }).subscribe(async res => {
+      if (res == 'ok') {
+        await this.getLocalVideoListByVideoId();
+      }
+    });
+  }
+
+  async deleteLocalVideo(id: number) {
+    try {
+      await this.videoService.deleteLocalVideo(id);
+      await this.getLocalVideoListByVideoId();
+      this.msgSrv.success('本地Video删除成功');
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
 }

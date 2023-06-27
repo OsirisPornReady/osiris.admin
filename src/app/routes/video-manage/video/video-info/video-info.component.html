@@ -89,17 +89,55 @@
   </div>
 </div>
 
-<nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
-<sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none">
-  <div>
-    <button nz-button type="submit" nzType="default" nzShape="round" (click)="evaluate(evaluateSf.value)" [disabled]="!evaluateSf.valid" [nzLoading]="http.loading" style="margin-left: 145px">保存评分与评价</button>
-  </div>
-</sf>
+<nz-tabset *ngIf="i">
+  <nz-tab nzTitle="视频信息">
+    <nz-divider *ngIf="i" nzText="Score and Comment"></nz-divider>
+    <sf *ngIf="i" #evaluateSf mode="edit" [schema]="evaluateSchema" [ui]="ui" [formData]="ei" button="none">
+      <div>
+        <button nz-button type="submit" nzType="default" nzShape="round" (click)="evaluate(evaluateSf.value)" [disabled]="!evaluateSf.valid" [nzLoading]="http.loading" style="margin-left: 145px">保存评分与评价</button>
+      </div>
+    </sf>
 
-<nz-divider *ngIf="i" nzText="Confirm Information"></nz-divider>
-<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
-<!--  <div class="drawer-footer">-->
-<!--    <button nz-button type="button" (click)="close()">关闭</button>-->
-<!--    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">自动{{record.id > 0 ? '填充' : '创建' }}</button>-->
-<!--  </div>-->
-</sf>
+    <nz-divider *ngIf="i" nzText="Video Information"></nz-divider>
+    <sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
+    <!--  <div class="drawer-footer">-->
+    <!--    <button nz-button type="button" (click)="close()">关闭</button>-->
+    <!--    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [disabled]="!sf.valid" [nzLoading]="http.loading">自动{{record.id > 0 ? '填充' : '创建' }}</button>-->
+    <!--  </div>-->
+    </sf>
+  </nz-tab>
+  <nz-tab nzTitle="本地视频资源">
+    <button nz-button nzType="primary" type="button" (click)="addEditLocalVideo()">导入</button>
+    <nz-divider nzText="Local Video Resource"></nz-divider>
+    <nz-collapse *ngIf="localVideoList.length > 0">
+      <nz-collapse-panel
+        *ngFor="let panel of localVideoList;let idx = index"
+        [nzHeader]="panel.title"
+        [nzExtra]="extraTpl"
+      >
+        <div>
+          <nz-card nzHoverable class="ant-card-body-custom-padding d-inline-block mr-lg" *ngFor="let item of panel.pathList">
+            <span nz-typography [nzContent]="item" class="text-md font-weight-normal"></span>
+          </nz-card>
+        </div>
+        <ng-template #extraTpl>
+          <nz-space nzSize="small" [nzSplit]="spaceSplit">
+            <ng-template #spaceSplit>
+              <nz-divider nzType="vertical"></nz-divider>
+            </ng-template>
+            <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();addEditLocalVideo(panel.id)">编辑</a>
+            <a *nzSpaceItem
+               nz-typography
+               nzType="danger"
+               nz-popconfirm
+               nzPopconfirmTitle="是否删除?"
+               (click)="$event.stopPropagation()"
+               (nzOnConfirm)="deleteLocalVideo(panel.id)">删除</a>
+          </nz-space>
+        </ng-template>
+      </nz-collapse-panel>
+    </nz-collapse>
+
+    <nz-empty *ngIf="localVideoList.length == 0"></nz-empty>
+  </nz-tab>
+</nz-tabset>

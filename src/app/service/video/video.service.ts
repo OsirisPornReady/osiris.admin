@@ -91,4 +91,39 @@ export class VideoService {
     return lastValueFrom(this.http.post(url, entity));
   }
 
+  openFileDialog(entity: any) {
+    let url = `crawl/file_operate/open_file_dialog`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
+  addLocalVideo(entity: any) {
+    let url = `api/video/add_local_video`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
+  updateLocalVideo(entity: any) {
+    let url = `api/video/update_local_video/${entity.id}`;
+    return lastValueFrom(this.http.put(url, entity));
+  }
+
+  deleteLocalVideo(id: number) {
+    let url = `api/video/delete_local_video/${id}`;
+    return lastValueFrom(this.http.delete(url));
+  }
+
+  getLocalVideoById(id: number) {
+    let url = `api/video/get_local_video_by_id/${id}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
+  getLocalVideoListByVideoId(videoId: number) {
+    let url = `api/video/get_local_video_list_by_video_id/${videoId}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
+  getVideoIdListOwnLocal() {
+    let url = `api/video/get_video_id_list_own_local`;
+    return lastValueFrom(this.http.get(url));
+  }
+
 }
