@@ -377,7 +377,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   }
 
   async addEditLocalVideo(item: any) {
-    this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: { id: item.id, videoInfo: item }}, { size: 1595 }).subscribe(async res => {
+    this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: { id: 0, videoInfo: item }}, { size: 1595 }).subscribe(async res => {
       if (res == 'ok') {
         await this.getByPage();
       }
