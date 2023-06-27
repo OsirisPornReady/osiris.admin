@@ -126,4 +126,9 @@ export class VideoService {
     return lastValueFrom(this.http.get(url));
   }
 
+  playVideo(entity: any) {
+    let url = `crawl/file_operate/play_video`;
+    return lastValueFrom(this.http.post(url, entity));
+  }
+
 }

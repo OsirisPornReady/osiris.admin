@@ -18,6 +18,7 @@ import { VideoManageVideoCrawlInfoComponent } from '../../video-manage/video/vid
 import { VideoManageVideoInfoComponent } from '../../video-manage/video/video-info/video-info.component';
 import { VideoManageVideoCrawlConfigComponent } from '../../video-manage/video/video-crawl/video-crawl-config/video-crawl-config.component';
 import {GalleryTorrentListComponent} from '../torrent-list/torrent-list.component';
+import {GalleryPlayVideoListComponent} from '../play-video-list/play-video-list.component';
 
 import {finalize, fromEvent, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
@@ -89,6 +90,8 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   keydownSubscription: Subscription = new Subscription();
   keyupSubscription: Subscription = new Subscription();
   ctrlPressed: boolean = false;
+
+  switchLoading: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -354,6 +357,27 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       drawerOptions: {nzPlacement: 'left', nzClosable: false}
     }).subscribe(res => {
       if (res.state == 'ok') {
+
+      }
+    });
+  }
+
+  async switchOnStorage(item: any) {
+    let value: any = {
+      id: item.id,
+      onStorage: !item.onStorage
+    }
+    this.switchLoading = true;
+    try {
+      await this.videoService.update(value);
+      item.onStorage = !item.onStorage;
+    } catch (e) {}
+    this.switchLoading = false;
+  }
+
+  openPlayVideoList(item: any) {
+    this.modal.create(GalleryPlayVideoListComponent, {record: item}, { size: 'md', modalOptions: { nzClosable: false } }).subscribe(res => {
+      if (res == 'ok') {
 
       }
     });

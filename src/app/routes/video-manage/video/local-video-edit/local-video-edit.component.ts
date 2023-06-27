@@ -118,7 +118,16 @@ export class VideoManageLocalVideoEditComponent implements OnInit {
       })) || {};
       if (res.hasOwnProperty('pathList')) {
         let pathList = res.pathList || [];
-        pathList.forEach((item: any) => this.localVideoPathList.push(item));
+        let filenameList: string[] = [];
+        pathList.forEach((item: any) => {
+          this.localVideoPathList.push(item);
+          let filename = this.commonService.extractInfoFromFilePath(item);
+          if (filename) {
+            filenameList.push(filename);
+          }
+        });
+        let title: string = filenameList.join(' | ');
+        this.sf?.getProperty('/title')?.setValue(title, false);
       }
     } catch (e) {
       console.error(e);
