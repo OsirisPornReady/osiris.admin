@@ -60,6 +60,8 @@ export class VideoManageLocalVideoEditComponent implements OnInit, OnDestroy {
   fileDialogSubscription: Subscription = new Subscription();
   onOpenDialog: boolean = false;
 
+  automated: boolean = false;
+
   constructor(
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
@@ -80,6 +82,11 @@ export class VideoManageLocalVideoEditComponent implements OnInit, OnDestroy {
       this.i = {
         title: this.record.videoInfo.title
       };
+      if (this.automated) {
+        setTimeout(() => {
+          this.openFileDialog();
+        }, 300)
+      }
     }
   }
 

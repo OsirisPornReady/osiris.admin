@@ -88,6 +88,8 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   torrentList: any[] = []
   popoverVisibleList: boolean[] = []
 
+  videoIdListOwnLocal: number[] = [];
+
   keydownSubscription: Subscription = new Subscription();
   keyupSubscription: Subscription = new Subscription();
   ctrlPressed: boolean = false;
@@ -112,6 +114,11 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   protected readonly dateStringFormatter = dateStringFormatter;
 
   async ngOnInit() {
+    try {
+      this.videoIdListOwnLocal = (await this.videoService.getVideoIdListOwnLocal()) || [];
+    } catch (e) {
+      console.error(e);
+    }
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
     this.crawlApiUrl = this.crawlTypeOptions.length > 0 ? this.crawlTypeOptions[1].value : null;
@@ -377,7 +384,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   }
 
   async addEditLocalVideo(item: any) {
-    this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: { id: 0, videoInfo: item }}, { size: 1595 }).subscribe(async res => {
+    this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: { id: 0, videoInfo: item }, automated: true }, { size: 1595 }).subscribe(async res => {
       if (res == 'ok') {
         await this.getByPage();
       }

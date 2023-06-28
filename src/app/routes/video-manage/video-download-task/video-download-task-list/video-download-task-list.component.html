@@ -1,8 +1,15 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
-  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>
-  <div nz-row class="mt-sm mb-md">
+<!--  <sf mode="search" [schema]="searchSchema" (formSubmit)="st.reset($event)" (formReset)="st.reset($event)"></sf>-->
+  <div nz-row class="mb-lg">
     <div nz-col [nzXs]="24" [nzLg]="24">
+      <nz-form-label [nzSpan]="6">操作</nz-form-label>
+      <button nz-button nzType="default" (click)="st.checkAll(true)">
+        全选
+      </button>
+      <button nz-button nzType="default" (click)="st.checkAll(false)">
+        取消全选
+      </button>
       <button nz-button nzType="primary" nzDanger (click)="bulkDelete(st._data)">
         <span nz-icon nzType="delete" nzTheme="outline"></span>
         批量删除
@@ -13,7 +20,7 @@
       </button>
     </div>
   </div>
-  <st #st [data]="data" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }">
+  <st #st [data]="data" [columns]="columns" [page]="page" [widthMode]="{ type: 'strict' }" (change)="handleSTChange($event)">
     <ng-template st-row="customTitle" let-item>
       <a nz-typography href="javascript:void(0);" (click)="previewVideoImage(item.videoInfo)">
         <span nz-typography nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.videoInfo.title">{{item.videoInfo.title}}</span>
@@ -24,8 +31,5 @@
       <span nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.torrentInfo.torrent_name">{{item.torrentInfo.torrent_name}}</span>
     </ng-template>
 
-    <ng-template st-row="customTorrentExcerpt" let-item>
-      <span nz-tooltip nzTooltipPlacement="topLeft" [nzTooltipTitle]="item.torrentInfo.torrent_excerpt">{{item.torrentInfo.torrent_excerpt}}</span>
-    </ng-template>
   </st>
 </nz-card>
