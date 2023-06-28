@@ -70,7 +70,8 @@ export class GalleryPlayVideoListComponent implements OnInit, OnDestroy {
       await this.videoService.playVideo(item);
       this.msgSrv.success('开始播放');
     } catch (e) {
-      console.error(e)
+      console.error(e);
+      this.msgSrv.error('播放失败');
     }
   }
 
