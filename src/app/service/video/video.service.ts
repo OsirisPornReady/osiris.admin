@@ -93,7 +93,7 @@ export class VideoService {
 
   openFileDialog(entity: any) {
     let url = `crawl/file_operate/open_file_dialog`;
-    return lastValueFrom(this.http.post(url, entity));
+    return this.http.post(url, entity);
   }
 
   addLocalVideo(entity: any) {

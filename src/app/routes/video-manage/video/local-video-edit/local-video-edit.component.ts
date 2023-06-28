@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import {SFComponent, SFSchema, SFUISchema} from '@delon/form';
 import {_HttpClient} from '@delon/theme';
 import {NzMessageService} from 'ng-zorro-antd/message';
@@ -6,12 +6,13 @@ import {NzModalRef} from 'ng-zorro-antd/modal';
 
 import {VideoService} from '../../../../service/video/video.service';
 import {CommonService} from '../../../../service/common/common.service';
+import {finalize, Subscription} from "rxjs";
 
 @Component({
   selector: 'app-video-manage-local-video-edit',
   templateUrl: './local-video-edit.component.html',
 })
-export class VideoManageLocalVideoEditComponent implements OnInit {
+export class VideoManageLocalVideoEditComponent implements OnInit, OnDestroy {
   title = '';
   record: any = {};
   i: any;
@@ -56,6 +57,9 @@ export class VideoManageLocalVideoEditComponent implements OnInit {
   ]
   loading: boolean = false;
 
+  fileDialogSubscription: Subscription = new Subscription();
+  onOpenDialog: boolean = false;
+
   constructor(
     private modal: NzModalRef,
     private msgSrv: NzMessageService,
@@ -77,6 +81,10 @@ export class VideoManageLocalVideoEditComponent implements OnInit {
         title: this.record.videoInfo.title
       };
     }
+  }
+
+  ngOnDestroy() {
+    this.fileDialogSubscription.unsubscribe();
   }
 
   async save(value: any) {
@@ -111,28 +119,38 @@ export class VideoManageLocalVideoEditComponent implements OnInit {
     this.modal.destroy();
   }
 
-  async openFileDialog() {
-    try {
-      let res: any = (await this.videoService.openFileDialog({
-        dialogType: this.dialogType
-      })) || {};
-      if (res.hasOwnProperty('pathList')) {
-        let pathList = res.pathList || [];
-        let filenameList: string[] = [];
-        pathList.forEach((item: any) => {
-          this.localVideoPathList.push(item);
-          let filename = this.commonService.extractInfoFromFilePath(item);
-          if (filename) {
-            filenameList.push(filename);
-          }
-        });
-        let title: string = filenameList.join(' | ');
-        this.sf?.getProperty('/title')?.setValue(title, false);
-      }
-    } catch (e) {
-      console.error(e);
-      this.msgSrv.error('文件对话框打开失败');
+  openFileDialog() {
+    if (this.onOpenDialog) {
+      this.msgSrv.warning('已打开文件对话框');
+      return;
     }
+    this.onOpenDialog = true;
+    this.fileDialogSubscription = this.videoService.openFileDialog({ dialogType: this.dialogType })
+      .pipe(finalize(() => {
+        this.onOpenDialog = false;
+      }))
+      .subscribe({
+        next: res => {
+          res = res || {};
+          if (res.hasOwnProperty('pathList')) {
+            let pathList = res.pathList || [];
+            let filenameList: string[] = [];
+            pathList.forEach((item: any) => {
+              this.localVideoPathList.push(item);
+              let filename = this.commonService.extractInfoFromFilePath(item);
+              if (filename) {
+                filenameList.push(filename);
+              }
+            });
+            let title: string = filenameList.join(' | ');
+            this.sf?.getProperty('/title')?.setValue(title, false);
+          }
+        },
+        error: (e) => {
+          console.error(e);
+          this.msgSrv.error('文件对话框打开失败');
+        }
+    })
   }
 
   deleteFromPathList(index: number) {
