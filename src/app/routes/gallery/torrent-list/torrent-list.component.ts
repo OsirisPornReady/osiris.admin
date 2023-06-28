@@ -115,15 +115,17 @@ export class GalleryTorrentListComponent implements OnInit, OnDestroy {
     window.open(link, '_self')
   }
 
-  addVideoDownloadTask(item: any, index: number) {
-    let task: any = {
-      torrentMagnet: item.torrent_magnet,
-      torrentInfo: item,
-      videoInfo: this.videoInfo,
-    }
+  addOrDeleteVideoDownloadTask(item: any, index: number) {
     if (this.videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet)) {
-      this.msgSrv.warning('该磁链任务已添加');
+      this.videoDownloadTaskService.videoDownloadTaskList = this.videoDownloadTaskService.videoDownloadTaskList.filter((i: any) => i.torrentMagnet != item.torrent_magnet);
+      this.videoDownloadTaskService.downloadMissionMap.delete(item.torrent_magnet);
+      this.msgSrv.warning('磁链任务删除成功');
     } else {
+      let task: any = {
+        torrentMagnet: item.torrent_magnet,
+        torrentInfo: item,
+        videoInfo: this.videoInfo,
+      }
       this.videoDownloadTaskService.downloadMissionMap.set(item.torrent_magnet, true);
       this.videoDownloadTaskService.videoDownloadTaskList.push(task);
       this.msgSrv.success('磁链任务添加成功');

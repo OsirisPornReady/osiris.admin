@@ -74,8 +74,12 @@
             </button>
           </nz-list-item-action>
           <nz-list-item-action>
-            <button nz-button nzType="primary" nzShape="round" [disabled]="videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet)" (click)="addVideoDownloadTask(item, idx)">
-              <span nz-icon nzType="export" nzTheme="outline"></span>
+            <button nz-button
+                    [nzType]="videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet) ? 'dashed' : 'primary'"
+                    [nzDanger]="videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet)"
+                    nzShape="round"
+                    (click)="addOrDeleteVideoDownloadTask(item, idx)">
+              <span nz-icon [nzType]="videoDownloadTaskService.downloadMissionMap.has(item.torrent_magnet) ? 'delete' : 'export'" nzTheme="outline"></span>
             </button>
           </nz-list-item-action>
         </ul>
