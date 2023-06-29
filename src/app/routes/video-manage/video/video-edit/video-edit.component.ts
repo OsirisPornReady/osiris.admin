@@ -416,7 +416,8 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
 
       try {
         // this.safeSF.setValue(`/${key}`, fillData[key]);
-        this.sf.setValue(`/${key}`, fillData[key]);
+        this.sf.getProperty(`/${key}`)?.setValue(fillData[key], false); //解决了时机问题就只需要让onlySelf项为false就行了
+        // this.sf.setValue(`/${key}`, fillData[key]);
       } catch (e) {
         console.error(`自动填充字段${key}失败`, e);
       }

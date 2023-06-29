@@ -42,9 +42,9 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
       // },
     },
     $crawlApiUrl: {
-      // visibleIf: {
-      //   canCrawl: val => val
-      // },
+      visibleIf: {
+        canCrawl: val => (val ? { required: true, show: true } : { required: false, show: true })
+      },
       changeDebounceTime: 100,
       widget: 'select',
       allowClear: true,
@@ -53,9 +53,9 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
       asyncData: () => this.crawlTypeService.getSelectAll()
     },
     $crawlKey: {
-      // visibleIf: {
-      //   canCrawl: val => val
-      // },
+      visibleIf: {
+        canCrawl: val => (val ? { required: true, show: true } : { required: false, show: true })
+      },
       placeholder: '导入关键字',
     },
   };
@@ -136,6 +136,14 @@ export class VideoManageVideoCrawlConfigComponent implements OnInit {
       } catch (e) {
         console.error(e)
       }
+    }
+  }
+
+  handleFormValueChange(event: any) {
+    if (event.path == '/canCrawl') {
+      // this.sf.validator();
+      this.sf.getProperty('/crawlApiUrl')?.updateValueAndValidity();
+      this.sf.getProperty('/crawlKey')?.updateValueAndValidity();
     }
   }
 
