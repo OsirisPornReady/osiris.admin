@@ -9,8 +9,8 @@
     <button nz-button nzType="default" nzShape="round" class="ml-md" (click)="resetCrawlKey()">
       <span nz-icon nzType="reload" nzTheme="outline"></span>
     </button>
-    <nz-switch [(ngModel)]="showDelete"
-               nzCheckedChildren="删除"
+    <nz-switch [(ngModel)]="showEdit"
+               nzCheckedChildren="编辑"
                nzUnCheckedChildren="查看"
                class="ml-md">
     </nz-switch>
@@ -62,42 +62,63 @@
           </ng-template>
         </span>
         <span nz-typography class="d-block"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
-        <nz-space nzSize="small" [nzSplit]="spaceSplit">
-          <ng-template #spaceSplit>
-            <nz-divider nzType="vertical"></nz-divider>
-          </ng-template>
-          <ng-template [ngIf]="showDelete">
-            <a *nzSpaceItem
-               nz-typography
-               nzType="danger"
-               (click)="handleLink($event)"
-               nz-popconfirm
-               nzPopconfirmTitle="是否删除?"
-               (nzOnConfirm)="delete(item.id)">删除</a>
-          </ng-template>
-          <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
-          <ng-template [ngIf]="item.canCrawl">
-            <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
-          </ng-template>
-          <a *nzSpaceItem nz-typography (click)="checkComic(item, $event)">验证</a>
-          <ng-template [ngIf]="item.canCrawl">
-            <ng-container *ngIf="!(onDownloadingComic && comicIdOnDownloading.includes(item.id));else stopDownloadButton">
-              <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="downloadComic(item, $event)">下载</button>
-            </ng-container>
-            <ng-template #stopDownloadButton>
-              <button *nzSpaceItem nz-button nzType="default" nzDanger nzSize="small" (click)="stopDownloadComic(item, $event)">
-                <span nz-icon [nzType]="(onDownloadingComic && comicIdOnDownloading.includes(item.id)) ? 'loading' : 'cloud-download'" nzTheme="outline"></span>
-                <span>停止</span>
-              </button>
+
+        <ng-template #spaceSplit>
+          <nz-divider nzType="vertical"></nz-divider>
+        </ng-template>
+        <div class="mb-sm">
+          <nz-space nzSize="small" [nzSplit]="spaceSplit">
+            <ng-template [ngIf]="showEdit">
+              <a *nzSpaceItem
+                 nz-typography
+                 nzType="danger"
+                 (click)="handleLink($event)"
+                 nz-popconfirm
+                 nzPopconfirmTitle="是否删除?"
+                 (nzOnConfirm)="delete(item.id)">删除</a>
             </ng-template>
-          </ng-template>
-          <ng-template [ngIf]="item.canCrawl">
-            <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
-              数据源
-              <span nz-icon nzType="share-alt" nzTheme="outline"></span>
-            </a>
-          </ng-template>
-        </nz-space>
+            <ng-template [ngIf]="showEdit">
+              <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();addEdit(item.id)">编辑</a>
+            </ng-template>
+            <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
+            <ng-template [ngIf]="item.canCrawl">
+              <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
+            </ng-template>
+            <a *nzSpaceItem nz-typography (click)="checkComic(item, $event)">验证</a>
+            <ng-template [ngIf]="item.canCrawl">
+              <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
+                数据源
+              </a>
+            </ng-template>
+          </nz-space>
+        </div>
+
+        <div>
+          <nz-space nzSize="small" [nzSplit]="spaceSplit">
+            <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();selectCoverImage(item)">
+              <span nz-icon nzType="folder-add" nzTheme="outline"></span>
+              选择封面
+            </button>
+            <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="checkComic(item, $event)">
+              <span nz-icon nzType="ordered-list" nzTheme="outline"></span>
+              验证
+            </button>
+            <ng-template [ngIf]="item.canCrawl">
+              <ng-container *ngIf="!(onDownloadingComic && comicIdOnDownloading.includes(item.id));else stopDownloadButton">
+                <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="downloadComic(item, $event)">
+                  <span nz-icon nzType="cloud-download" nzTheme="outline"></span>
+                  下载
+                </button>
+              </ng-container>
+              <ng-template #stopDownloadButton>
+                <button *nzSpaceItem nz-button nzType="default" nzDanger nzSize="small" (click)="stopDownloadComic(item, $event)">
+                  <span nz-icon [nzType]="(onDownloadingComic && comicIdOnDownloading.includes(item.id)) ? 'loading' : 'cloud-download'" nzTheme="outline"></span>
+                  <span>停止</span>
+                </button>
+              </ng-template>
+            </ng-template>
+          </nz-space>
+        </div>
       </nz-card>
       <nz-empty *ngIf="(!loading) && gridList.length == 0"></nz-empty>
     </div>

@@ -152,4 +152,9 @@ export class CommonService {
     }
   }
 
+  selectCoverImage() {
+    let url = `crawl/file_operate/select_cover_image`;
+    return this.http.get(url);
+  }
+
 }

@@ -75,7 +75,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   imagePhysicalDirectoryName: string = '';
   imageServerDirectoryName: string = '';
 
-  showDelete: boolean = false;
+  showEdit: boolean = false;
   keyword: string = '';
 
   savedPi: any = null;
@@ -95,6 +95,9 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   ctrlPressed: boolean = false;
 
   switchLoading: boolean = false;
+
+  fileDialogSubscription: Subscription = new Subscription();
+  onOpenDialog: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -276,6 +279,14 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     }
   }
 
+  addEdit(id: number = 0): void {
+    this.modal.createStatic(VideoManageVideoEditComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        this.getByPage();
+      }
+    });
+  }
+
   async delete(id: number = 0) {
     try {
       await this.videoService.delete(id);
@@ -386,7 +397,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   async addEditLocalVideo(item: any) {
     this.modal.createStatic(VideoManageLocalVideoEditComponent, {record: { id: 0, videoInfo: item }, automated: true }, { size: 1595 }).subscribe(async res => {
       if (res == 'ok') {
-        await this.getByPage();
+        this.getByPage();
       }
     });
   }
@@ -397,6 +408,40 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
 
       }
     });
+  }
+
+  selectCoverImage(item: any) {
+    if (this.onOpenDialog) {
+      this.msgSrv.warning('已打开文件对话框');
+      return;
+    }
+    this.onOpenDialog = true;
+    this.fileDialogSubscription = this.commonService.selectCoverImage()
+      .pipe(finalize(() => {
+        this.onOpenDialog = false;
+      }))
+      .subscribe({
+        next: async res => {
+          res = res || {};
+          if (res.hasOwnProperty('coverBase64')) {
+            try {
+              let entity: any = {
+                id: item.id,
+                coverBase64: res.coverBase64
+              }
+              await this.videoService.update(entity);
+              this.getByPage();
+            } catch (e) {
+              console.error(e);
+              this.msgSrv.error('更新封面图出错');
+            }
+          }
+        },
+        error: (e) => {
+          console.error(e);
+          this.msgSrv.error('封面图选择出错');
+        }
+      })
   }
 
 }

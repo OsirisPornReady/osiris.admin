@@ -69,7 +69,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   comicPhysicalDirectoryName: string = '';
   comicServerDirectoryName: string = '';
 
-  showDelete: boolean = false;
+  showEdit: boolean = false;
   keyword: string = '';
 
   savedPi: any = null;
@@ -87,6 +87,9 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   keydownSubscription: Subscription = new Subscription();
   keyupSubscription: Subscription = new Subscription();
   ctrlPressed: boolean = false;
+
+  fileDialogSubscription: Subscription = new Subscription();
+  onOpenDialog: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -272,6 +275,14 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     }
   }
 
+  addEdit(id: number = 0): void {
+    this.modal.createStatic(ComicManageComicEditComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        this.st.reload();
+      }
+    });
+  }
+
   async delete(id: number = 0) {
     try {
       await this.comicService.delete(id);
@@ -374,8 +385,42 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     let pageList = Array.from(new Array(item.pageSize + 1).keys()).slice(1)
     let checkRes: boolean = await this.comicDownloadService.checkLocalExhentaiComicPages(item, pageList)
     if (checkRes) {
-      await this.getByPage();
+      this.getByPage();
     }
+  }
+
+  selectCoverImage(item: any) {
+    if (this.onOpenDialog) {
+      this.msgSrv.warning('已打开文件对话框');
+      return;
+    }
+    this.onOpenDialog = true;
+    this.fileDialogSubscription = this.commonService.selectCoverImage()
+      .pipe(finalize(() => {
+        this.onOpenDialog = false;
+      }))
+      .subscribe({
+        next: async res => {
+          res = res || {};
+          if (res.hasOwnProperty('coverBase64')) {
+            try {
+              let entity: any = {
+                id: item.id,
+                coverBase64: res.coverBase64
+              }
+              await this.comicService.update(entity);
+              this.getByPage();
+            } catch (e) {
+              console.error(e);
+              this.msgSrv.error('更新封面图出错');
+            }
+          }
+        },
+        error: (e) => {
+          console.error(e);
+          this.msgSrv.error('文件对话框打开失败');
+        }
+      })
   }
 
 }
