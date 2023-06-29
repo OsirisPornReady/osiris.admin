@@ -76,7 +76,9 @@
                (nzOnConfirm)="delete(item.id)">删除</a>
           </ng-template>
           <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
-          <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
+          <template [ngIf]="item.canCrawl">
+            <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
+          </template>
           <a *nzSpaceItem nz-typography (click)="checkComic(item, $event)">验证</a>
           <ng-container *ngIf="!(onDownloadingComic && comicIdOnDownloading.includes(item.id));else stopDownloadButton">
             <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="downloadComic(item, $event)">下载</button>

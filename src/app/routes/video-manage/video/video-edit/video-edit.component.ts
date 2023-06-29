@@ -359,7 +359,9 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
         id,
         ...value
       }
-      this.videoImageDownloadService.downloadVideoImage(item);
+      if (this.automated) {
+        this.videoImageDownloadService.downloadVideoImage(item);
+      }
       this.msgSrv.success('保存成功');
       this.modal.close('ok');
     } catch (error) {}
