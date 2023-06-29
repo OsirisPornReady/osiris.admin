@@ -416,8 +416,12 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
 
       try {
         // this.safeSF.setValue(`/${key}`, fillData[key]);
-        this.sf.getProperty(`/${key}`)?.setValue(fillData[key], false); //解决了时机问题就只需要让onlySelf项为false就行了
-        // this.sf.setValue(`/${key}`, fillData[key]);
+
+        //https://github.com/ng-alain/ng-alain/issues/1146
+        //Property.setValue 只会更新某个元素值并校验并不会跟UI产生联系，若想变更值建议使用 sf.setValue （可能会遇到 #1171 无法更新问题）。
+
+        // this.sf.getProperty(`/${key}`)?.setValue(fillData[key], false); //解决了时机问题就只需要让onlySelf项为false就行了
+        this.sf.setValue(`/${key}`, fillData[key]);
       } catch (e) {
         console.error(`自动填充字段${key}失败`, e);
       }
