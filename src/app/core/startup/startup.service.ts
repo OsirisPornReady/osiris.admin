@@ -128,6 +128,16 @@ export class StartupService {
                         icon: null
                       },
                       {
+                        text: 'Video Crawl Task',
+                        link: '/video-manage/video-crawl-task-list',
+                        icon: null
+                      },
+                      {
+                        text: 'Video Download',
+                        link: '/video-manage/video-download-task-list',
+                        icon: null
+                      },
+                      {
                         text: 'tag',
                         link: '/video-manage/video-tag-list',
                         icon: null
@@ -157,6 +167,16 @@ export class StartupService {
                       {
                         text: 'comic',
                         link: '/comic-manage/comic-list',
+                        icon: null
+                      },
+                      {
+                        text: 'Comic Crawl Task',
+                        link: '/comic-manage/comic-crawl-task-list',
+                        icon: null
+                      },
+                      {
+                        text: 'Comic Download',
+                        link: '/comic-manage/comic-download-task-list',
                         icon: null
                       },
                       {
