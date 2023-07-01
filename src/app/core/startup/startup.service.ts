@@ -103,6 +103,11 @@ export class StartupService {
                 icon: { type: 'icon', value: 'picture' }
               },
               {
+                text: 'Comic Crawl Task',
+                link: '/comic-manage/comic-crawl-task-list',
+                icon: { type: 'icon', value: 'picture' }
+              },
+              {
                 text: 'Comic Download',
                 link: '/comic-manage/comic-download-task-list',
                 icon: { type: 'icon', value: 'picture' }

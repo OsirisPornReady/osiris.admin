@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { NavigationEnd, NavigationError, RouteConfigLoadStart, Router } from '@angular/router';
 import {_HttpClient, TitleService, VERSION as VERSION_ALAIN} from '@delon/theme';
 import { environment } from '@env/environment';
@@ -8,16 +8,17 @@ import {lastValueFrom, Subscription} from 'rxjs';
 
 import { ComicDownloadService } from './service/comic/comic-download.service';
 import { CrawlTaskService } from './service/crawl/crawl-task.service';
-import {VideoCrawlTask} from "./model/CrawlTask";
+import { VideoCrawlTask, ComicCrawlTask } from "./model/CrawlTask";
 
 @Component({
   selector: 'app-root',
   template: ` <router-outlet></router-outlet> `
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
   downloadFinishSubscription: Subscription = new Subscription();
   videoCrawlFinishSubscription: Subscription = new Subscription();
+  comicCrawlFinishSubscription: Subscription = new Subscription();
 
   constructor(
     el: ElementRef,
@@ -54,6 +55,7 @@ export class AppComponent implements OnInit {
         this.modalSrv.closeAll();
       }
     });
+
     this.downloadFinishSubscription = this.comicDownloadService.downloadFinishSubject.subscribe(async (res: any) => {
       if (this.comicDownloadService.downloadMissionMap.has(res.id)) {  //不管是什么原因结束,结束了就把暂存的下载标识删掉
         this.comicDownloadService.downloadMissionMap.delete(res.id);
@@ -64,6 +66,7 @@ export class AppComponent implements OnInit {
         console.error(e)
       }
     })
+
     this.videoCrawlFinishSubscription = this.crawlTaskService.videoCrawlFinishSubject.subscribe(async (res: any) => {
       if (res.state == 'success') {
         console.log(res)
@@ -83,5 +86,31 @@ export class AppComponent implements OnInit {
         }
       }
     })
+
+    this.comicCrawlFinishSubscription = this.crawlTaskService.comicCrawlFinishSubject.subscribe(async (res: any) => {
+      if (res.state == 'success') {
+        console.log(res)
+        let comicCrawlTask = this.crawlTaskService.comicCrawlTaskList.find((comicCrawlTask: ComicCrawlTask) => comicCrawlTask.id == res.id);
+        if (comicCrawlTask) {
+          comicCrawlTask.data = res.data;
+        }
+      } else if (res.state == 'fail') {
+        let comicCrawlTask = this.crawlTaskService.comicCrawlTaskList.find((comicCrawlTask: ComicCrawlTask) => comicCrawlTask.id == res.id);
+        if (comicCrawlTask) {
+          comicCrawlTask.data = null;
+        }
+      } else if (res.state == 'final') {
+        let comicCrawlTask = this.crawlTaskService.comicCrawlTaskList.find((comicCrawlTask: ComicCrawlTask) => comicCrawlTask.id == res.id);
+        if (comicCrawlTask) {
+          comicCrawlTask.state = 'wait';
+        }
+      }
+    })
+  }
+
+  ngOnDestroy() {
+    this.downloadFinishSubscription.unsubscribe();
+    this.videoCrawlFinishSubscription.unsubscribe();
+    this.comicCrawlFinishSubscription.unsubscribe();
   }
 }

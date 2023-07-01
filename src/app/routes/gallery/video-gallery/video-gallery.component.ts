@@ -423,16 +423,18 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         next: async res => {
           res = res || {};
           if (res.hasOwnProperty('coverBase64')) {
-            try {
-              let entity: any = {
-                id: item.id,
-                coverBase64: res.coverBase64
+            if (res.coverBase64) {
+              try {
+                let entity: any = {
+                  id: item.id,
+                  coverBase64: res.coverBase64
+                }
+                await this.videoService.update(entity);
+                this.getByPage();
+              } catch (e) {
+                console.error(e);
+                this.msgSrv.error('更新封面图出错');
               }
-              await this.videoService.update(entity);
-              this.getByPage();
-            } catch (e) {
-              console.error(e);
-              this.msgSrv.error('更新封面图出错');
             }
           }
         },

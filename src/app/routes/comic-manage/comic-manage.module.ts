@@ -12,10 +12,12 @@ import { ComicManageComicDownloadTaskListComponent } from './comic-download-task
 import { ComicManageLocalComicEditComponent } from './comic/local-comic-edit/local-comic-edit.component';
 import { ComicManageComicAlbumListComponent } from './comic-album/comic-album-list/comic-album-list.component';
 import { ComicManageComicAlbumEditComponent } from './comic-album/comic-album-edit/comic-album-edit.component';
+import { ComicManageComicCrawlTaskListComponent } from './comic/comic-crawl/comic-crawl-task-list/comic-crawl-task-list.component';
 
 const COMPONENTS: Type<void>[] = [
   ComicManageComicListComponent,
-  ComicManageComicAlbumListComponent
+  ComicManageComicAlbumListComponent,
+  ComicManageComicCrawlTaskListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [

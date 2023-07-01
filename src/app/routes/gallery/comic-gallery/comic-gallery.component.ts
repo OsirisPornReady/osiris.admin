@@ -10,6 +10,7 @@ import { ComicDownloadService } from '../../../service/comic/comic-download.serv
 import { CommonService} from '../../../service/common/common.service';
 import { DataUrlDetectService } from '../../../service/common/dataUrl.detect.service';
 import { CrawlTypeService } from '../../../service/crawl/crawl-type.service';
+import { CrawlTaskService } from '../../../service/crawl/crawl-task.service';
 
 
 import { ComicManageComicEditComponent} from "../../comic-manage/comic/comic-edit/comic-edit.component";
@@ -19,6 +20,7 @@ import { ComicManageComicCrawlConfigComponent } from "../../comic-manage/comic/c
 import {finalize, fromEvent, lastValueFrom, Subscription} from "rxjs";
 import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
+import {ComicCrawlTask} from "../../../model/CrawlTask";
 import { fallbackImageBase64 } from "../../../../assets/image-base64";
 
 
@@ -99,6 +101,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     private commonService: CommonService,
     private dataUrlDetectService: DataUrlDetectService,
     private crawlTypeService: CrawlTypeService,
+    private crawlTaskService: CrawlTaskService,
     private drawer: DrawerHelper,
     private msgSrv: NzMessageService,
     private ntfService: NzNotificationService,
@@ -400,16 +403,18 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
         next: async res => {
           res = res || {};
           if (res.hasOwnProperty('coverBase64')) {
-            try {
-              let entity: any = {
-                id: item.id,
-                coverBase64: res.coverBase64
+            if (res.coverBase64) {
+              try {
+                let entity: any = {
+                  id: item.id,
+                  coverBase64: res.coverBase64
+                }
+                await this.comicService.update(entity);
+                this.getByPage();
+              } catch (e) {
+                console.error(e);
+                this.msgSrv.error('更新封面图出错');
               }
-              await this.comicService.update(entity);
-              this.getByPage();
-            } catch (e) {
-              console.error(e);
-              this.msgSrv.error('更新封面图出错');
             }
           }
         },
@@ -418,6 +423,64 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
           this.msgSrv.error('文件对话框打开失败');
         }
       })
+  }
+
+  createComicCrawlTask(comicId: number = 0, item: any) {
+    let value: any = {
+      id: comicId,
+      crawlApiUrl: comicId == 0 ? this.crawlApiUrl : item.crawlApiUrl,
+      crawlKey: comicId == 0 ? this.crawlKey : item.crawlKey,
+      comicPhysicalPath: comicId == 0 ? this.comicPhysicalPath : item.comicPhysicalPath,
+      comicServerPath: comicId == 0 ? this.comicServerPath : item.comicServerPath,
+      comicPhysicalDirectoryName: comicId == 0 ? this.comicPhysicalDirectoryName : item.comicPhysicalDirectoryName,
+      comicServerDirectoryName: comicId == 0 ? this.comicServerDirectoryName : item.comicServerDirectoryName,
+      onlyCrawlInfo: comicId != 0
+    }
+
+    if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlApiUrl')) {
+      if (!(typeof value.crawlKey == 'string' && typeof value.crawlApiUrl == 'string' && value.crawlApiUrl != '')) { //直接在前端进行类型检查吧
+        this.msgSrv.error('爬虫参数类型错误,请检查配置');
+        return;
+      }
+    } else {
+      this.msgSrv.error('未正确配置爬虫参数,请检查配置');
+      return;
+    }
+    if (this.commonService.globalData.isDownloadImage) {
+      if (value.hasOwnProperty('comicPhysicalPath') && value.hasOwnProperty('comicServerPath') && value.hasOwnProperty('comicPhysicalDirectoryName') && value.hasOwnProperty('comicServerDirectoryName')) {
+        value.comicPhysicalPath = (typeof value.comicPhysicalPath == 'string') ? value.comicPhysicalPath : ''
+        value.comicServerPath = (typeof value.comicServerPath == 'string') ? value.comicServerPath : ''
+        value.comicPhysicalDirectoryName = (typeof value.comicPhysicalDirectoryName == 'string') ? value.comicPhysicalDirectoryName : ''
+        value.comicServerDirectoryName = (typeof value.comicServerDirectoryName == 'string') ? value.comicServerDirectoryName : ''
+      } else {
+        this.msgSrv.info('图片相关配置不正确,请检查配置');
+        return;
+      }
+    }
+
+    value.crawlKey = value.crawlKey.trim();
+    let payload: any = {
+      crawlKey: value.crawlKey,
+      downloadImage: this.commonService.globalData.isDownloadImage,
+      comicPhysicalPath: value.comicPhysicalPath,
+      comicServerPath: value.comicServerPath,
+      comicPhysicalDirectoryName: value.comicPhysicalDirectoryName,
+      comicServerDirectoryName: value.comicServerDirectoryName,
+      onlyCrawlInfo: value.onlyCrawlInfo
+    }
+
+    let comicCrawlTask: ComicCrawlTask = {
+      id: -1,
+      comicId,
+      type: 'video',
+      state: 'wait',
+      info: item,
+      crawlApiUrl: value.crawlApiUrl,
+      payload,
+      data: null,
+      subscription: new Subscription()
+    }
+    this.crawlTaskService.addComicCrawlTask(comicId, comicCrawlTask);
   }
 
 }

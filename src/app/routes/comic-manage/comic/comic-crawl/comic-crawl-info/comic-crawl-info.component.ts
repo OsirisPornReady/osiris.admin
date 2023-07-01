@@ -196,6 +196,9 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
   keyupSubscription: Subscription = new Subscription();
   ctrlPressed: boolean = true;
 
+  asyncCrawl: boolean = false;
+  taskData: any = {};
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
@@ -207,95 +210,106 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlApiUrl')) {
-      if (!(typeof this.record.crawlKey == 'string' && typeof this.record.crawlApiUrl == 'string' && this.record.crawlApiUrl != '')) { //直接在前端进行类型检查吧
-        this.msgSrv.error('爬虫参数类型错误,请关闭页面');
-        console.log(this.record)
-        this.close();
-        return;
-      }
+    if (this.asyncCrawl) {
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.i = this.taskData || {};
+          resolve(true);
+        }, 700);
+      })
     } else {
-      this.msgSrv.error('未正确配置爬虫参数,请关闭页面');
-      this.close();
-      return;
-    }
-    if (this.commonService.globalData.isDownloadImage) {
-      if (this.record.hasOwnProperty('comicPhysicalPath') && this.record.hasOwnProperty('comicServerPath') && this.record.hasOwnProperty('comicPhysicalDirectoryName') && this.record.hasOwnProperty('comicServerDirectoryName')) {
-        this.record.comicPhysicalPath = (typeof this.record.comicPhysicalPath == 'string') ? this.record.comicPhysicalPath : ''
-        this.record.comicServerPath = (typeof this.record.comicServerPath == 'string') ? this.record.comicServerPath : ''
-        this.record.comicPhysicalDirectoryName = (typeof this.record.comicPhysicalDirectoryName == 'string') ? this.record.comicPhysicalDirectoryName : ''
-        this.record.comicServerDirectoryName = (typeof this.record.comicServerDirectoryName == 'string') ? this.record.comicServerDirectoryName : ''
+      if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlApiUrl')) {
+        if (!(typeof this.record.crawlKey == 'string' && typeof this.record.crawlApiUrl == 'string' && this.record.crawlApiUrl != '')) { //直接在前端进行类型检查吧
+          this.msgSrv.error('爬虫参数类型错误,请关闭页面');
+          console.log(this.record)
+          this.close();
+          return;
+        }
       } else {
-        this.msgSrv.info('图片相关配置不正确,请关闭页面');
+        this.msgSrv.error('未正确配置爬虫参数,请关闭页面');
         this.close();
         return;
       }
+      if (this.commonService.globalData.isDownloadImage) {
+        if (this.record.hasOwnProperty('comicPhysicalPath') && this.record.hasOwnProperty('comicServerPath') && this.record.hasOwnProperty('comicPhysicalDirectoryName') && this.record.hasOwnProperty('comicServerDirectoryName')) {
+          this.record.comicPhysicalPath = (typeof this.record.comicPhysicalPath == 'string') ? this.record.comicPhysicalPath : ''
+          this.record.comicServerPath = (typeof this.record.comicServerPath == 'string') ? this.record.comicServerPath : ''
+          this.record.comicPhysicalDirectoryName = (typeof this.record.comicPhysicalDirectoryName == 'string') ? this.record.comicPhysicalDirectoryName : ''
+          this.record.comicServerDirectoryName = (typeof this.record.comicServerDirectoryName == 'string') ? this.record.comicServerDirectoryName : ''
+        } else {
+          this.msgSrv.info('图片相关配置不正确,请关闭页面');
+          this.close();
+          return;
+        }
+      }
+      try {
+        this.record.crawlKey = this.record.crawlKey.trim();
+        this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
+        this.i = (await this.crawlService.crawlComicByUrl(this.record.crawlApiUrl,{
+          crawlKey: this.record.crawlKey,
+          downloadImage: this.commonService.isDownloadImage,
+          comicPhysicalPath: this.record.comicPhysicalPath,
+          comicServerPath: this.record.comicServerPath,
+          comicPhysicalDirectoryName: this.record.comicPhysicalDirectoryName,
+          comicServerDirectoryName: this.record.comicServerDirectoryName,
+          onlyCrawlInfo: !!this.record.onlyCrawlInfo
+        })) || {};
+
+        // this.msgSrv.remove(this.crawlLoadingMsgId);
+        this.msgSrv.remove('');
+        this.msgSrv.success('爬取成功');
+      } catch (error) {
+        console.error(error)
+        // this.msgSrv.remove(this.crawlLoadingMsgId);
+        this.msgSrv.remove('');
+        this.msgSrv.error('爬取失败');
+        this.close();
+      }
     }
-    try {
-      this.record.crawlKey = this.record.crawlKey.trim();
-      this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
-      this.i = (await this.crawlService.crawlComicByUrl(this.record.crawlApiUrl,{
-        crawlKey: this.record.crawlKey,
-        downloadImage: this.commonService.isDownloadImage,
-        comicPhysicalPath: this.record.comicPhysicalPath,
-        comicServerPath: this.record.comicServerPath,
-        comicPhysicalDirectoryName: this.record.comicPhysicalDirectoryName,
-        comicServerDirectoryName: this.record.comicServerDirectoryName,
-        onlyCrawlInfo: !!this.record.onlyCrawlInfo
-      })) || {};
-      this.dataSourceUrl = this.i.dataSourceUrl
-      this.coverSrc = this.i.coverSrc;
-      this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
-      this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
-      this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      // this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
 
-      // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
-      //   if (event.key == 'Enter') {
-      //     try {
-      //       this.save(this.sf.value);
-      //     } catch (e) {}
-      //   }
-      // })
-      // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-      //   if (event.key == ' ') {
-      //     this.close();
-      //   }
-      // })
-      // this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-      //   if (event.key == 'd') {
-      //     this.commonService.openNewTab(this.i.btdigUrl);
-      //   }
-      // })
+    this.dataSourceUrl = this.i.dataSourceUrl
+    this.coverSrc = this.i.coverSrc;
+    this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
+    this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
+    this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
+    // this.previewImageSrcList = Array.isArray(this.i.localComicPicSrcList) ? this.i.localComicPicSrcList : []
 
-      this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == 'Control') {
-          this.ctrlPressed = true;
-        }
-        if (this.ctrlPressed && event.key == 'Enter') {
-          setTimeout(async () => {
-            try {
-              await this.save(this.sf.value);
-            } catch (e) {}
-          })
-        }
-      })
-      this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
-        if (event.key == 'Control') {
-          this.ctrlPressed = false;
-        }
-      })
+    // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
+    //   if (event.key == 'Enter') {
+    //     try {
+    //       this.save(this.sf.value);
+    //     } catch (e) {}
+    //   }
+    // })
+    // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+    //   if (event.key == ' ') {
+    //     this.close();
+    //   }
+    // })
+    // this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+    //   if (event.key == 'd') {
+    //     this.commonService.openNewTab(this.i.btdigUrl);
+    //   }
+    // })
 
-      // this.msgSrv.remove(this.crawlLoadingMsgId);
-      this.msgSrv.remove('');
-      this.msgSrv.success('爬取成功');
-    } catch (error) {
-      console.error(error)
-      // this.msgSrv.remove(this.crawlLoadingMsgId);
-      this.msgSrv.remove('');
-      this.msgSrv.error('爬取失败');
-      this.close();
-    }
+    this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = true;
+      }
+      if (this.ctrlPressed && event.key == 'Enter') {
+        setTimeout(async () => {
+          try {
+            await this.save(this.sf.value);
+          } catch (e) {}
+        })
+      }
+    })
+    this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = false;
+      }
+    })
+
   }
 
   async save(value: any) {
