@@ -1,14 +1,24 @@
 <!--<page-header [home]="''" [title]="''"></page-header>-->
 <div class="page-header d-flex justify-content-start align-items-center">
-  <div class="header-content">
+  <div class="header-content d-flex justify-content-start align-items-center">
     <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
     <input  nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-xl ml-md" auto-focus (keydown.enter)="autoCreate()"/>
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
-    <button nz-button nzType="default" nzShape="round" class="ml-md" (click)="resetCrawlKey()">
-      <span nz-icon nzType="reload" nzTheme="outline"></span>
-    </button>
+<!--    <button nz-button nzType="default" nzShape="round" class="ml-md" (click)="resetCrawlKey()">-->
+<!--      <span nz-icon nzType="reload" nzTheme="outline"></span>-->
+<!--    </button>-->
+    <nz-badge [nzCount]="crawlTaskCount">
+      <button nz-button nzType="default" nzShape="round" class="ml-md" (click)="autoTask()">
+        <span nz-icon nzType="enter" nzTheme="outline"></span>
+      </button>
+    </nz-badge>
+<!--    <nz-switch [(ngModel)]="realTimeCrawl"-->
+<!--               nzCheckedChildren="后台爬取"-->
+<!--               nzUnCheckedChildren="即时爬取"-->
+<!--               class="ml-md">-->
+<!--    </nz-switch>-->
     <nz-switch [(ngModel)]="showEdit"
                nzCheckedChildren="编辑"
                nzUnCheckedChildren="查看"
@@ -82,15 +92,13 @@
             </ng-template>
             <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
             <ng-template [ngIf]="item.canCrawl">
-              <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();getCrawl(item)">爬取</a>
+              <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();getCrawl(item)">
+                <span nz-icon nzType="api" nzTheme="outline"></span>
+                爬取
+              </button>
             </ng-template>
             <ng-template [ngIf]="item.canCrawl">
-              <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
-                数据源
-              </a>
-            </ng-template>
-            <ng-template [ngIf]="item.canCrawl">
-              <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();createComicCrawlTask(item.id, item)">
+              <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();createComicCrawlTask(item)">
                 <span nz-icon nzType="api" nzTheme="outline"></span>
                 创建爬取任务
               </button>
@@ -100,6 +108,11 @@
 
         <div>
           <nz-space nzSize="small" [nzSplit]="spaceSplit">
+            <ng-template [ngIf]="item.canCrawl">
+              <a *nzSpaceItem [href]="item.dataSourceUrl" target="_blank" (click)="handleLink($event)">
+                数据源
+              </a>
+            </ng-template>
             <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();selectCoverImage(item)">
               <span nz-icon nzType="folder-add" nzTheme="outline"></span>
               选择封面

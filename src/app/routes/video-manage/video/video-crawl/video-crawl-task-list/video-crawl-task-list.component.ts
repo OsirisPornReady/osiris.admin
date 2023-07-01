@@ -90,6 +90,9 @@ export class VideoManageVideoCrawlTaskListComponent implements OnInit, OnDestroy
       if (res.state == 'final') {
         this.st.reload(null, {merge: true, toTop: false});
       }
+      if (res.state == 'reload') {
+        this.st.reload(null, {merge: true, toTop: false});
+      }
     })
   }
 
@@ -117,8 +120,9 @@ export class VideoManageVideoCrawlTaskListComponent implements OnInit, OnDestroy
       })
       if (taskList.length > 0) {
         this.nzModal.confirm({
-          nzTitle: '确认开始所选任务吗？',
-          nzOkText: '开始',
+          nzTitle: '确认删除所选任务吗？',
+          nzOkText: '删除',
+          nzOkDanger: true,
           nzOnOk: async () => {
             taskList.forEach((task: any) => {
               this.delete(task.id)
@@ -179,7 +183,7 @@ export class VideoManageVideoCrawlTaskListComponent implements OnInit, OnDestroy
     }
   }
 
-  openDrawer(videoId: number, value: any) {
+  openCrawlInfoDrawer(videoId: number, value: any) {
     this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: { id: videoId }, asyncCrawl: true, taskData: value }, {
       size: 1600,
       drawerOptions: {nzClosable: false}

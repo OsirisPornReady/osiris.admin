@@ -27,7 +27,7 @@
   </div>
   <st #st [data]="data" [columns]="columns" [page]="page">
     <ng-template st-row="state" let-item>
-      <button nz-button nzType="default" nzSize="small" [nzLoading]="item.state == 'crawling'" [disabled]="!item.data" (click)="openDrawer(item.videoId, item.data)">
+      <button nz-button nzType="default" nzSize="small" [nzLoading]="item.state == 'crawling'" [disabled]="!item.data" (click)="openCrawlInfoDrawer(item.videoId, item.data)">
         <span nz-icon nzType="api" nzTheme="outline"></span>
         <span>{{item.data ? '待处理' : '待爬取'}}</span>
       </button>

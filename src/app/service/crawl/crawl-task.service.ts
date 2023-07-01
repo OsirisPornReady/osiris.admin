@@ -55,7 +55,13 @@ export class CrawlTaskService {
       if (this.videoCrawlTaskList.length == 0) {
         this.currentVideoCrawlTaskAvailableId = 1;
       }
-      videoCrawlTask.subscription.unsubscribe();
+      if (videoCrawlTask.state == 'crawling') {
+        videoCrawlTask.subscription.unsubscribe();
+      } else {
+        this.videoCrawlFinishSubject.next({
+          state: 'reload',
+        });
+      }
     }
   }
 
@@ -133,7 +139,13 @@ export class CrawlTaskService {
       if (this.comicCrawlTaskList.length == 0) {
         this.currentComicCrawlTaskAvailableId = 1;
       }
-      comicCrawlTask.subscription.unsubscribe();
+      if (comicCrawlTask.state == 'crawling') {
+        comicCrawlTask.subscription.unsubscribe();
+      } else {
+        this.comicCrawlFinishSubject.next({
+          state: 'reload',
+        });
+      }
     }
   }
 

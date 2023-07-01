@@ -100,6 +100,9 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   fileDialogSubscription: Subscription = new Subscription();
   onOpenDialog: boolean = false;
 
+  realTimeCrawl: boolean = false;
+  crawlTaskCount: number = 0;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -124,6 +127,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.error(e);
     }
+    this.crawlTaskCount = this.crawlTaskService.videoCrawlTaskList.length;
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
     this.crawlApiUrl = this.crawlTypeOptions.length > 0 ? this.crawlTypeOptions[1].value : null;
@@ -140,7 +144,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       if (event.key == 'Control') {
         this.ctrlPressed = true;
       }
-      if (this.ctrlPressed && event.key == ' ') {
+      if (this.ctrlPressed && event.key == '.') {
         navigator.clipboard.readText().then(clipText => {
           if (clipText) {
             this.crawlKey = clipText;
@@ -149,6 +153,18 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
               this.crawlApiUrl = dataUrlType;
             }
             this.autoCreate();
+          }
+        });
+      }
+      if (this.ctrlPressed && event.key == ' ') {
+        navigator.clipboard.readText().then(clipText => {
+          if (clipText) {
+            this.crawlKey = clipText;
+            let dataUrlType = this.dataUrlDetectService.detectUrlType(clipText);
+            if (dataUrlType) {
+              this.crawlApiUrl = dataUrlType;
+            }
+            this.autoTask();
           }
         });
       }
@@ -275,6 +291,25 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         imageServerDirectoryName: this.imageServerDirectoryName,
       }
       this.getCrawl(value);
+    }
+  }
+
+  autoTask() {
+    if (!this.crawlApiUrl) {
+      this.msgSrv.info('爬虫类型未设置');
+    } else if (!this.crawlKey.trim()) { //涉及输入框的要做trim处理
+      this.msgSrv.info('爬虫关键字为空');
+    } else {
+      let value = {
+        id: 0,
+        crawlApiUrl: this.crawlApiUrl,
+        crawlKey: this.crawlKey,
+        imagePhysicalPath: this.imagePhysicalPath,
+        imageServerPath: this.imageServerPath,
+        imagePhysicalDirectoryName: this.imagePhysicalDirectoryName,
+        imageServerDirectoryName: this.imageServerDirectoryName,
+      }
+      this.createVideoCrawlTask(value);
     }
   }
 
@@ -445,15 +480,16 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       })
   }
 
-  createVideoCrawlTask(videoId: number = 0, item: any) {
+  createVideoCrawlTask(item: any) {
+    const videoId: number = item.id;
     let value: any = {
       id: videoId,
-      crawlApiUrl: videoId == 0 ? this.crawlApiUrl : item.crawlApiUrl,
-      crawlKey: videoId == 0 ? this.crawlKey : item.crawlKey,
-      imagePhysicalPath: videoId == 0 ? this.imagePhysicalPath : item.imagePhysicalPath,
-      imageServerPath: videoId == 0 ? this.imageServerPath : item.imageServerPath,
-      imagePhysicalDirectoryName: videoId == 0 ? this.imagePhysicalDirectoryName : item.imagePhysicalDirectoryName,
-      imageServerDirectoryName: videoId == 0 ? this.imageServerDirectoryName : item.imageServerDirectoryName,
+      crawlApiUrl: item.crawlApiUrl,
+      crawlKey: item.crawlKey,
+      imagePhysicalPath: item.imagePhysicalPath,
+      imageServerPath: item.imageServerPath,
+      imagePhysicalDirectoryName: item.imagePhysicalDirectoryName,
+      imageServerDirectoryName: item.imageServerDirectoryName,
     }
 
     if (value.hasOwnProperty('crawlKey') && value.hasOwnProperty('crawlApiUrl')) {
@@ -499,6 +535,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       subscription: new Subscription()
     }
     this.crawlTaskService.addVideoCrawlTask(videoId, videoCrawlTask);
+    this.crawlTaskCount = this.crawlTaskService.videoCrawlTaskList.length;
   }
 
 }

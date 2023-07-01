@@ -93,6 +93,9 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
   fileDialogSubscription: Subscription = new Subscription();
   onOpenDialog: boolean = false;
 
+  realTimeCrawl: boolean = false;
+  crawlTaskCount: number = 0;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -115,6 +118,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.error(e);
     }
+    this.crawlTaskCount = this.crawlTaskService.comicCrawlTaskList.length;
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
     this.crawlApiUrl = this.crawlTypeOptions.length > 0 ? this.crawlTypeOptions[5].value : null;
@@ -138,7 +142,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
       if (event.key == 'Control') {
         this.ctrlPressed = true;
       }
-      if (this.ctrlPressed && event.key == ' ') {
+      if (this.ctrlPressed && event.key == '.') {
         navigator.clipboard.readText().then(clipText => {
           if (clipText) {
             this.crawlKey = clipText;
@@ -147,6 +151,18 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
               this.crawlApiUrl = dataUrlType;
             }
             this.autoCreate();
+          }
+        });
+      }
+      if (this.ctrlPressed && event.key == ' ') {
+        navigator.clipboard.readText().then(clipText => {
+          if (clipText) {
+            this.crawlKey = clipText;
+            let dataUrlType = this.dataUrlDetectService.detectUrlType(clipText);
+            if (dataUrlType) {
+              this.crawlApiUrl = dataUrlType;
+            }
+            this.autoTask();
           }
         });
       }
@@ -272,6 +288,25 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
         comicServerDirectoryName: this.comicServerDirectoryName,
       }
       this.getCrawl(value);
+    }
+  }
+
+  autoTask() {
+    if (!this.crawlApiUrl) {
+      this.msgSrv.info('爬虫类型未设置');
+    } else if (!this.crawlKey.trim()) { //涉及输入框的要做trim处理
+      this.msgSrv.info('爬虫关键字为空');
+    } else {
+      let value = {
+        id: 0,
+        crawlApiUrl: this.crawlApiUrl,
+        crawlKey: this.crawlKey,
+        comicPhysicalPath: this.comicPhysicalPath,
+        comicServerPath: this.comicServerPath,
+        comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
+        comicServerDirectoryName: this.comicServerDirectoryName,
+      }
+      this.createComicCrawlTask(value);
     }
   }
 
@@ -425,15 +460,16 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
       })
   }
 
-  createComicCrawlTask(comicId: number = 0, item: any) {
+  createComicCrawlTask(item: any) {
+    const comicId: number = item.id;
     let value: any = {
       id: comicId,
-      crawlApiUrl: comicId == 0 ? this.crawlApiUrl : item.crawlApiUrl,
-      crawlKey: comicId == 0 ? this.crawlKey : item.crawlKey,
-      comicPhysicalPath: comicId == 0 ? this.comicPhysicalPath : item.comicPhysicalPath,
-      comicServerPath: comicId == 0 ? this.comicServerPath : item.comicServerPath,
-      comicPhysicalDirectoryName: comicId == 0 ? this.comicPhysicalDirectoryName : item.comicPhysicalDirectoryName,
-      comicServerDirectoryName: comicId == 0 ? this.comicServerDirectoryName : item.comicServerDirectoryName,
+      crawlApiUrl: item.crawlApiUrl,
+      crawlKey: item.crawlKey,
+      comicPhysicalPath: item.comicPhysicalPath,
+      comicServerPath: item.comicServerPath,
+      comicPhysicalDirectoryName: item.comicPhysicalDirectoryName,
+      comicServerDirectoryName: item.comicServerDirectoryName,
       onlyCrawlInfo: comicId != 0
     }
 
@@ -481,6 +517,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
       subscription: new Subscription()
     }
     this.crawlTaskService.addComicCrawlTask(comicId, comicCrawlTask);
+    this.crawlTaskCount = this.crawlTaskService.comicCrawlTaskList.length;
   }
 
 }
