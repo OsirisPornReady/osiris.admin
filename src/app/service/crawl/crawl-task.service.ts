@@ -50,10 +50,12 @@ export class CrawlTaskService {
     if (index == -1) {  // 没找到
       this.msgSrv.warning(`未找到id对应的任务`);
     } else {
+      let videoCrawlTask = this.videoCrawlTaskList[index];
       this.videoCrawlTaskList.splice(index, 1);
       if (this.videoCrawlTaskList.length == 0) {
         this.currentVideoCrawlTaskAvailableId = 1;
       }
+      videoCrawlTask.subscription.unsubscribe();
     }
   }
 
@@ -126,10 +128,12 @@ export class CrawlTaskService {
     if (index == -1) {  // 没找到
       this.msgSrv.warning(`未找到id对应的任务`);
     } else {
+      let comicCrawlTask = this.comicCrawlTaskList[index];
       this.comicCrawlTaskList.splice(index, 1);
       if (this.comicCrawlTaskList.length == 0) {
         this.currentComicCrawlTaskAvailableId = 1;
       }
+      comicCrawlTask.subscription.unsubscribe();
     }
   }
 

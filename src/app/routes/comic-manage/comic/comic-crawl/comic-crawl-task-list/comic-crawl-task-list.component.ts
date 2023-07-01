@@ -3,6 +3,7 @@ import { STColumn, STComponent, STPage } from '@delon/abc/st';
 import { SFSchema } from '@delon/form';
 import {ModalHelper, _HttpClient, DrawerHelper} from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import {NzModalService} from 'ng-zorro-antd/modal';
 import { Subscription } from 'rxjs';
 
 import { CrawlService } from '../../../../../service/crawl/crawl.service';
@@ -12,6 +13,7 @@ import { ComicManageComicCrawlInfoComponent} from '../comic-crawl-info/comic-cra
 import { ComicManageComicEditComponent} from '../../comic-edit/comic-edit.component';
 
 import { ComicCrawlTask} from '../../../../../model/CrawlTask';
+
 
 
 
@@ -38,21 +40,15 @@ export class ComicManageComicCrawlTaskListComponent implements OnInit, OnDestroy
   };
   @ViewChild('st') private readonly st!: STComponent;
   columns: STColumn[] = [
+    { title: '', index: 'checked', type: 'checkbox' },
     { title: 'ID', index: 'id' },
     { title: '类型', index: 'type' },
-    { title: '视频ID', index: 'comicId' },
-    { title: '状态', index: 'state' },
+    { title: '漫画ID', index: 'comicId' },
+    { title: '状态', index: 'state', render: 'state' },
     // { title: '更新时间', type: 'date', index: 'updateTime' },
     {
       title: '操作',
       buttons: [
-        {
-          text: '处理',
-          iif: (item) => item.data,
-          click: (item: any) => {
-            this.openDrawer(item.comicId, item.data);
-          }
-        },
         {
           text: '爬取',
           iif: (item) => item.state != 'crawling',
@@ -61,7 +57,7 @@ export class ComicManageComicCrawlTaskListComponent implements OnInit, OnDestroy
           }
         },
         {
-          text: '停止爬取',
+          text: '停止',
           iif: (item) => item.state == 'crawling',
           click: (item: any) => {
             this.stopComicCrawlTask(item.id);
@@ -88,6 +84,7 @@ export class ComicManageComicCrawlTaskListComponent implements OnInit, OnDestroy
     private crawlService: CrawlService,
     private crawlTaskService: CrawlTaskService,
     private drawer: DrawerHelper,
+    private nzModal: NzModalService,
   ) { }
 
   ngOnInit(): void {
@@ -115,6 +112,56 @@ export class ComicManageComicCrawlTaskListComponent implements OnInit, OnDestroy
     // });
   }
 
+  bulkDelete(_data: any) {
+    try {
+      let taskList: string[] = [];
+      taskList = _data.filter((item: any) => {
+        return (item.hasOwnProperty('checked') && item.checked)
+      })
+      if (taskList.length > 0) {
+        this.nzModal.confirm({
+          nzTitle: '确认开始所选任务吗？',
+          nzOkText: '开始',
+          nzOnOk: async () => {
+            taskList.forEach((task: any) => {
+              this.delete(task.id)
+            })
+          },
+          nzCancelText: '取消',
+          nzOnCancel: () => console.log('Cancel'),
+        });
+      } else {
+        this.msgSrv.error('至少勾选一项');
+        return;
+      }
+    } catch (error) {}
+  }
+
+  bulkStartTask(_data: any) {
+    try {
+      let taskList: string[] = [];
+      taskList = _data.filter((item: any) => {
+        return (item.hasOwnProperty('checked') && item.checked)
+      })
+      if (taskList.length > 0) {
+        this.nzModal.confirm({
+          nzTitle: '确认开始所选任务吗？',
+          nzOkText: '开始',
+          nzOnOk: async () => {
+            taskList.forEach((task: any) => {
+              this.startComicCrawlTask(task.id)
+            })
+          },
+          nzCancelText: '取消',
+          nzOnCancel: () => console.log('Cancel'),
+        });
+      } else {
+        this.msgSrv.error('至少勾选一项');
+        return;
+      }
+    } catch (error) {}
+  }
+
   startComicCrawlTask(id: number) {
     this.crawlTaskService.startComicCrawlTask(id);
     this.st.reload()
@@ -127,16 +174,16 @@ export class ComicManageComicCrawlTaskListComponent implements OnInit, OnDestroy
 
   delete(id: number) {
     try {
-      this.crawlTaskService.deleteComicCrawlTask(id)
+      this.crawlTaskService.deleteComicCrawlTask(id)  // 由于需要停止任务等特殊处理,不在此进行st reload
       this.msgSrv.success('删除成功');
-      this.st.reload();
+      // this.st.reload();
     } catch (e) {
       console.error(e);
     }
   }
 
   openDrawer(comicId: number, value: any) {
-    this.drawer.static('爬取信息', ComicManageComicCrawlInfoComponent, { record: { id: comicId }, asyncCrawl: true, taskData: value }, {
+    this.drawer.create('爬取信息', ComicManageComicCrawlInfoComponent, { record: { id: comicId }, asyncCrawl: true, taskData: value }, {
       size: 1600,
       drawerOptions: {nzClosable: false}
     }).subscribe(res => {

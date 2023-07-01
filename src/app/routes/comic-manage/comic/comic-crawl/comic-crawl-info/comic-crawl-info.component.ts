@@ -215,7 +215,7 @@ export class ComicManageComicCrawlInfoComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.i = this.taskData || {};
           resolve(true);
-        }, 700);
+        }, 500);
       })
     } else {
       if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlApiUrl')) {

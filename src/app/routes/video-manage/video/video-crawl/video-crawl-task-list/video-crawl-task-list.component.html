@@ -15,15 +15,22 @@
       <button nz-button nzType="default" (click)="st.checkAll(false)">
         取消全选
       </button>
-<!--      <button nz-button nzType="primary" nzDanger (click)="bulkDelete(st._data);copiedTaskList=[]">-->
-<!--        <span nz-icon nzType="delete" nzTheme="outline"></span>-->
-<!--        批量删除-->
-<!--      </button>-->
-<!--      <button nz-button nzType="primary" (click)="bulkDownload(st._data)">-->
-<!--        <span nz-icon nzType="download" nzTheme="outline"></span>-->
-<!--        批量下载-->
-<!--      </button>-->
+      <button nz-button nzType="primary" nzDanger (click)="bulkDelete(st._data)">
+        <span nz-icon nzType="delete" nzTheme="outline"></span>
+        批量删除
+      </button>
+      <button nz-button nzType="primary" (click)="bulkStartTask(st._data)">
+        <span nz-icon nzType="download" nzTheme="outline"></span>
+        批量开始
+      </button>
     </div>
   </div>
-  <st #st [data]="data" [columns]="columns" [page]="page"></st>
+  <st #st [data]="data" [columns]="columns" [page]="page">
+    <ng-template st-row="state" let-item>
+      <button nz-button nzType="default" nzSize="small" [nzLoading]="item.state == 'crawling'" [disabled]="!item.data" (click)="openDrawer(item.videoId, item.data)">
+        <span nz-icon nzType="api" nzTheme="outline"></span>
+        <span>{{item.data ? '待处理' : '待爬取'}}</span>
+      </button>
+    </ng-template>
+  </st>
 </nz-card>

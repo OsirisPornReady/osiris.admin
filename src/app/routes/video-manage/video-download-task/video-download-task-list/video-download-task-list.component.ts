@@ -150,7 +150,6 @@ export class VideoManageVideoDownloadTaskListComponent implements OnInit {
   }
 
   bulkDownload(_data: any) {
-    console.log(this.data)
     try {
       let torrentMagnetList: string[] = [];
       torrentMagnetList = _data.filter((item: any) => {
