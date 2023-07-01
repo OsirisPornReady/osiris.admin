@@ -220,10 +220,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCrawl(item: any, event: any) {
-    if (event) {
-      event.stopPropagation();
-    }
+  getCrawl(item: any) {
     let value = {
       id: item.id,
       crawlApiUrl: item.crawlApiUrl,
@@ -271,7 +268,7 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
         comicPhysicalDirectoryName: this.comicPhysicalDirectoryName,
         comicServerDirectoryName: this.comicServerDirectoryName,
       }
-      this.getCrawl(value, null);
+      this.getCrawl(value);
     }
   }
 

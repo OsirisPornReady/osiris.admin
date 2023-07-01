@@ -88,6 +88,11 @@ export class StartupService {
                 icon: { type: 'icon', value: 'youtube' }
               },
               {
+                text: 'Video Crawl Task',
+                link: '/video-manage/video-crawl-task-list',
+                icon: { type: 'icon', value: 'youtube' }
+              },
+              {
                 text: 'Video Download',
                 link: '/video-manage/video-download-task-list',
                 icon: { type: 'icon', value: 'youtube' }

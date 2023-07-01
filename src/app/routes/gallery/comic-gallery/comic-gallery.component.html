@@ -82,7 +82,7 @@
             </ng-template>
             <a *nzSpaceItem nz-typography (click)="setConfig(item.id, $event)">配置</a>
             <ng-template [ngIf]="item.canCrawl">
-              <a *nzSpaceItem nz-typography (click)="getCrawl(item, $event)">爬取</a>
+              <a *nzSpaceItem nz-typography (click)="$event.stopPropagation();getCrawl(item)">爬取</a>
             </ng-template>
             <a *nzSpaceItem nz-typography (click)="checkComic(item, $event)">验证</a>
             <ng-template [ngIf]="item.canCrawl">

@@ -186,6 +186,9 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   coverBase64: string = ''
   previewImageBase64List: string[] = [];
 
+  asyncCrawl: boolean = false;
+  taskData: any = {};
+
   constructor(
     private drawer: NzDrawerRef,
     private msgSrv: NzMessageService,
@@ -200,118 +203,111 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
-    if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlApiUrl')) {
-      if (!(typeof this.record.crawlKey == 'string' && typeof this.record.crawlApiUrl == 'string' && this.record.crawlApiUrl != '')) { //直接在前端进行类型检查吧
-        this.msgSrv.error('爬虫参数类型错误,请关闭页面');
-        console.log(this.record)
-        this.close();
-        return;
-      }
+    if (this.asyncCrawl) {
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          this.i = this.taskData || {};
+          resolve(true);
+        }, 700);
+      })
     } else {
-      this.msgSrv.error('未正确配置爬虫参数,请关闭页面');
-      this.close();
-      return;
-    }
-    if (this.commonService.globalData.isDownloadImage) {
-      if (this.record.hasOwnProperty('imagePhysicalPath') && this.record.hasOwnProperty('imageServerPath') && this.record.hasOwnProperty('imagePhysicalDirectoryName') && this.record.hasOwnProperty('imageServerDirectoryName')) {
-        this.record.imagePhysicalPath = (typeof this.record.imagePhysicalPath == 'string') ? this.record.imagePhysicalPath : ''
-        this.record.imageServerPath = (typeof this.record.imageServerPath == 'string') ? this.record.imageServerPath : ''
-        this.record.imagePhysicalDirectoryName = (typeof this.record.imagePhysicalDirectoryName == 'string') ? this.record.imagePhysicalDirectoryName : ''
-        this.record.imageServerDirectoryName = (typeof this.record.imageServerDirectoryName == 'string') ? this.record.imageServerDirectoryName : ''
+      if (this.record.hasOwnProperty('crawlKey') && this.record.hasOwnProperty('crawlApiUrl')) {
+        if (!(typeof this.record.crawlKey == 'string' && typeof this.record.crawlApiUrl == 'string' && this.record.crawlApiUrl != '')) { //直接在前端进行类型检查吧
+          this.msgSrv.error('爬虫参数类型错误,请关闭页面');
+          console.log(this.record)
+          this.close();
+          return;
+        }
       } else {
-        this.msgSrv.info('图片相关配置不正确,请关闭页面');
+        this.msgSrv.error('未正确配置爬虫参数,请关闭页面');
         this.close();
         return;
       }
+      if (this.commonService.globalData.isDownloadImage) {
+        if (this.record.hasOwnProperty('imagePhysicalPath') && this.record.hasOwnProperty('imageServerPath') && this.record.hasOwnProperty('imagePhysicalDirectoryName') && this.record.hasOwnProperty('imageServerDirectoryName')) {
+          this.record.imagePhysicalPath = (typeof this.record.imagePhysicalPath == 'string') ? this.record.imagePhysicalPath : ''
+          this.record.imageServerPath = (typeof this.record.imageServerPath == 'string') ? this.record.imageServerPath : ''
+          this.record.imagePhysicalDirectoryName = (typeof this.record.imagePhysicalDirectoryName == 'string') ? this.record.imagePhysicalDirectoryName : ''
+          this.record.imageServerDirectoryName = (typeof this.record.imageServerDirectoryName == 'string') ? this.record.imageServerDirectoryName : ''
+        } else {
+          this.msgSrv.info('图片相关配置不正确,请关闭页面');
+          this.close();
+          return;
+        }
+      }
+      try {
+        this.record.crawlKey = this.record.crawlKey.trim();
+        this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
+        // switch (this.record.crawlType) {
+        //   case 0:
+        //     this.i = null; //js中空对象并不为假值,置假应该用null
+        //     this.msgSrv.remove(this.crawlLoadingMsgId);
+        //     this.msgSrv.error('未指定数据源,请关闭页面');
+        //     return;
+        //   case 1:
+        //     this.i = (await this.crawlService.crawlJavBusVideo( { crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+        //     break;
+        //   case 2:
+        //     this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+        //     break;
+        //   case 3:
+        //     this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
+        //     break;
+        //   default:
+        //     this.i = null;
+        //     this.msgSrv.remove(this.crawlLoadingMsgId);
+        //     this.msgSrv.error('无法识别数据源,请关闭页面');
+        //     return;
+        // }
+        this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{
+          crawlKey: this.record.crawlKey,
+          downloadImage: this.commonService.globalData.isDownloadImage,
+          imagePhysicalPath: this.record.imagePhysicalPath,
+          imageServerPath: this.record.imageServerPath,
+          imagePhysicalDirectoryName: this.record.imagePhysicalDirectoryName,
+          imageServerDirectoryName: this.record.imageServerDirectoryName
+        })) || {};
+
+        // this.msgSrv.remove(this.crawlLoadingMsgId);
+        this.msgSrv.remove('');
+        this.msgSrv.success('爬取成功');
+      } catch (error) {
+        console.error(error)
+        // this.msgSrv.remove(this.crawlLoadingMsgId);
+        this.msgSrv.remove('');
+        this.msgSrv.error('爬取失败');
+        this.close();
+      }
     }
-    try {
-      this.record.crawlKey = this.record.crawlKey.trim();
-      this.crawlLoadingMsgId = this.msgSrv.loading(`${this.record.crawlKey}爬取中`, { nzDuration: 0 }).messageId;
-      // switch (this.record.crawlType) {
-      //   case 0:
-      //     this.i = null; //js中空对象并不为假值,置假应该用null
-      //     this.msgSrv.remove(this.crawlLoadingMsgId);
-      //     this.msgSrv.error('未指定数据源,请关闭页面');
-      //     return;
-      //   case 1:
-      //     this.i = (await this.crawlService.crawlJavBusVideo( { crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      //     break;
-      //   case 2:
-      //     this.i = (await this.crawlService.crawlBrazzersVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      //     break;
-      //   case 3:
-      //     this.i = (await this.crawlService.crawlTransAngelsVideo({ crawlKey: this.record.crawlKey, downloadImage: this.commonService.isDownloadImage })) || {};
-      //     break;
-      //   default:
-      //     this.i = null;
-      //     this.msgSrv.remove(this.crawlLoadingMsgId);
-      //     this.msgSrv.error('无法识别数据源,请关闭页面');
-      //     return;
-      // }
-      this.i = (await this.crawlService.crawlVideoByUrl(this.record.crawlApiUrl,{
-        crawlKey: this.record.crawlKey,
-        downloadImage: this.commonService.globalData.isDownloadImage,
-        imagePhysicalPath: this.record.imagePhysicalPath,
-        imageServerPath: this.record.imageServerPath,
-        imagePhysicalDirectoryName: this.record.imagePhysicalDirectoryName,
-        imageServerDirectoryName: this.record.imageServerDirectoryName
-      })) || {};
-      // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
-      this.dataSourceUrl = this.i.dataSourceUrl
-      // this.coverSrc = this.i.coverSrc;
-      this.coverBase64 = this.i.coverBase64;
-      this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
-      this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
-      this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
-      // this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
-      this.previewImageBase64List = Array.isArray(this.i.previewImageBase64List) ? this.i.previewImageBase64List : []
 
-      // this.enterKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(async event => {
-      //   if (event.key == 'Enter') {
-      //     try {
-      //       this.save(this.sf.value);
-      //     } catch (e) {}
-      //   }
-      // })
-      // this.spaceKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-      //   if (event.key == ' ') {
-      //     this.close();
-      //   }
-      // })
-      // this.dKeyDownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-      //   if (event.key == 'd') {
-      //     this.commonService.openNewTab(this.i.btdigUrl);
-      //   }
-      // })
+    // this.i.serialNumber = this.record.serialNumber.toUpperCase(); //只接受处理完的符合网站链接标准的番号
+    this.dataSourceUrl = this.i.dataSourceUrl
+    // this.coverSrc = this.i.coverSrc;
+    this.coverBase64 = this.i.coverBase64;
+    this.javUrl = this.commonService.buildJavbusLink(this.i.crawlKey)
+    this.btdigUrl = this.commonService.buildBtdiggLink(this.i.crawlKey)
+    this.nyaaUrl = this.commonService.buildNyaaLink(this.i.crawlKey)
+    // this.previewImageSrcList = Array.isArray(this.i.localPreviewImageSrcList) ? this.i.localPreviewImageSrcList : []
+    this.previewImageBase64List = Array.isArray(this.i.previewImageBase64List) ? this.i.previewImageBase64List : []
 
-      this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
-        if (event.key == 'Control') {
-          this.ctrlPressed = true;
-        }
-        if (this.ctrlPressed && event.key == 'Enter') {
-          setTimeout(async () => {
-            try {
-              await this.save(this.sf.value);
-            } catch (e) {}
-          })
-        }
-      })
-      this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
-        if (event.key == 'Control') {
-          this.ctrlPressed = false;
-        }
-      })
+    this.keydownSubscription = fromEvent<KeyboardEvent>(document, 'keydown').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = true;
+      }
+      if (this.ctrlPressed && event.key == 'Enter') {
+        setTimeout(async () => {
+          try {
+            await this.save(this.sf.value);
+          } catch (e) {}
+        })
+      }
+    })
+    this.keyupSubscription = fromEvent<KeyboardEvent>(document, 'keyup').subscribe(event => {
+      if (event.key == 'Control') {
+        this.ctrlPressed = false;
+      }
+    })
 
-      // this.msgSrv.remove(this.crawlLoadingMsgId);
-      this.msgSrv.remove('');
-      this.msgSrv.success('爬取成功');
-    } catch (error) {
-      console.error(error)
-      // this.msgSrv.remove(this.crawlLoadingMsgId);
-      this.msgSrv.remove('');
-      this.msgSrv.error('爬取失败');
-      this.close();
-    }
   }
 
   async save(value: any) {

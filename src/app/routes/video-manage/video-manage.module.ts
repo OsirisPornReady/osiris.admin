@@ -21,6 +21,7 @@ import { VideoManageVideoAlbumEditComponent } from './video-album/video-album-ed
 import { VideoManageVideoCollectComponent } from './video/video-select-album/video-collect.component';
 import { VideoManageVideoDownloadTaskListComponent } from './video-download-task/video-download-task-list/video-download-task-list.component';
 import { VideoManageLocalVideoEditComponent } from './video/local-video-edit/local-video-edit.component';
+import { VideoManageVideoCrawlTaskListComponent } from './video/video-crawl/video-crawl-task-list/video-crawl-task-list.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
@@ -28,7 +29,8 @@ const COMPONENTS: Type<void>[] = [
   VideoManageVideoTypeListComponent,
   VideoManageVideoQualityListComponent,
   VideoManageVideoAlbumListComponent,
-  VideoManageVideoDownloadTaskListComponent
+  VideoManageVideoDownloadTaskListComponent,
+  VideoManageVideoCrawlTaskListComponent
 ];
 
 const COMPONENTS_NOROUNT: Type<void>[] = [

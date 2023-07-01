@@ -5,7 +5,10 @@ import { environment } from '@env/environment';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { VERSION as VERSION_ZORRO } from 'ng-zorro-antd/version';
 import {lastValueFrom, Subscription} from 'rxjs';
+
 import { ComicDownloadService } from './service/comic/comic-download.service';
+import { CrawlTaskService } from './service/crawl/crawl-task.service';
+import {VideoCrawlTask} from "./model/CrawlTask";
 
 @Component({
   selector: 'app-root',
@@ -14,6 +17,7 @@ import { ComicDownloadService } from './service/comic/comic-download.service';
 export class AppComponent implements OnInit {
 
   downloadFinishSubscription: Subscription = new Subscription();
+  videoCrawlFinishSubscription: Subscription = new Subscription();
 
   constructor(
     el: ElementRef,
@@ -22,6 +26,7 @@ export class AppComponent implements OnInit {
     private titleSrv: TitleService,
     private modalSrv: NzModalService,
     private comicDownloadService: ComicDownloadService,
+    private crawlTaskService: CrawlTaskService,
     private http: _HttpClient
   ) {
     renderer.setAttribute(el.nativeElement, 'ng-alain-version', VERSION_ALAIN.full);
@@ -57,6 +62,25 @@ export class AppComponent implements OnInit {
         await lastValueFrom(this.http.get(`crawl/comic/cancel_download/${res.id}`));  // 似乎只有这样才能成功发送请求,不知道为啥
       } catch (e) {
         console.error(e)
+      }
+    })
+    this.videoCrawlFinishSubscription = this.crawlTaskService.videoCrawlFinishSubject.subscribe(async (res: any) => {
+      if (res.state == 'success') {
+        console.log(res)
+        let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
+        if (videoCrawlTask) {
+          videoCrawlTask.data = res.data;
+        }
+      } else if (res.state == 'fail') {
+        let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
+        if (videoCrawlTask) {
+          videoCrawlTask.data = null;
+        }
+      } else if (res.state == 'final') {
+        let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
+        if (videoCrawlTask) {
+          videoCrawlTask.state = 'wait';
+        }
       }
     })
   }
