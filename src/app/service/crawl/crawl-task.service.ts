@@ -123,7 +123,7 @@ export class CrawlTaskService {
     videoCrawlTask.subscription.unsubscribe();
   }
 
-  async executeVideoWorkFlow() {
+  async executeVideoWorkFlow(): Promise<any> {
     if (this.onVideoWorkFlow) {
       this.msgSrv.warning('正在执行工作流');
       return;
@@ -187,6 +187,9 @@ export class CrawlTaskService {
       this.videoCrawlTaskList = this.videoCrawlTaskList.filter((task: VideoCrawlTask) => !task.data);
       this.onVideoWorkFlow = false;
       this.videoWorkFlowStage = 'wait4start';
+      return {
+        message: 'confirm-finished'
+      }
     }
 
   }

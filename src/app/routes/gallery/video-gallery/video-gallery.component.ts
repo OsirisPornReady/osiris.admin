@@ -539,7 +539,13 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   }
 
   async executeVideoWorkFlow() {
-    await this.crawlTaskService.executeVideoWorkFlow();
+    let res = (await this.crawlTaskService.executeVideoWorkFlow()) || {};
+    if (res.message == 'confirm-finished') {
+      await new Promise((resolve, reject) => {
+        setTimeout(()=>{ resolve(true) }, 1500);
+      })
+      this.getByPage();
+    }
   }
 
 }
