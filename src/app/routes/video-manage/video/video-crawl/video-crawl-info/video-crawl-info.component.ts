@@ -22,6 +22,7 @@ import {fallbackImageBase64} from "../../../../../../assets/image-base64";
   styleUrls: ['/video-crawl-info.component.less']
 })
 export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
+  protected readonly fallbackImageBase64 = fallbackImageBase64;
   scoreTextList: string[] = this.commonService.scoreTextList;
 
   onSubmit: boolean = false;
@@ -419,5 +420,4 @@ export class VideoManageVideoCrawlInfoComponent implements OnInit, OnDestroy {
     })
   }
 
-    protected readonly fallbackImageBase64 = fallbackImageBase64;
 }

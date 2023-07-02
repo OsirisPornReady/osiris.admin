@@ -69,7 +69,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.videoCrawlFinishSubscription = this.crawlTaskService.videoCrawlFinishSubject.subscribe(async (res: any) => {
       if (res.state == 'success') {
-        console.log(res)
         let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
         if (videoCrawlTask) {
           videoCrawlTask.data = res.data;

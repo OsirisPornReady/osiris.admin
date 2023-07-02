@@ -74,7 +74,8 @@ import {
   FolderAddOutline,
   OrderedListOutline,
   EnterOutline,
-  AuditOutline
+  AuditOutline,
+  UndoOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -148,5 +149,6 @@ export const ICONS_AUTO = [
   FolderAddOutline,
   OrderedListOutline,
   EnterOutline,
-  AuditOutline
+  AuditOutline,
+  UndoOutline
 ];

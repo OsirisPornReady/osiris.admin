@@ -147,33 +147,40 @@ export class CrawlTaskService {
     if (this.videoWorkFlowStage == 'wait4confirm') {
       this.onVideoWorkFlow = true;
       this.videoWorkFlowStage = 'confirming';
-      for (let task of this.videoCrawlTaskList) {
+      for (let index = 0; index < this.videoCrawlTaskList.length; index++) {
+        let task = this.videoCrawlTaskList[index];
         if (task.data) {
           const videoId = task.videoId;
           await new Promise((resolve, reject) => {
             this.drawer.create('爬取信息', VideoManageVideoCrawlInfoComponent, { record: { id: videoId }, asyncCrawl: true, taskData: task.data }, {
               size: 1600,
               drawerOptions: {nzClosable: false}
-            }).subscribe(res => {
-              if (res.state == 'ok') {
-                this.modal.createStatic(VideoManageVideoEditComponent, {
-                  record: {id: videoId},
-                  automated: true,
-                  automatedData: res.data
-                }).subscribe(res => {
-                  resolve(true);
-                });
-              } else {
-                resolve(true);
-              }
+            }).subscribe({
+                next: res => {
+                  if (res.state == 'ok') {
+                    this.modal.createStatic(VideoManageVideoEditComponent, {
+                      record: {id: videoId},
+                      automated: true,
+                      automatedData: res.data
+                    }).subscribe(res => {
+                      resolve(true);
+                    });
+                  } else {
+                    resolve(true);
+                  }
+                },
+                error: () => { resolve(true); },
+                complete: () => { resolve(true); }
             });
           })
           if (this.videoCrawlTaskVideoIdMap.has(videoId)) {
             this.videoCrawlTaskVideoIdMap.delete(videoId);
           }
-          await new Promise((resolve, reject) => {
-            setTimeout(()=>{ resolve(true) }, 2000);
-          })
+          if (index < this.videoCrawlTaskList.length - 1) {
+            await new Promise((resolve, reject) => {
+              setTimeout(()=>{ resolve(true) }, 2000);
+            })
+          }
         }
       }
       // this.videoCrawlTaskList.length = 0;
