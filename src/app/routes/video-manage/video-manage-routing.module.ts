@@ -15,7 +15,9 @@ const routes: Routes = [
   { path: 'video-quality-list', component: VideoManageVideoQualityListComponent },
   { path: 'video-album-list', component: VideoManageVideoAlbumListComponent },
   { path: 'video-download-task-list', component: VideoManageVideoDownloadTaskListComponent },
-  { path: 'video-crawl-task-list', component: VideoManageVideoCrawlTaskListComponent }
+  { path: 'video-crawl-task-list', component: VideoManageVideoCrawlTaskListComponent },
+  { path: 'video-download-task-list-shortcut', component: VideoManageVideoDownloadTaskListComponent },
+  { path: 'video-crawl-task-list-shortcut', component: VideoManageVideoCrawlTaskListComponent }
 ];
 
 @NgModule({

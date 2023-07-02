@@ -9,7 +9,9 @@ const routes: Routes = [
   { path: 'comic-list', component: ComicManageComicListComponent },
   { path: 'comic-download-task-list', component: ComicManageComicDownloadTaskListComponent },
   { path: 'comic-album-list', component: ComicManageComicAlbumListComponent },
-  { path: 'comic-crawl-task-list', component: ComicManageComicCrawlTaskListComponent }
+  { path: 'comic-crawl-task-list', component: ComicManageComicCrawlTaskListComponent },
+  { path: 'comic-download-task-list-shortcut', component: ComicManageComicDownloadTaskListComponent },
+  { path: 'comic-crawl-task-list-shortcut', component: ComicManageComicCrawlTaskListComponent },
 ];
 
 @NgModule({

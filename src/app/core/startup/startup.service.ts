@@ -89,12 +89,12 @@ export class StartupService {
               },
               {
                 text: 'Video Crawl Task',
-                link: '/video-manage/video-crawl-task-list',
+                link: '/video-manage/video-crawl-task-list-shortcut',
                 icon: { type: 'icon', value: 'youtube' }
               },
               {
                 text: 'Video Download',
-                link: '/video-manage/video-download-task-list',
+                link: '/video-manage/video-download-task-list-shortcut',
                 icon: { type: 'icon', value: 'youtube' }
               },
               {
@@ -104,12 +104,12 @@ export class StartupService {
               },
               {
                 text: 'Comic Crawl Task',
-                link: '/comic-manage/comic-crawl-task-list',
+                link: '/comic-manage/comic-crawl-task-list-shortcut',
                 icon: { type: 'icon', value: 'picture' }
               },
               {
                 text: 'Comic Download',
-                link: '/comic-manage/comic-download-task-list',
+                link: '/comic-manage/comic-download-task-list-shortcut',
                 icon: { type: 'icon', value: 'picture' }
               },
               {
