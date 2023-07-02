@@ -101,7 +101,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   onOpenDialog: boolean = false;
 
   realTimeCrawl: boolean = false;
-  crawlTaskCount: number = 0;
+  // crawlTaskCount: number = 0;
 
   constructor(
     private http: _HttpClient,
@@ -112,7 +112,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     private dataUrlDetectService: DataUrlDetectService,
     private crawlService: CrawlService,
     private crawlTypeService: CrawlTypeService,
-    private crawlTaskService: CrawlTaskService,
+    public crawlTaskService: CrawlTaskService,
     private drawer: DrawerHelper,
     private msgSrv: NzMessageService,
     private ntfService: NzNotificationService,
@@ -127,7 +127,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.error(e);
     }
-    this.crawlTaskCount = this.crawlTaskService.videoCrawlTaskList.length;
+    // this.crawlTaskCount = this.crawlTaskService.videoCrawlTaskList.length;
     this.getByPage();
     this.crawlTypeOptions = (await lastValueFrom(this.crawlTypeService.getSelectAll())) || [];
     this.crawlApiUrl = this.crawlTypeOptions.length > 0 ? this.crawlTypeOptions[1].value : null;
@@ -535,7 +535,11 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       subscription: new Subscription()
     }
     this.crawlTaskService.addVideoCrawlTask(videoId, videoCrawlTask);
-    this.crawlTaskCount = this.crawlTaskService.videoCrawlTaskList.length;
+    // this.crawlTaskCount = this.crawlTaskService.videoCrawlTaskList.length;
+  }
+
+  async executeVideoWorkFlow() {
+    await this.crawlTaskService.executeVideoWorkFlow();
   }
 
 }

@@ -10,7 +10,7 @@
       <button nz-button nzType="default" (click)="st.checkAll(false)">
         取消全选
       </button>
-      <button nz-button nzType="primary" nzDanger (click)="bulkDelete(st._data);copiedTaskList=[]">
+      <button nz-button nzType="primary" nzDanger (click)="bulkDelete(st._data);copiedTaskList.length=0">
         <span nz-icon nzType="delete" nzTheme="outline"></span>
         批量删除
       </button>

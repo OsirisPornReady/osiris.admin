@@ -83,6 +83,13 @@ export class AppComponent implements OnInit, OnDestroy {
         let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
         if (videoCrawlTask) {
           videoCrawlTask.state = 'wait';
+          if (res.autoTask) {
+            this.crawlTaskService.videoWorkFlowStack.pop();
+            if (this.crawlTaskService.videoWorkFlowStack.length == 0) {
+              this.crawlTaskService.videoWorkFlowStage = 'wait4confirm'
+              this.crawlTaskService.onVideoWorkFlow = false;
+            }
+          }
         }
       }
     })

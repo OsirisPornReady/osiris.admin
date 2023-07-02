@@ -520,4 +520,8 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
     this.crawlTaskCount = this.crawlTaskService.comicCrawlTaskList.length;
   }
 
+  executeComicCrawlTaskList() {
+
+  }
+
 }
