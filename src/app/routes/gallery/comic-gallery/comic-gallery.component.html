@@ -2,7 +2,7 @@
 <div class="page-header d-flex justify-content-start align-items-center">
   <div class="header-content d-flex justify-content-start align-items-center">
     <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
-    <input  nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-xl ml-md" auto-focus (keydown.enter)="autoCreate()"/>
+    <input  nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-xl ml-md" auto-focus (keydown.enter)="autoTask()"/>
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
