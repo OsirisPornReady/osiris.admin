@@ -31,7 +31,7 @@
                nzUnCheckedChildren="查看"
                class="ml-md">
     </nz-switch>
-    <nz-switch [(ngModel)]="canSwitchShowOnClient"
+    <nz-switch [(ngModel)]="canSwitchVideoOnClient"
                nzCheckedChildren="上架编辑"
                nzUnCheckedChildren="上架编辑"
                class="ml-md">
@@ -160,10 +160,14 @@
           </nz-space>
         </div>
 
-        <div class="mt-sm" *ngIf="canSwitchShowOnClient">
-          <button nz-button nzType="default" nzSize="small" style="width: 100%;" (click)="$event.stopPropagation();switchShowOnClient(item)">
-            <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>
-            上架
+        <div class="mt-sm" *ngIf="canSwitchVideoOnClient">
+          <button nz-button
+                  [nzType]="videoIdListOnClient.includes(item.id) ? 'default' : 'primary'"
+                  [nzLoading]="switchOnClientLoading"
+                  nzSize="default" style="width: 100%;"
+                  (click)="$event.stopPropagation();switchVideoOnClient(item)">
+            <span nz-icon [nzType]="videoIdListOnClient.includes(item.id) ? 'eye-invisible' : 'eye'" nzTheme="outline"></span>
+            <span>{{videoIdListOnClient.includes(item.id) ? '下架' : '上架'}}</span>
           </button>
         </div>
       </nz-card>

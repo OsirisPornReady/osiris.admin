@@ -136,4 +136,19 @@ export class VideoService {
     return lastValueFrom(this.http.post(url, entity));
   }
 
+  getVideoIdListOnClient() {
+    let url = `api/video/get_video_id_list_on_client`;
+    return lastValueFrom(this.http.get(url));
+  }
+
+  pushVideoOnClient(videoId: number) {
+    let url = `api/video/push_video_on_client/${videoId}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
+  pullVideoOffClient(videoId: number) {
+    let url = `api/video/pull_video_off_client/${videoId}`;
+    return lastValueFrom(this.http.get(url));
+  }
+
 }

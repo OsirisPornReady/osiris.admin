@@ -103,7 +103,9 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   realTimeCrawl: boolean = false;
   // crawlTaskCount: number = 0;
 
-  canSwitchShowOnClient: boolean = false;
+  canSwitchVideoOnClient: boolean = false;
+  videoIdListOnClient: number[] = [];
+  switchOnClientLoading: boolean = false;
 
   constructor(
     private http: _HttpClient,
@@ -126,6 +128,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       this.videoIdListOwnLocal = (await this.videoService.getVideoIdListOwnLocal()) || [];
+      this.videoIdListOnClient = (await this.videoService.getVideoIdListOnClient()) || [];
     } catch (e) {
       console.error(e);
     }
@@ -551,8 +554,20 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     }
   }
 
-  async switchShowOnClient(item: any) {
-
+  async switchVideoOnClient(item: any) {
+    this.switchOnClientLoading = true;
+    let flag: boolean = this.videoIdListOnClient.includes(item.id)
+    try {
+      if (!flag) {
+        await this.videoService.pushVideoOnClient(item.id);
+      } else {
+        await this.videoService.pullVideoOffClient(item.id);
+      }
+      this.videoIdListOnClient = (await this.videoService.getVideoIdListOnClient()) || [];
+    } catch (e) {
+      console.error(e)
+    }
+    this.switchOnClientLoading = false;
   }
 
 }
