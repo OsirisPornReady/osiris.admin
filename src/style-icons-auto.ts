@@ -75,7 +75,8 @@ import {
   OrderedListOutline,
   EnterOutline,
   AuditOutline,
-  UndoOutline
+  UndoOutline,
+  CloudUploadOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -150,5 +151,6 @@ export const ICONS_AUTO = [
   OrderedListOutline,
   EnterOutline,
   AuditOutline,
-  UndoOutline
+  UndoOutline,
+  CloudUploadOutline
 ];

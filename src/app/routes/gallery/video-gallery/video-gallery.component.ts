@@ -103,6 +103,8 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   realTimeCrawl: boolean = false;
   // crawlTaskCount: number = 0;
 
+  canSwitchShowOnClient: boolean = false;
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -547,6 +549,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       })
       this.getByPage();
     }
+  }
+
+  async switchShowOnClient(item: any) {
+
   }
 
 }

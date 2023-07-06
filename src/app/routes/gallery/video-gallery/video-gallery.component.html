@@ -31,6 +31,11 @@
                nzUnCheckedChildren="查看"
                class="ml-md">
     </nz-switch>
+    <nz-switch [(ngModel)]="canSwitchShowOnClient"
+               nzCheckedChildren="上架编辑"
+               nzUnCheckedChildren="上架编辑"
+               class="ml-md">
+    </nz-switch>
   </div>
   <div class="header-content ml-xl">
     <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
@@ -153,6 +158,13 @@
               播放
             </button>
           </nz-space>
+        </div>
+
+        <div class="mt-sm" *ngIf="canSwitchShowOnClient">
+          <button nz-button nzType="default" nzSize="small" style="width: 100%;" (click)="$event.stopPropagation();switchShowOnClient(item)">
+            <span nz-icon nzType="cloud-upload" nzTheme="outline"></span>
+            上架
+          </button>
         </div>
       </nz-card>
       <nz-empty *ngIf="(!loading) && gridList.length == 0"></nz-empty>
