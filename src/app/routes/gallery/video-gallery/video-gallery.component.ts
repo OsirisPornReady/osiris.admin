@@ -109,6 +109,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   canSwitchVideoOnClient: boolean = false;
   videoIdListOnClient: number[] = [];
   switchOnClientLoading: boolean = false;
+  videoIdOnSwitchingOnClient: number = -1;
 
   sort: string = '';
   sortOptions = [
@@ -569,6 +570,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
 
   async switchVideoOnClient(item: any) {
     this.switchOnClientLoading = true;
+    this.videoIdOnSwitchingOnClient = item.id;
     let flag: boolean = this.videoIdListOnClient.includes(item.id)
     try {
       if (!flag) {
@@ -581,6 +583,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       console.error(e)
     }
     this.switchOnClientLoading = false;
+    this.videoIdOnSwitchingOnClient = -1;
   }
 
   openVideoCustomTagsEdit(id: number) {

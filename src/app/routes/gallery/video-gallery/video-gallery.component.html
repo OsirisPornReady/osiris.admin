@@ -181,7 +181,7 @@
         <div class="mb-sm" *ngIf="canSwitchVideoOnClient">
           <button nz-button
                   [nzType]="videoIdListOnClient.includes(item.id) ? 'default' : 'primary'"
-                  [nzLoading]="switchOnClientLoading"
+                  [nzLoading]="switchOnClientLoading && videoIdOnSwitchingOnClient == item.id"
                   nzSize="default" style="width: 100%;"
                   (click)="$event.stopPropagation();switchVideoOnClient(item)">
             <span nz-icon [nzType]="videoIdListOnClient.includes(item.id) ? 'eye-invisible' : 'eye'" nzTheme="outline"></span>
