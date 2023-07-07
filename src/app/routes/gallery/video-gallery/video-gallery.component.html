@@ -1,8 +1,8 @@
 <!--<page-header [home]="''" [title]="''"></page-header>-->
 <div class="page-header d-flex justify-content-start align-items-center">
   <div class="header-content d-flex justify-content-start align-items-center">
-    <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 170px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
-    <input nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-xl ml-md" auto-focus (keydown.enter)="autoTask()"/>
+    <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 150px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
+    <input nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-lg ml-md" auto-focus (keydown.enter)="autoTask()"/>
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
@@ -38,17 +38,30 @@
     </nz-switch>
   </div>
   <div class="header-content ml-xl">
-    <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫终端已连接' : '爬虫终端已断开'" class="mr-md"></nz-badge>
-    <button nz-button type="button" nzType="default" nzShape="round" (click)="connectMessageSocket()">
+    <nz-badge [nzStatus]="!messageSocketSubscription.closed ? 'success' : 'error'" [nzText]="!messageSocketSubscription.closed ? '爬虫连接' : '爬虫断开'" class="mr-md"></nz-badge>
+    <button nz-button type="button" nzType="default" nzShape="circle" (click)="connectMessageSocket()">
       <span nz-icon [nzType]="'sync'" [nzSpin]="reloadSocketSpin"></span>
     </button>
   </div>
-  <div class="header-content search-keyword">
-    <button nz-button nzType="default" nzShape="round" class="mr-md" (click)="resetSearch()">
-      <span nz-icon nzType="reload" nzTheme="outline"></span>
-    </button>
-    <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
-      <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-lg" (keydown.enter)="search()"/>
+  <div class="header-content search-keyword d-flex justify-content-end align-items-center">
+<!--    nzCompact主要是可以消除border重叠-->
+    <nz-input-group nzCompact>
+      <nz-select
+        [(ngModel)]="sort"
+        style="width: 150px"
+        nzSize="large"
+        nzAllowClear
+        nzShowSearch
+        nzPlaceHolder="选择排序"
+        [nzOptions]="sortOptions"
+        (ngModelChange)="getByPage()"
+      ></nz-select>
+      <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
+        <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-lg" (keydown.enter)="search()"/>
+      </nz-input-group>
+      <button nz-button nzType="default" nzShape="round" nzSize="large" (click)="resetSearch()">
+        <span nz-icon nzType="reload" nzTheme="outline"></span>
+      </button>
     </nz-input-group>
 <!--    <ng-template #suffixIconSearch>-->
 <!--      <span nz-icon [nzType]="keyword ? 'undo' : 'search'" [ngClass]="[keyword ? 'reset-search-icon' : '']"  (click)="resetSearch()"></span>-->

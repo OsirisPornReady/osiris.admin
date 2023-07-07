@@ -110,6 +110,13 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   videoIdListOnClient: number[] = [];
   switchOnClientLoading: boolean = false;
 
+  sort: string = '';
+  sortOptions = [
+    { label: '发布时间排序', value: 'publishTime.descend' },
+    { label: '添加时间排序', value: 'addTime.descend' },
+    { label: '更新时间排序', value: 'updateTime.descend' },
+  ];
+
   constructor(
     private http: _HttpClient,
     private modal: ModalHelper,
@@ -203,6 +210,9 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     let url = `api/video/get_by_page?pi=${this.pi}&ps=${this.ps}`
     if (this.keyword) {
       url = `${url}&keyword=${this.keyword}`;
+    }
+    if (this.sort) {
+      url = `${url}&sort=${this.sort}`;
     }
     this.loading = true;
     this.http.get(url).pipe(finalize(() => {
