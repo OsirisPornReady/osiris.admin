@@ -22,6 +22,7 @@ import { VideoManageVideoCollectComponent } from './video/video-select-album/vid
 import { VideoManageVideoDownloadTaskListComponent } from './video-download-task/video-download-task-list/video-download-task-list.component';
 import { VideoManageLocalVideoEditComponent } from './video/local-video-edit/local-video-edit.component';
 import { VideoManageVideoCrawlTaskListComponent } from './video/video-crawl/video-crawl-task-list/video-crawl-task-list.component';
+import { VideoManageVideoCustomTagsEditComponent } from './video/video-custom-tags-edit/video-custom-tags-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   VideoManageVideoListComponent,
@@ -44,7 +45,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   VideoManageVideoEvaluateComponent,
   VideoManageVideoAlbumEditComponent,
   VideoManageVideoCollectComponent,
-  VideoManageLocalVideoEditComponent
+  VideoManageLocalVideoEditComponent,
+  VideoManageVideoCustomTagsEditComponent
 ];
 
 @NgModule({

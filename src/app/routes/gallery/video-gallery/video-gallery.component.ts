@@ -27,6 +27,9 @@ import {CrawlMessage} from "../../../model/CrawlMessage";
 import {VideoCrawlTask} from "../../../model/CrawlTask";
 import {fallbackImageBase64} from "../../../../assets/image-base64";
 import {VideoManageLocalVideoEditComponent} from "../../video-manage/video/local-video-edit/local-video-edit.component";
+import {
+  VideoManageVideoCustomTagsEditComponent
+} from "../../video-manage/video/video-custom-tags-edit/video-custom-tags-edit.component";
 
 
 @Component({
@@ -568,6 +571,15 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       console.error(e)
     }
     this.switchOnClientLoading = false;
+  }
+
+  openVideoCustomTagsEdit(id: number) {
+    this.modal.createStatic(VideoManageVideoCustomTagsEditComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        // 不一定需要,因为tag改动没有体现在grid视图上,不需要更新视觉效果
+        this.getByPage();
+      }
+    });
   }
 
 }

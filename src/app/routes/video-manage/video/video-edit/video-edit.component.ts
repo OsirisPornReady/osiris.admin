@@ -1,8 +1,10 @@
-import {Component, OnInit, AfterViewInit, ViewChild, QueryList, ViewChildren} from '@angular/core';
+import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, QueryList, ViewChildren} from '@angular/core';
 import {SFComponent, SFSchema, SFUISchema} from '@delon/form';
 import { _HttpClient, DrawerHelper } from '@delon/theme';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzModalRef } from 'ng-zorro-antd/modal';
+
+import {debounceTime, distinctUntilChanged, Subject, Subscription} from "rxjs";
 
 import { AreaService } from '../../../../service/area/area.service';
 import { CastService } from '../../../../service/cast/cast.service';
@@ -16,11 +18,12 @@ import { VideoImageDownloadService } from '../../../../service/video/video-image
 
 import { VideoManageVideoCrawlInfoComponent } from '../video-crawl/video-crawl-info/video-crawl-info.component';
 
+
 @Component({
   selector: 'app-video-manage-video-edit',
   templateUrl: './video-edit.component.html'
 })
-export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
+export class VideoManageVideoEditComponent implements OnInit, AfterViewInit, OnDestroy {
   scoreTextList: string[] = this.commonService.scoreTextList;
 
   title = '';
@@ -42,6 +45,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       crawlButton: { type: 'string', title: '导入' },
       title: { type: 'string', title: '标题' },
       score: { type: 'number', title: '评分', maximum: 10, multipleOf: 1 },
+      customTags: { type: 'string', title: '自定义标签' },
       onStorage: { type: 'boolean', title: '入库情况' },
       videoSrc: { type: 'string', title: '视频地址' },
       existSerialNumber: { type: 'boolean', title: '有无番号' },
@@ -266,11 +270,24 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     $comment: {
       widget: 'textarea'
     },
+    $customTags: {
+      widget: 'custom'
+    }
   };
 
   automatedMsgId: string = '';
   automated: boolean = false;
   automatedData: any = {};
+
+  customTags: any[] = []
+  inputCustomTagValue: string = '';
+  onEditCustomTags: boolean = false;
+  onSwapCustomTags: boolean = false;
+  tagKeyword: string = '';
+  tagCheckedCount: number = 0;
+  tagSwapIndexList: number[] = [];
+  inputCustomTagValueStream: Subject<any> = new Subject<any>();
+
 
   constructor(
     private modal: NzModalRef,
@@ -301,6 +318,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
       this.title = '新增';
       this.i = {};
     }
+    this.getCustomTags();
     setTimeout(async () => {
       if (this.automated) {
         await this.automatedOperate();
@@ -344,10 +362,15 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     // }
   }
 
+  ngOnDestroy() {
+    this.inputCustomTagValueStream.unsubscribe();
+  }
+
   async save(value: any) {
     // const params = { ...value };
     // params.id = this.record.id;
     // sf的机制让它不会收集为null的数据,不符合后端VideoDTO,提交params会出错
+    value.customTags = this.customTags.map(tag => tag.text);
     let id: number = -1;
     try {
       if (this.record.id > 0) {
@@ -457,6 +480,95 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit {
     } else {
       this.msgSrv.error('表单存在非法值,无法自动提交')
     }
+  }
+
+  getCustomTags() {
+    if (this.i.hasOwnProperty('customTags') && this.i.customTags) {
+      this.customTags = this.i.customTags.map((tag: string) => {
+        return {
+          checked: false,
+          text: tag
+        }
+      });
+    } else {
+      this.customTags = [];
+    }
+    this.inputCustomTagValueStream.pipe(
+      debounceTime(400),
+      distinctUntilChanged())
+      .subscribe(res => {
+        this.queryCustomTag();
+      });
+  }
+
+  addCustomTag() {
+    if (this.inputCustomTagValue) {
+      let flag = this.customTags.findIndex((tag: any) => tag.text == this.inputCustomTagValue);
+      if (flag == -1) {
+        let addTag: any = {
+          checked: false,
+          text: this.inputCustomTagValue
+        }
+        this.customTags.push(addTag);
+        this.inputCustomTagValue = '';
+      } else {
+        this.msgSrv.warning('标签已存在');
+      }
+    } else {
+      this.msgSrv.warning('输入值为空');
+    }
+  }
+
+  deleteCustomTag(removedTag: any) {
+    this.customTags = this.customTags.filter(tag => tag.text !== removedTag.text);
+  }
+
+  swapCustomTags() {
+    let posA: number = this.tagSwapIndexList[0];
+    let posB: number = this.tagSwapIndexList[1];
+    [this.customTags[posA], this.customTags[posB]] = [this.customTags[posB], this.customTags[posA]];
+    this.tagSwapIndexList = [];
+    this.customTags = this.customTags.map(tag => {
+      tag.checked = false;
+      return tag;
+    })
+  }
+
+  handleCustomTagInputKeydownEnter() {
+    if (this.onEditCustomTags) {
+      if (!this.onSwapCustomTags) {
+        this.addCustomTag();
+      }
+    } else {
+      this.queryCustomTag();
+    }
+  }
+
+  queryCustomTag() {
+    this.tagKeyword = this.inputCustomTagValue;
+  }
+
+  handleCheckCustomTag (event: any, index: number) {
+    if (event) {
+      this.tagSwapIndexList.push(index);
+    } else {
+      this.tagSwapIndexList = this.tagSwapIndexList.filter((idx: any) => idx != index);
+    }
+  }
+
+  handleSwitchOnEditCustomTags(event: any) {
+    if (!event) {
+      this.onSwapCustomTags = false;
+      this.tagSwapIndexList = [];
+      this.customTags = this.customTags.map(tag => {
+        tag.checked = false;
+        return tag;
+      })
+    }
+  }
+
+  handleInputCustomTagValue() {
+    this.inputCustomTagValueStream.next(this.inputCustomTagValue);
   }
 
 }
