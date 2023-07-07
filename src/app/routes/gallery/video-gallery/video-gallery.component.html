@@ -90,7 +90,7 @@
           (click)="handlePreview($event)"
         />
         <span nz-typography class="d-block mb-sm" [nzCopyable]="true" [nzCopyText]="item.title" (click)="$event.stopPropagation()">{{item.title}}</span>
-        <span nz-typography class="d-block mb-sm"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
+        <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
         <span nz-typography class="d-block mb-sm"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
         <span *ngIf="item.series" nz-typography class="d-block" [nzCopyable]="true" [nzCopyText]="item.series ? item.series[0] : ''" (click)="$event.stopPropagation()"><mark>{{'系列: ' + item.series}}</mark></span>
 
@@ -153,7 +153,7 @@
           </nz-space>
         </div>
 
-        <div class="mb-sm">
+        <div>
           <nz-space nzSize="small" [nzSplit]="spaceSplit">
             <nz-switch *nzSpaceItem
                        [(ngModel)]="item.onStorage"
@@ -178,7 +178,7 @@
           </nz-space>
         </div>
 
-        <div class="mb-sm" *ngIf="canSwitchVideoOnClient">
+        <div class="mt-sm" *ngIf="canSwitchVideoOnClient">
           <button nz-button
                   [nzType]="videoIdListOnClient.includes(item.id) ? 'default' : 'primary'"
                   [nzLoading]="switchOnClientLoading && videoIdOnSwitchingOnClient == item.id"
