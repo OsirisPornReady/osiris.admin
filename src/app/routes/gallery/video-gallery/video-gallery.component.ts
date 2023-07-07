@@ -577,7 +577,7 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     this.modal.createStatic(VideoManageVideoCustomTagsEditComponent, {record: {id}}).subscribe(res => {
       if (res == 'ok') {
         // 不一定需要,因为tag改动没有体现在grid视图上,不需要更新视觉效果
-        this.getByPage();
+        // this.getByPage();
       }
     });
   }

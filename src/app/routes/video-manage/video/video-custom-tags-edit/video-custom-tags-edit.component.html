@@ -10,7 +10,7 @@
 <!--  [disabled]="!sf.valid"-->
 
   <ng-template sf-template="customTags" let-i let-ui="ui" let-schema="schema">
-    <div [ngClass]="[customTags.length > 0 ? 'mb-md' : '']">
+    <div class="mb-md d-flex justify-content-start align-items-center" style="height: 32px">
       <nz-switch
         [(ngModel)]="onEditCustomTags"
         nzCheckedChildren="查看"
