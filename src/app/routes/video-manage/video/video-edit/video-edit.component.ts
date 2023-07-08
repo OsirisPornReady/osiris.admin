@@ -511,6 +511,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit, OnD
         }
         this.customTags.push(addTag);
         this.inputCustomTagValue = '';
+        this.queryCustomTag();
       } else {
         this.msgSrv.warning('标签已存在');
       }
@@ -538,7 +539,6 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit, OnD
     if (this.onEditCustomTags) {
       if (!this.onSwapCustomTags) {
         this.addCustomTag();
-        this.queryCustomTag();
       }
     } else {
       this.queryCustomTag();

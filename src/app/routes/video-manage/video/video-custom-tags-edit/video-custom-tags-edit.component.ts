@@ -117,6 +117,7 @@ export class VideoManageVideoCustomTagsEditComponent implements OnInit, OnDestro
         }
         this.customTags.push(addTag);
         this.inputCustomTagValue = '';
+        this.queryCustomTag();
       } else {
         this.msgSrv.warning('标签已存在');
       }
@@ -144,7 +145,6 @@ export class VideoManageVideoCustomTagsEditComponent implements OnInit, OnDestro
     if (this.onEditCustomTags) {
       if (!this.onSwapCustomTags) {
         this.addCustomTag();
-        this.queryCustomTag();
       }
     } else {
       this.queryCustomTag();
