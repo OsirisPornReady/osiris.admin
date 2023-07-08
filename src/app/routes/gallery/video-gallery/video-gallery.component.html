@@ -2,7 +2,31 @@
 <div class="page-header d-flex justify-content-start align-items-center">
   <div class="header-content d-flex justify-content-start align-items-center">
     <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 120px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
-    <input nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoTask()"/>
+    <nz-input-group nzSize="large" class="ml-md" [nzSuffix]="inputClearTpl">
+      <input
+        nz-input nzSize="large" placeholder="Crawl Key"
+        [(ngModel)]="crawlKey"
+        class="width-md"
+        auto-focus
+        (keydown.enter)="autoTask()"
+      />
+    </nz-input-group>
+    <ng-template #inputClearTpl>
+      <span
+        nz-icon
+        class="ant-input-clear-icon"
+        nzType="key"
+        nzTheme="outline"
+        *ngIf="!crawlKey"></span>
+      <span
+        nz-icon
+        class="ant-input-clear-icon"
+        nzTheme="fill"
+        nzType="close-circle"
+        *ngIf="crawlKey"
+        (click)="crawlKey = ''"
+      ></span>
+    </ng-template>
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
@@ -81,15 +105,29 @@
       <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
         <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-md" (keydown.enter)="search()"/>
       </nz-input-group>
-      <button nz-button nzType="default" nzShape="round" nzSize="large" (click)="resetSearch()">
-        <span nz-icon nzType="reload" nzTheme="outline"></span>
-      </button>
+<!--      <button nz-button nzType="default" nzShape="round" nzSize="large" (click)="resetSearch()">-->
+<!--        <span nz-icon nzType="reload" nzTheme="outline"></span>-->
+<!--      </button>-->
     </nz-input-group>
 <!--    <ng-template #suffixIconSearch>-->
 <!--      <span nz-icon [nzType]="keyword ? 'undo' : 'search'" [ngClass]="[keyword ? 'reset-search-icon' : '']"  (click)="resetSearch()"></span>-->
 <!--    </ng-template>-->
     <ng-template #suffixIconSearch>
-      <span nz-icon [nzType]="'search'"></span>
+      <span
+        nz-icon
+        class="ant-input-clear-icon"
+        nzTheme="fill"
+        nzType="close-circle"
+        *ngIf="keyword"
+        (click)="resetSearch()"
+      ></span>
+      <span
+        nz-icon
+        class="ant-input-clear-icon"
+        [nzType]="'search'"
+        *ngIf="!keyword"
+        (click)="search()"
+      ></span>
     </ng-template>
   </div>
 </div>

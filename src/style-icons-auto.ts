@@ -82,7 +82,8 @@ import {
   ClusterOutline,
   SwapOutline,
   TagsOutline,
-  ClearOutline
+  ClearOutline,
+  KeyOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -164,5 +165,6 @@ export const ICONS_AUTO = [
   ClusterOutline,
   SwapOutline,
   TagsOutline,
-  ClearOutline
+  ClearOutline,
+  KeyOutline
 ];
