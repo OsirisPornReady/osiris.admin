@@ -77,7 +77,11 @@ import {
   AuditOutline,
   UndoOutline,
   CloudUploadOutline,
-  EyeInvisibleOutline
+  EyeInvisibleOutline,
+  BugOutline,
+  ClusterOutline,
+  SwapOutline,
+  TagsOutline
 } from '@ant-design/icons-angular/icons';
 
 export const ICONS_AUTO = [
@@ -154,5 +158,9 @@ export const ICONS_AUTO = [
   AuditOutline,
   UndoOutline,
   CloudUploadOutline,
-  EyeInvisibleOutline
+  EyeInvisibleOutline,
+  BugOutline,
+  ClusterOutline,
+  SwapOutline,
+  TagsOutline
 ];

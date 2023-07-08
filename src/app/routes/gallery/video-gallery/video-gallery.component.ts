@@ -30,6 +30,9 @@ import {VideoManageLocalVideoEditComponent} from "../../video-manage/video/local
 import {
   VideoManageVideoCustomTagsEditComponent
 } from "../../video-manage/video/video-custom-tags-edit/video-custom-tags-edit.component";
+import {
+  VideoManageVideoCustomSortOrderEditComponent
+} from "../../video-manage/video/video-custom-order-edit/video-custom-sort-order-edit.component";
 
 
 @Component({
@@ -116,7 +119,12 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     { label: '发布时间排序', value: 'publishTime.descend' },
     { label: '添加时间排序', value: 'addTime.descend' },
     { label: '更新时间排序', value: 'updateTime.descend' },
+    { label: '自定义排序', value: 'customSortOrder.descend' },
   ];
+
+  swapIdStack: number[] = [];
+  onSwapCustomSortOrder: boolean = true;
+
 
   constructor(
     private http: _HttpClient,
@@ -593,6 +601,39 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         // this.getByPage();
       }
     });
+  }
+
+  openVideoCustomSortOrderEdit(id: number) {
+    this.modal.createStatic(VideoManageVideoCustomSortOrderEditComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        this.getByPage();
+      }
+    });
+  }
+
+  selectSwapId(id: number) {
+    let flag = this.swapIdStack.findIndex(swapId => swapId == id)
+    if (flag == -1) {
+      if (this.swapIdStack.length >= 2) {
+        this.swapIdStack.shift();
+      }
+      this.swapIdStack.push(id);
+    } else {
+      this.swapIdStack = this.swapIdStack.filter(swapId => swapId != id);
+    }
+  }
+
+  async swapCustomSortOrder() {
+    try {
+      if (this.swapIdStack.length < 2) { return; }
+      await this.videoService.swapCustomSortOrder(this.swapIdStack[0], this.swapIdStack[1]);
+      this.swapIdStack = [];
+      this.getByPage();
+      this.msgSrv.success('交换顺序成功');
+    } catch (e) {
+      console.error(e);
+      this.msgSrv.error('交换顺序失败');
+    }
   }
 
 }

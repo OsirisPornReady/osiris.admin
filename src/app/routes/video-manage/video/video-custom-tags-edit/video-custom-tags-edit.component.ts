@@ -22,7 +22,7 @@ export class VideoManageVideoCustomTagsEditComponent implements OnInit, OnDestro
     properties: {
       customTags: { type: 'string', title: '自定义标签' },
     },
-    required: ['score', 'comment'],
+    required: [],
   };
   ui: SFUISchema = {
     '*': {

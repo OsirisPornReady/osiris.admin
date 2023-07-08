@@ -151,4 +151,9 @@ export class VideoService {
     return lastValueFrom(this.http.get(url));
   }
 
+  swapCustomSortOrder(idA: number, idB: number) {
+    let url = `api/video/swap_custom_sort_order`;
+    return lastValueFrom(this.http.get(url, { idA, idB }));
+  }
+
 }
