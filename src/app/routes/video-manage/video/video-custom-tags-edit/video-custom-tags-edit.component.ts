@@ -144,6 +144,7 @@ export class VideoManageVideoCustomTagsEditComponent implements OnInit, OnDestro
     if (this.onEditCustomTags) {
       if (!this.onSwapCustomTags) {
         this.addCustomTag();
+        this.queryCustomTag();
       }
     } else {
       this.queryCustomTag();

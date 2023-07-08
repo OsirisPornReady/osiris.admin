@@ -538,6 +538,7 @@ export class VideoManageVideoEditComponent implements OnInit, AfterViewInit, OnD
     if (this.onEditCustomTags) {
       if (!this.onSwapCustomTags) {
         this.addCustomTag();
+        this.queryCustomTag();
       }
     } else {
       this.queryCustomTag();
