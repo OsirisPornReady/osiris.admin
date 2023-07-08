@@ -34,7 +34,10 @@
 <!--      <span nz-icon nzType="reload" nzTheme="outline"></span>-->
 <!--    </button>-->
     <nz-badge [nzCount]="crawlTaskService.videoCrawlTaskList.length">
-      <button nz-button nzType="default" nzShape="round" class="ml-md" (click)="autoTask()">
+      <button nz-button nzType="default"
+              nzShape="round" class="ml-md"
+              [disabled]="crawlTaskService.onVideoWorkFlow"
+              (click)="autoTask()">
         <span nz-icon nzType="enter" nzTheme="outline"></span>
       </button>
     </nz-badge>

@@ -181,6 +181,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
         });
       }
       if (this.ctrlPressed && event.key == ' ') {
+        if (this.crawlTaskService.onVideoWorkFlow) {
+          this.msgSrv.warning('爬取工作流未完成，无法添加任务');
+          return;
+        }
         navigator.clipboard.readText().then(clipText => {
           if (clipText) {
             this.crawlKey = clipText;
