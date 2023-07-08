@@ -624,8 +624,11 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
   }
 
   async swapCustomSortOrder() {
+    if (this.swapIdStack.length > 0 && this.swapIdStack.length < 2) {
+      this.swapIdStack = [];
+      return;
+    }
     try {
-      if (this.swapIdStack.length < 2) { return; }
       await this.videoService.swapCustomSortOrder(this.swapIdStack[0], this.swapIdStack[1]);
       this.swapIdStack = [];
       this.getByPage();
@@ -634,6 +637,10 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
       console.error(e);
       this.msgSrv.error('交换顺序失败');
     }
+  }
+
+  refreshVideoGallery() {
+    this.getByPage();
   }
 
 }

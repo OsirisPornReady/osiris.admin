@@ -2,7 +2,7 @@
 <div class="page-header d-flex justify-content-start align-items-center">
   <div class="header-content d-flex justify-content-start align-items-center">
     <nz-select nzShowSearch nzAllowClear nzBorderless nzPlaceHolder="Select a data source" style="width: 120px" [(ngModel)]="crawlApiUrl" [nzOptions]="crawlTypeOptions"></nz-select>
-    <input nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-lg ml-md" auto-focus (keydown.enter)="autoTask()"/>
+    <input nz-input nzSize="large" placeholder="Crawl Key" [(ngModel)]="crawlKey" class="width-md ml-md" auto-focus (keydown.enter)="autoTask()"/>
     <button nz-button nzType="dashed" nzShape="round" type="button" class="ml-md" (click)="autoCreate()">
       <span nz-icon nzType="api" nzTheme="outline"></span>
     </button>
@@ -21,6 +21,11 @@
       <span *ngIf="crawlTaskService.videoWorkFlowStage == 'wait4confirm'" nz-icon nzType="audit" nzTheme="outline"></span>
       <span *ngIf="crawlTaskService.videoWorkFlowStage == 'confirming'" nz-icon nzType="loading" nzTheme="outline"></span>
     </button>
+    <button nz-button type="button" nzType="primary"
+            nzShape="round" class="ml-md"
+            (click)="refreshVideoGallery()">
+      <span nz-icon nzType="sync" nzTheme="outline"></span>
+    </button>
 <!--    <nz-switch [(ngModel)]="realTimeCrawl"-->
 <!--               nzCheckedChildren="后台爬取"-->
 <!--               nzUnCheckedChildren="即时爬取"-->
@@ -36,11 +41,18 @@
                nzUnCheckedChildren="上架编辑"
                class="ml-md">
     </nz-switch>
+    <button nz-button type="button" nzType="primary"
+            nzShape="round" class="ml-md"
+            [nzDanger]="swapIdStack.length > 0 && swapIdStack.length < 2"
+            [disabled]="swapIdStack.length == 0"
+            (click)="swapCustomSortOrder()">
+      <span nz-icon [nzType]="(swapIdStack.length > 0 && swapIdStack.length < 2) ? 'close' : 'swap'" nzTheme="outline"></span>
+    </button>
     <button nz-button type="button" nzType="default"
             nzShape="round" class="ml-md"
-            [disabled]="swapIdStack.length < 2"
-            (click)="swapCustomSortOrder()">
-      <span nz-icon nzType="swap" nzTheme="outline"></span>
+            [disabled]="swapIdStack.length == 0"
+            (click)="swapIdStack = []">
+      <span nz-icon nzType="clear" nzTheme="outline"></span>
     </button>
   </div>
   <div class="header-content ml-xl">
@@ -58,7 +70,7 @@
     <nz-input-group nzCompact>
       <nz-select
         [(ngModel)]="sort"
-        style="width: 120px"
+        style="width: 140px"
         nzSize="large"
         nzAllowClear
         nzShowSearch
@@ -67,7 +79,7 @@
         (ngModelChange)="getByPage()"
       ></nz-select>
       <nz-input-group nzSize="large" [nzSuffix]="suffixIconSearch">
-        <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-lg" (keydown.enter)="search()"/>
+        <input type="text" nz-input nzSize="large" [(ngModel)]="keyword" placeholder="关键字搜索" class="width-md" (keydown.enter)="search()"/>
       </nz-input-group>
       <button nz-button nzType="default" nzShape="round" nzSize="large" (click)="resetSearch()">
         <span nz-icon nzType="reload" nzTheme="outline"></span>
