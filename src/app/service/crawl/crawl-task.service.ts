@@ -16,6 +16,7 @@ export class CrawlTaskService {
   videoCrawlTaskList: VideoCrawlTask[] = [];
   videoCrawlTaskVideoIdMap: Map<number, boolean> = new Map();
   videoWorkFlowStack: any[] = [];
+  videoCrawlSuccessCount: number = 0;
   videoWorkFlowStage: string = 'wait4start';
   onVideoWorkFlow: boolean = false;
   videoCrawlFinishSubject: Subject<any> = new Subject<any>();
@@ -176,6 +177,7 @@ export class CrawlTaskService {
           if (this.videoCrawlTaskVideoIdMap.has(videoId)) {
             this.videoCrawlTaskVideoIdMap.delete(videoId);
           }
+          this.videoCrawlSuccessCount--;
           if (index < this.videoCrawlTaskList.length - 1) {
             await new Promise((resolve, reject) => {
               setTimeout(()=>{ resolve(true) }, 2000);

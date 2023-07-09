@@ -41,13 +41,15 @@
         <span nz-icon nzType="enter" nzTheme="outline"></span>
       </button>
     </nz-badge>
-    <button nz-button nzType="primary" nzShape="round" type="button"
-            class="ml-md" [disabled]="crawlTaskService.onVideoWorkFlow" (click)="executeVideoWorkFlow()">
-      <span *ngIf="crawlTaskService.videoWorkFlowStage == 'wait4start'" nz-icon nzType="cloud-download" nzTheme="outline"></span>
-      <span *ngIf="crawlTaskService.videoWorkFlowStage == 'crawling'" nz-icon nzType="loading" nzTheme="outline"></span>
-      <span *ngIf="crawlTaskService.videoWorkFlowStage == 'wait4confirm'" nz-icon nzType="audit" nzTheme="outline"></span>
-      <span *ngIf="crawlTaskService.videoWorkFlowStage == 'confirming'" nz-icon nzType="loading" nzTheme="outline"></span>
-    </button>
+    <nz-badge [nzCount]="crawlTaskService.videoCrawlSuccessCount">
+      <button nz-button nzType="primary" nzShape="round" type="button"
+              class="ml-md" [disabled]="crawlTaskService.onVideoWorkFlow" (click)="executeVideoWorkFlow()">
+        <span *ngIf="crawlTaskService.videoWorkFlowStage == 'wait4start'" nz-icon nzType="cloud-download" nzTheme="outline"></span>
+        <span *ngIf="crawlTaskService.videoWorkFlowStage == 'crawling'" nz-icon nzType="loading" nzTheme="outline"></span>
+        <span *ngIf="crawlTaskService.videoWorkFlowStage == 'wait4confirm'" nz-icon nzType="audit" nzTheme="outline"></span>
+        <span *ngIf="crawlTaskService.videoWorkFlowStage == 'confirming'" nz-icon nzType="loading" nzTheme="outline"></span>
+      </button>
+    </nz-badge>
     <button nz-button type="button" nzType="default"
             nzShape="circle" class="ml-md"
             (click)="refreshVideoGallery()">
@@ -162,7 +164,7 @@
         <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
         <span *ngIf="item.series" nz-typography class="d-block" [nzCopyable]="true" [nzCopyText]="item.series ? item.series[0] : ''" (click)="$event.stopPropagation()"><mark>{{'系列: ' + item.series}}</mark></span>
         <span nz-typography class="d-block mb-sm"><mark>{{'自定义顺序: ' + item.customSortOrder}}</mark></span>
-        
+
         <ng-template #spaceSplit>
           <nz-divider nzType="vertical"></nz-divider>
         </ng-template>

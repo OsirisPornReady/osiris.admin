@@ -72,6 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
         let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
         if (videoCrawlTask) {
           videoCrawlTask.data = res.data;
+          this.crawlTaskService.videoCrawlSuccessCount++;
         }
       } else if (res.state == 'fail') {
         let videoCrawlTask = this.crawlTaskService.videoCrawlTaskList.find((videoCrawlTask: VideoCrawlTask) => videoCrawlTask.id == res.id);
