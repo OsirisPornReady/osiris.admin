@@ -160,9 +160,9 @@
         <span nz-typography class="d-block mb-sm" [nzCopyable]="true" [nzCopyText]="item.title" (click)="$event.stopPropagation()">{{item.title}}</span>
         <span nz-typography class="d-block"><mark>日期: {{item.publishTime ? dateStringFormatter(item.publishTime) : '-'}}</mark></span>
         <span nz-typography class="d-block"><mark>{{item.serialNumber ? '番号: ' + item.serialNumber : '厂牌: ' + item.brand}}</mark></span>
-        <span nz-typography class="d-block mb-sm"><mark>{{'自定义顺序: ' + item.customSortOrder}}</mark></span>
         <span *ngIf="item.series" nz-typography class="d-block" [nzCopyable]="true" [nzCopyText]="item.series ? item.series[0] : ''" (click)="$event.stopPropagation()"><mark>{{'系列: ' + item.series}}</mark></span>
-
+        <span nz-typography class="d-block mb-sm"><mark>{{'自定义顺序: ' + item.customSortOrder}}</mark></span>
+        
         <ng-template #spaceSplit>
           <nz-divider nzType="vertical"></nz-divider>
         </ng-template>
