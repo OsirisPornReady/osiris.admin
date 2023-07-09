@@ -647,4 +647,11 @@ export class GalleryVideoGalleryComponent implements OnInit, OnDestroy {
     this.getByPage();
   }
 
+  resetVideoGallery() {
+    this.keyword = '';
+    this.sort = '';
+    this.swapIdStack = [];
+    this.getByPage();
+  }
+
 }

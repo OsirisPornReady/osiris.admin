@@ -152,6 +152,10 @@
                    [(nzPageIndex)]="pi"
                    [nzTotal]="total"
                    (nzPageIndexChange)="handlePageIndexChange()"
-                   (nzPageSizeChange)="handlePageSizeChange()"></nz-pagination>
+                   (nzPageSizeChange)="handlePageSizeChange()"
+                   [nzShowTotal]="rangeTemplate"></nz-pagination>
+    <ng-template #rangeTemplate let-range="range" let-total>
+      第{{ range[0] }}项 ~ 第{{ range[1] }}项 , 共 {{ total }} 项
+    </ng-template>
   </div>
 </div>

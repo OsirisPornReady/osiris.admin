@@ -35,7 +35,8 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
   page: STPage = {
     showSize: true,
     pageSizes: [10, 20, 30, 40, 50],
-    showQuickJumper: true
+    showQuickJumper: true,
+    total: '第{{range[0]}}条 ~ 第{{range[1]}}条 , 共 {{total}} 条'
   };
   searchParam: any = {
     // searchField: null

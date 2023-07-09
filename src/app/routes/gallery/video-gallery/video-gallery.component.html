@@ -48,10 +48,15 @@
       <span *ngIf="crawlTaskService.videoWorkFlowStage == 'wait4confirm'" nz-icon nzType="audit" nzTheme="outline"></span>
       <span *ngIf="crawlTaskService.videoWorkFlowStage == 'confirming'" nz-icon nzType="loading" nzTheme="outline"></span>
     </button>
-    <button nz-button type="button" nzType="primary"
-            nzShape="round" class="ml-md"
+    <button nz-button type="button" nzType="default"
+            nzShape="circle" class="ml-md"
             (click)="refreshVideoGallery()">
       <span nz-icon nzType="sync" nzTheme="outline"></span>
+    </button>
+    <button nz-button type="button" nzType="primary"
+            nzShape="round" nzDanger class="ml-md"
+            (click)="resetVideoGallery()">
+      <span nz-icon nzType="poweroff" nzTheme="outline"></span>
     </button>
 <!--    <nz-switch [(ngModel)]="realTimeCrawl"-->
 <!--               nzCheckedChildren="后台爬取"-->
@@ -285,7 +290,11 @@
                    [(nzPageIndex)]="pi"
                    [nzTotal]="total"
                    (nzPageIndexChange)="handlePageIndexChange()"
-                   (nzPageSizeChange)="handlePageSizeChange()"></nz-pagination>
+                   (nzPageSizeChange)="handlePageSizeChange()"
+                   [nzShowTotal]="rangeTemplate"></nz-pagination>
+    <ng-template #rangeTemplate let-range="range" let-total>
+      第{{ range[0] }}项 ~ 第{{ range[1] }}项 , 共 {{ total }} 项
+    </ng-template>
   </div>
 <!--  <div>-->
 <!--    <iframe [src]="ifUrl" width="500" height="500" frameborder="0">-->
