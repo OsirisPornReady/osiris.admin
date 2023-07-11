@@ -1,7 +1,25 @@
 <page-header [home]="''" [title]="''"></page-header>
 <nz-card>
-  <sf *ngIf="isKeywordSearch" mode="search" [schema]="keywordSearchSchema" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
+  <sf *ngIf="isKeywordSearch && (!isCompoundKeywordSearch)" mode="search" [schema]="keywordSearchSchema" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
   <sf *ngIf="!isKeywordSearch" mode="search" [schema]="searchSchema" [ui]="ui" [formData]="searchParam" (formSubmit)="st.reset($event)" (formReset)="st.reset($event); defaultSort=null"></sf>
+  <div *ngIf="isKeywordSearch && isCompoundKeywordSearch">
+    <div class="mb-lg">
+      <span nz-typography class="mr-sm">组合关键字:</span>
+      <button nz-button nzType="dashed" (click)="compoundKeywordList.push({value:''})">添加</button>
+      <button nz-button nzType="primary" (click)="searchCompoundKeyword()">搜索</button>
+      <button nz-button nzType="default" (click)="st.reset({}); defaultSort=null; compoundKeywordList=[{value:''}]">重置</button>
+      <nz-switch [(ngModel)]="onDeleteCompoundKeyword" class="ml-md"></nz-switch>
+    </div>
+    <div class="compound-keyword-group">
+      <div *ngFor="let kwd of compoundKeywordList;let idx = index" class="compound-keyword mr-md mb-md">
+        <span nz-typography class="mr-sm">组合{{idx}}:</span>
+        <input nz-input nzSize="default" placeholder="组合关键字" class="width-sm" [(ngModel)]="kwd.value"/>
+        <button *ngIf="onDeleteCompoundKeyword" nz-button nzType="dashed" nzDanger nzSize="small" nzShape="circle" class="delete-button" (click)="deleteCompoundKeyword(idx)">
+          <span nz-icon nzType="minus" nzTheme="outline"></span>
+        </button>
+      </div>
+    </div>
+  </div>
   <nz-divider nzText=""></nz-divider>
   <div nz-row class="my-md">
     <div nz-col [nzXs]="24" [nzLg]="24">
@@ -28,8 +46,13 @@
                    (ngModelChange)="switchMultiSelect()"
                    class="mr-md"></nz-switch>
         <nz-switch [(ngModel)]="isKeywordSearch"
-                   [nzCheckedChildren]="'关键字'"
-                   [nzUnCheckedChildren]="'组合搜索'"
+                   [nzCheckedChildren]="'关键字搜索'"
+                   [nzUnCheckedChildren]="'类别搜索'"
+                   class="mr-md"></nz-switch>
+        <nz-switch *ngIf="isKeywordSearch"
+                   [(ngModel)]="isCompoundKeywordSearch"
+                   [nzCheckedChildren]="'组合'"
+                   [nzUnCheckedChildren]="'单个'"
                    class="mr-md"></nz-switch>
       </div>
       <div class="d-flex justify-content-start align-items-center">

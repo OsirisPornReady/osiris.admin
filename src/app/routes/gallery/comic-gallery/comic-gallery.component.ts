@@ -22,6 +22,9 @@ import {dateStringFormatter} from "../../../shared/utils/dateUtils";
 import {CrawlMessage} from "../../../model/CrawlMessage";
 import {ComicCrawlTask} from "../../../model/CrawlTask";
 import { fallbackImageBase64 } from "../../../../assets/image-base64";
+import {
+  ComicManageComicCustomTagsEditComponent
+} from "../../comic-manage/comic/comic-custom-tags-edit/comic-custom-tags-edit.component";
 
 
 @Component({
@@ -522,6 +525,15 @@ export class GalleryComicGalleryComponent implements OnInit, OnDestroy {
 
   executeComicCrawlTaskList() {
 
+  }
+
+  openComicCustomTagsEdit(id: number) {
+    this.modal.createStatic(ComicManageComicCustomTagsEditComponent, {record: {id}}).subscribe(res => {
+      if (res == 'ok') {
+        // 不一定需要,因为tag改动没有体现在grid视图上,不需要更新视觉效果
+        // this.getByPage();
+      }
+    });
   }
 
 }

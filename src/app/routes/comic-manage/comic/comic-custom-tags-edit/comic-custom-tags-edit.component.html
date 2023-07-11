@@ -1,0 +1,60 @@
+<div class="modal-header">
+  <div class="modal-title">{{ title }}</div>
+</div>
+<nz-spin *ngIf="!i" class="modal-spin"></nz-spin>
+<sf *ngIf="i" #sf mode="edit" [schema]="schema" [ui]="ui" [formData]="i" button="none">
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" nzType="primary" (click)="save(sf.value)" [nzLoading]="http.loading">保存</button>
+  </div>
+<!--  [disabled]="!sf.valid"-->
+
+  <ng-template sf-template="customTags" let-i let-ui="ui" let-schema="schema">
+    <div class="mb-md d-flex justify-content-start align-items-center" style="height: 32px">
+      <nz-switch
+        [(ngModel)]="onEditCustomTags"
+        nzCheckedChildren="查看"
+        nzUnCheckedChildren="编辑"
+        class="mr-md"
+        (ngModelChange)="handleSwitchOnEditCustomTags($event)"
+      ></nz-switch>
+      <nz-switch
+        *ngIf="onEditCustomTags"
+        [(ngModel)]="onSwapCustomTags"
+        nzCheckedChildren="交换"
+        nzUnCheckedChildren="增删"
+        class="mr-md"
+      ></nz-switch>
+    </div>
+    <div [ngClass]="[customTags.length > 0 ? 'mb-md' : '']">
+      <input
+        nz-input placeholder="请输入自定义标签"
+        [(ngModel)]="inputCustomTagValue"
+        class="width-xl mr-md"
+        (keydown.enter)="$event.preventDefault();handleCustomTagInputKeydownEnter()"
+        (ngModelChange)="handleInputCustomTagValue()"
+      />
+      <button *ngIf="onEditCustomTags && !onSwapCustomTags" nz-button type="button" nzType="primary" (click)="addCustomTag()">添加</button>
+      <button *ngIf="onEditCustomTags && onSwapCustomTags" nz-button type="button" nzType="primary" [disabled]="tagSwapIndexList.length < 2" (click)="swapCustomTags()">换位</button>
+      <button *ngIf="!onEditCustomTags" nz-button type="button" nzType="default" (click)="queryCustomTag()">查询</button>
+    </div>
+    <div>
+      <nz-tag
+        *ngFor="let tag of customTags; let idx = index"
+        [nzMode]="onEditCustomTags ? (onSwapCustomTags ? 'default' : 'closeable') : 'default'"
+        [nzColor]="(tagKeyword && tag.text.includes(tagKeyword)) ? 'red' : 'default'"
+        (nzOnClose)="deleteCustomTag(tag)"
+      >
+        <label
+          *ngIf="onSwapCustomTags"
+          nz-checkbox
+          [(ngModel)]="tag.checked"
+          [nzDisabled]="(!tagSwapIndexList.includes(idx)) && tagSwapIndexList.length >= 2"
+          (ngModelChange)="handleCheckCustomTag($event, idx)"
+        >{{ tag.text }}</label>
+        <span *ngIf="!onSwapCustomTags">{{ tag.text }}</span>
+      </nz-tag>
+    </div>
+  </ng-template>
+
+</sf>

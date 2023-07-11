@@ -97,14 +97,14 @@
     <div class="grid-container d-flex justify-content-around align-items-start">
       <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" nzHoverable (click)="openInfo(item.id)">
   <!--      item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc-->
-        <img
-          nz-image
-          width="378px"
-          [nzSrc]="item.coverBase64"
-          [nzFallback]="fallbackImageBase64"
-          alt=""
-          (click)="handlePreview($event)"
-        />
+<!--        <img-->
+<!--          nz-image-->
+<!--          width="378px"-->
+<!--          [nzSrc]="item.coverBase64"-->
+<!--          [nzFallback]="fallbackImageBase64"-->
+<!--          alt=""-->
+<!--          (click)="handlePreview($event)"-->
+<!--        />-->
         <span nz-typography class="d-block mb-sm">{{item.title}}</span>
         <span nz-typography class="d-block"><mark>页数: {{item.pageSize}}</mark></span>
         <span nz-typography class="d-block">
@@ -141,6 +141,10 @@
                 数据源
               </a>
             </ng-template>
+            <button *nzSpaceItem nz-button nzType="default" nzSize="small" (click)="$event.stopPropagation();openComicCustomTagsEdit(item.id)">
+              <span nz-icon nzType="tags" nzTheme="outline"></span>
+              自定义标签
+            </button>
           </nz-space>
         </div>
 

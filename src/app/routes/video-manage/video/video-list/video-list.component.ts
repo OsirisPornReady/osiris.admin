@@ -46,7 +46,6 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
       value: ''
     }
   ];
-  aa = 'qq'
   onDeleteCompoundKeyword: boolean = false;
   keywordSearchSchema: SFSchema = {
     properties: {
@@ -641,7 +640,6 @@ export class VideoManageVideoListComponent implements OnInit, OnDestroy {
 
   searchCompoundKeyword() {
     let params = this.compoundKeywordList.filter((item: any) => item.value).map((item: any) => item.value);
-    console.log(params)
     this.st.reset({ compoundKeyword: params });
   }
 

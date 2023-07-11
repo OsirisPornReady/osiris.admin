@@ -13,6 +13,7 @@ import { ComicManageLocalComicEditComponent } from './comic/local-comic-edit/loc
 import { ComicManageComicAlbumListComponent } from './comic-album/comic-album-list/comic-album-list.component';
 import { ComicManageComicAlbumEditComponent } from './comic-album/comic-album-edit/comic-album-edit.component';
 import { ComicManageComicCrawlTaskListComponent } from './comic/comic-crawl/comic-crawl-task-list/comic-crawl-task-list.component';
+import { ComicManageComicCustomTagsEditComponent } from './comic/comic-custom-tags-edit/comic-custom-tags-edit.component';
 
 const COMPONENTS: Type<void>[] = [
   ComicManageComicListComponent,
@@ -29,7 +30,8 @@ const COMPONENTS_NOROUNT: Type<void>[] = [
   ComicManageComicDownloadConfigComponent,
   ComicManageComicDownloadTaskListComponent,
   ComicManageLocalComicEditComponent,
-  ComicManageComicAlbumEditComponent
+  ComicManageComicAlbumEditComponent,
+  ComicManageComicCustomTagsEditComponent
 ]
 
 @NgModule({

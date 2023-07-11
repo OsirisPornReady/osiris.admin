@@ -43,6 +43,12 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   searchParam: any = {
     // searchField: null
   }
+  compoundKeywordList: any[] = [
+    {
+      value: ''
+    }
+  ];
+  onDeleteCompoundKeyword: boolean = false;
   keywordSearchSchema: SFSchema = {
     properties: {
       keyword: {
@@ -284,6 +290,7 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
   isAutoFill: boolean = false;
   isAutoSubmit: boolean = false;
   isKeywordSearch: boolean = true;
+  isCompoundKeywordSearch: boolean = false;
   crawlKey: string = '';
   crawlTypeOptions: any[] = [];
   crawlApiUrl: any = null;
@@ -784,6 +791,17 @@ export class ComicManageComicListComponent implements OnInit, OnDestroy {
 
   gotoDataSourceUrl(item: any) {
     this.commonService.openNewTab(item.dataSourceUrl);
+  }
+
+  searchCompoundKeyword() {
+    let params = this.compoundKeywordList.filter((item: any) => item.value).map((item: any) => item.value);
+    this.st.reset({ compoundKeyword: params });
+  }
+
+  deleteCompoundKeyword(index: number) {
+    if (this.compoundKeywordList.length > 1) {
+      this.compoundKeywordList.splice(index, 1);
+    }
   }
 
 }
