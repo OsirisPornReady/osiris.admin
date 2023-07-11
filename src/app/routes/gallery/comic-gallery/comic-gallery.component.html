@@ -97,17 +97,18 @@
     <div class="grid-container d-flex justify-content-around align-items-start">
       <nz-card *ngFor="let item of gridList" [ngClass]="['grid-item', 'ant-card-body-custom-padding']" nzHoverable (click)="openInfo(item.id)">
   <!--      item.comicServerPath + '/' + item.comicServerDirectoryName + '/' + item.localCoverSrc-->
-<!--        <img-->
-<!--          nz-image-->
-<!--          width="378px"-->
-<!--          [nzSrc]="item.coverBase64"-->
-<!--          [nzFallback]="fallbackImageBase64"-->
-<!--          alt=""-->
-<!--          (click)="handlePreview($event)"-->
-<!--        />-->
+        <img
+          nz-image
+          width="378px"
+          [nzSrc]="item.coverBase64"
+          [nzFallback]="fallbackImageBase64"
+          alt=""
+          (click)="handlePreview($event)"
+        />
         <span nz-typography class="d-block mb-sm">{{item.title}}</span>
         <span nz-typography class="d-block"><mark>页数: {{item.pageSize}}</mark></span>
-        <span nz-typography class="d-block">
+        <span nz-typography class="d-block"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
+        <span nz-typography class="d-block mb-sm">
           完整性:
           <ng-container *ngIf="item.integrity || comicIdListOwnLocal.includes(item.id); else integrityFalse">
             <span nz-icon [nzType]="'check-circle'" [nzTheme]="'twotone'" [nzTwotoneColor]="'#52c41a'"></span>
@@ -116,7 +117,6 @@
             <span nz-icon [nzType]="'close-circle'" [nzTheme]="'twotone'" [nzTwotoneColor]="'#ff4d4f'"></span>
           </ng-template>
         </span>
-        <span nz-typography class="d-block mb-sm"><mark>日期: {{item.postedTime ? dateStringFormatter(item.postedTime) : '-'}}</mark></span>
 
         <ng-template #spaceSplit>
           <nz-divider nzType="vertical"></nz-divider>
